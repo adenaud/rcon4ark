@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">NexusRcon-Ark</string>
     <string name="action_settings">Settings</string>
+
+
+    <string name="hostname">Hostname</string>
+    <string name="port">Port</string>
+    <string name="password">Password</string>
+
 </resources>
