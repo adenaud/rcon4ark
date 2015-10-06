@@ -6,5 +6,6 @@
     <string name="hostname">Hostname</string>
     <string name="port">Port</string>
     <string name="password">Password</string>
+    <string name="title_activity_server_connection">ServerConnectionActivity</string>
 
 </resources>

@@ -18,7 +18,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.ServerConnectionActivity" >
+        <activity
+            android:name=".view.ServerConnectionActivity"
+            android:label="@string/title_activity_server_connection"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="net.nexusrcon.nexusrconark.MainActivity" />
         </activity>
     </application>
 
