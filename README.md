@@ -1,2 +1,2 @@
 # NexusRcon - ARK
-ARK : Survival Evolved Server manager tool for Android
+ARK : Survival Evolved Server manager for Android
