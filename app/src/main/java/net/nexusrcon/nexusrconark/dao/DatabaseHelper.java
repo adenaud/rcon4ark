@@ -7,6 +7,11 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.table.TableUtils;
+
+import net.nexusrcon.nexusrconark.model.Server;
+
+import java.sql.SQLException;
 
 /**
  * Created by Anthony on 09/10/2015.
@@ -25,7 +30,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase database, ConnectionSource connectionSource) {
-
+        try {
+            TableUtils.createTable(connectionSource, Server.class);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

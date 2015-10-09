@@ -9,7 +9,15 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_main" tools:context=".MainActivity">
 
-    <TextView android:text="@string/no_server" android:lines="2" android:layout_width="fill_parent"
+    <TextView
+        android:id="@+id/textview_noserver"
+        android:text="@string/no_server" android:lines="2" android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:gravity="center" />
+
+    <ListView
+        android:id="@+id/list_servers"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+
 </RelativeLayout>
