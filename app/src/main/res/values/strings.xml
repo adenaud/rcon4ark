@@ -3,9 +3,19 @@
     <string name="action_settings">Settings</string>
 
 
+    <!-- Main Activity -->
+
+    <string name="no_server">No server.\n Press the + button to add one.</string>
+
+    <!--  New / Edit Server Activity-->
+
+    <string name="title_activity_server_connection">Server</string>
+    <string name="new_server">New server</string>
+    <string name="edit_server">Edit server</string>
+
     <string name="hostname">Hostname</string>
     <string name="port">Port</string>
     <string name="password">Password</string>
-    <string name="title_activity_server_connection">ServerConnectionActivity</string>
+
 
 </resources>
