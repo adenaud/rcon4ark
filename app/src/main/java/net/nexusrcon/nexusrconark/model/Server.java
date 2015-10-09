@@ -3,13 +3,23 @@ package net.nexusrcon.nexusrconark.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.j256.ormlite.field.DatabaseField;
+
 /**
  * Created by Anthony on 06/10/2015.
  */
 public class Server implements Parcelable {
 
+    @DatabaseField(generatedId = true)
+    private int id;
+
+    @DatabaseField
     private String hostname;
+
+    @DatabaseField
     private int port;
+
+    @DatabaseField
     private String password;
 
     public Server(){
