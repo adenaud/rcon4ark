@@ -5,9 +5,11 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -32,6 +34,9 @@ public class MainActivity extends RoboActionBarActivity {
     @Inject
     private ServerAdapter serverAdapter;
 
+    @Inject
+    private ServerDAO serverDAO;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +54,8 @@ public class MainActivity extends RoboActionBarActivity {
                 Server server = new Server();
                 Intent intent = new Intent(MainActivity.this, ServerConnectionActivity.class);
                 intent.putExtra("server", server);
+                intent.putExtra("titleId",R.string.new_server);
+
                 startActivityForResult(intent, Codes.REQUEST_NEW_SERVER);
             }
         });
@@ -101,10 +108,24 @@ public class MainActivity extends RoboActionBarActivity {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_servers_floating, menu);
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        return super.onContextItemSelected(item);
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        Server server = (Server) listView.getItemAtPosition(info.position);
+        switch(item.getItemId()){
+            case R.id.menu_action_edit :
+                //playerService.killPlayer(player);
+                return  true;
+            case R.id.menu_action_delete:
+                serverDAO.delete(server);
+                refresh();
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
     }
 }

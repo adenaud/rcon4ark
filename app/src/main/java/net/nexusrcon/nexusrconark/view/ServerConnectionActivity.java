@@ -45,6 +45,7 @@ public class ServerConnectionActivity extends RoboActionBarActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         server = getIntent().getParcelableExtra("server");
+        setTitle(getIntent().getIntExtra("titleId",R.string.edit_server));
 
         hostnameEditText.setText(server.getHostname());
         portEditText.setText(String.valueOf(server.getPort()));
