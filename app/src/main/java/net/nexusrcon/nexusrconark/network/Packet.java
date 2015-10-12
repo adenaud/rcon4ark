@@ -1,7 +1,11 @@
 package net.nexusrcon.nexusrconark.network;
 
+
+import org.apache.commons.lang3.ArrayUtils;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 /**
@@ -18,9 +22,8 @@ public class Packet {
 
     }
 
-    public Packet(int id, int type, String body) {
+    public Packet(int type, String body) {
         this.size = body.length() + 9;
-        this.id = id;
         this.type = type;
         this.body = body;
     }
@@ -60,8 +63,9 @@ public class Packet {
     }
 
     private int getIntFromBytes(byte[] data, int index){
-        byte[] res;
+        byte[] res = ByteBuffer.allocate(4).array();
         res = Arrays.copyOfRange(data,index, index + 4);
+        ArrayUtils.reverse(res);
         int integer = (res[0] << 24) & 0xff000000 | (res[1] << 16) & 0x00ff0000 | (res[2] << 8) & 0x0000ff00 | (res[3] << 0) & 0x000000ff;
         return  integer;
     }
@@ -72,4 +76,35 @@ public class Packet {
         return "";
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
 }

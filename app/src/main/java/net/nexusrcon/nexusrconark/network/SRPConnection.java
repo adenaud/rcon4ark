@@ -5,6 +5,7 @@ import net.nexusrcon.nexusrconark.event.ReceiveEvent;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Map;
@@ -61,6 +62,20 @@ public class SRPConnection{
     }
 
 
+    public void send(final Packet packet) throws IOException {
+
+        if(client.isConnected()){
+            byte[] data = packet.encode();
+            OutputStream outputStream = client.getOutputStream();
+            outputStream.write(data);
+            this.outgoingPackets.put(getSequenceNumber(), packet);
+
+            Ln.e("Sending packet");
+
+        }else {
+            Ln.e("Connection is closed");
+        }
+    }
 
     private void beginReceive() {
         receiveThread = new Thread(new Runnable() {

@@ -23,7 +23,7 @@ import net.nexusrcon.nexusrconark.view.ServerConnectionActivity;
 import roboguice.activity.RoboActionBarActivity;
 import roboguice.inject.InjectView;
 
-public class MainActivity extends RoboActionBarActivity {
+public class MainActivity extends RoboActionBarActivity implements AdapterView.OnItemClickListener {
 
     @InjectView(R.id.list_servers)
     private ListView listView;
@@ -36,6 +36,9 @@ public class MainActivity extends RoboActionBarActivity {
 
     @Inject
     private ServerDAO serverDAO;
+
+    @Inject
+    private ArkService arkService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +62,10 @@ public class MainActivity extends RoboActionBarActivity {
                 startActivityForResult(intent, Codes.REQUEST_NEW_SERVER);
             }
         });
+
+        listView.setOnItemClickListener(this);
+
+
 
         refresh();
     }
@@ -127,5 +134,19 @@ public class MainActivity extends RoboActionBarActivity {
             default:
                 return super.onContextItemSelected(item);
         }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Server server = serverAdapter.getItem(position);
+        arkService.connect(server);
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        arkService.login(server.getPassword());
     }
 }
