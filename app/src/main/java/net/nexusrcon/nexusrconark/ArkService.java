@@ -39,6 +39,8 @@ public class ArkService implements OnReceiveListener {
 
             }
         });
+
+
     }
 
     private void login(String password){
@@ -75,6 +77,11 @@ public class ArkService implements OnReceiveListener {
         Packet packet = event.getPacket();
         if(packet.getType() == 2){
             if(packet.getId() == -1){
+                try {
+                    connection.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 Ln.d("Auth Fail");
             }
             else{

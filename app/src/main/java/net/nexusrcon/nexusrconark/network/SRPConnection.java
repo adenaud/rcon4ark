@@ -23,72 +23,49 @@ public class SRPConnection {
 
     private Thread connectionThread;
     private Thread receiveThread;
-    private Thread connectionEventThread;
-
 
     private Socket client;
     private Map<Integer, Packet> outgoingPackets;
 
     private boolean runReceiveThread;
-    private boolean runConnectionThread;
-    private boolean isConnected = false;
+    private boolean isConnected;
 
-    private String hostname;
     private OnReceiveListener onReceiveListener;
-
     private OnConnectListener onConnectListener;
 
     public SRPConnection() {
-        client = new Socket();
+
         outgoingPackets = new ConcurrentHashMap<>();
     }
 
+
     public void open(final String hostname, final int port) {
+
         if (!isConnected) {
-            runConnectionThread = true;
+            client = new Socket();
             connectionThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
 
                         Ln.d("opening connection ...");
+                        isConnected = true;
                         client.connect(new InetSocketAddress(hostname, port));
+
+
+                        onConnectListener.onConnect();
 
                         runReceiveThread = true;
                         beginReceive();
 
                     } catch (IOException e) {
+                        isConnected = false;
                         e.printStackTrace();
                     }
                 }
             });
             connectionThread.setName("ConnectionThread");
             connectionThread.start();
-
-            connectionEventThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    while (runConnectionThread) {
-
-                        try {
-                            Thread.sleep(200);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-
-                        if (client.isConnected() && !isConnected) {
-                            isConnected = true;
-                            onConnectListener.onConnect();
-                        }
-                        if (!client.isConnected() && isConnected) {
-                            isConnected = false;
-                            onConnectListener.onDisconnect();
-                        }
-                    }
-                }
-            });
-            connectionEventThread.setName("ConnectionEventThread");
-            connectionEventThread.start();
         }
     }
 
@@ -105,7 +82,7 @@ public class SRPConnection {
             outputStream.write(data);
             this.outgoingPackets.put(getSequenceNumber(), packet);
 
-            Ln.e("Sending packet");
+            Ln.d("Sending packet");
 
         } else {
             Ln.e("Connection is closed");
@@ -154,5 +131,16 @@ public class SRPConnection {
 
     public void setOnConnectListener(OnConnectListener onConnectListener) {
         this.onConnectListener = onConnectListener;
+    }
+
+    public void close() throws IOException {
+        Ln.d("Closing connection");
+        client.close();
+
+        isConnected = false;
+        runReceiveThread = false;
+
+        receiveThread.interrupt();
+        connectionThread.interrupt();
     }
 }
