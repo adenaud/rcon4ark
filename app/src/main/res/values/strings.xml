@@ -18,6 +18,12 @@
     <string name="password">Password</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
+    <string name="title_activity_rcon">ARK RCON</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+
+
+    <string name="fragment_players">Players</string>
+    <string name="fragment_commands">Commands</string>
 
 
 </resources>

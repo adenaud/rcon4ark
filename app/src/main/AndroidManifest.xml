@@ -29,6 +29,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="net.nexusrcon.nexusrconark.MainActivity" />
         </activity>
+        <activity
+            android:name=".view.RconActivity"
+            android:label="@string/title_activity_rcon"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="net.nexusrcon.nexusrconark.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

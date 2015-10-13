@@ -17,13 +17,15 @@ import com.google.inject.Inject;
 
 import net.nexusrcon.nexusrconark.adapter.ServerAdapter;
 import net.nexusrcon.nexusrconark.dao.ServerDAO;
+import net.nexusrcon.nexusrconark.event.OnConnectListener;
 import net.nexusrcon.nexusrconark.model.Server;
+import net.nexusrcon.nexusrconark.view.RconActivity;
 import net.nexusrcon.nexusrconark.view.ServerConnectionActivity;
 
 import roboguice.activity.RoboActionBarActivity;
 import roboguice.inject.InjectView;
 
-public class MainActivity extends RoboActionBarActivity implements AdapterView.OnItemClickListener {
+public class MainActivity extends RoboActionBarActivity implements AdapterView.OnItemClickListener, OnConnectListener {
 
     @InjectView(R.id.list_servers)
     private ListView listView;
@@ -108,6 +110,9 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
         if(requestCode == Codes.REQUEST_NEW_SERVER || requestCode == Codes.REQUEST_EDIT_SERVER ){
             refresh();
         }
+        if(requestCode == Codes.REQUEST_RCON_CLOSE){
+            arkService.disconnect();
+        }
 
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -139,7 +144,21 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Server server = serverAdapter.getItem(position);
+        arkService.setOnConnectListener(this);
         arkService.connect(server);
 
     }
+
+    @Override
+    public void onConnect() {
+        Intent intent = new Intent(this, RconActivity.class);
+        startActivityForResult(intent, Codes.REQUEST_RCON_CLOSE);
+    }
+
+    @Override
+    public void onDisconnect() {
+
+    }
+
+
 }
