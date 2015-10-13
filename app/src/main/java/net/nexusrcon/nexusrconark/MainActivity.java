@@ -141,12 +141,5 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
         Server server = serverAdapter.getItem(position);
         arkService.connect(server);
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-
     }
 }

@@ -3,6 +3,7 @@ package net.nexusrcon.nexusrconark;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import net.nexusrcon.nexusrconark.event.OnConnectListener;
 import net.nexusrcon.nexusrconark.event.OnReceiveListener;
 import net.nexusrcon.nexusrconark.event.ReceiveEvent;
 import net.nexusrcon.nexusrconark.model.Server;
@@ -23,14 +24,26 @@ public class ArkService implements OnReceiveListener {
     @Inject
     private SRPConnection connection;
 
-    public void connect(Server server){
+    public void connect(final Server server){
         connection.open(server.getHostname(),server.getPort());
 
         connection.setOnReceiveListener(this);
+        connection.setOnConnectListener(new OnConnectListener() {
+            @Override
+            public void onConnect() {
+                login(server.getPassword());
+            }
+
+            @Override
+            public void onDisconnect() {
+
+            }
+        });
     }
 
-    public void login(String password){
+    private void login(String password){
         Packet packet = new Packet(3,password);
+        packet.setId(connection.getSequenceNumber());
         try {
             connection.send(packet);
         } catch (IOException e) {

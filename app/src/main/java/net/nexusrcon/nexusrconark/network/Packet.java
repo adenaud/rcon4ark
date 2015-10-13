@@ -23,7 +23,6 @@ public class Packet {
     }
 
     public Packet(int type, String body) {
-        this.size = body.length() + 9;
         this.type = type;
         this.body = body;
     }
@@ -33,23 +32,20 @@ public class Packet {
     }
 
     public byte[] encode() {
-        byte[] packet = null;
-
-
         ByteArrayOutputStream packetOutput = new ByteArrayOutputStream();
 
         try {
-            packetOutput.write(size);
-            packetOutput.write(id);
-            packetOutput.write(type);
+            packetOutput.write(getUint32Bytes( body.length() + 10));
+            packetOutput.write(getUint32Bytes(id));
+            packetOutput.write(getUint32Bytes(type));
             packetOutput.write((body + '\0').getBytes());
-            packetOutput.write(0);
+            packetOutput.write(0x00);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
 
-        return packet;
+        return packetOutput.toByteArray();
     }
 
     public Packet decode(byte[] rawPacket) {
@@ -58,13 +54,12 @@ public class Packet {
         id = getIntFromBytes(rawPacket,4);
         type = getIntFromBytes(rawPacket,8);
         body = getStringFromBytes(rawPacket,12,size - 9);
-
         return this;
     }
 
     private int getIntFromBytes(byte[] data, int index){
         byte[] res = ByteBuffer.allocate(4).array();
-        res = Arrays.copyOfRange(data,index, index + 4);
+        res = Arrays.copyOfRange(data, index, index + 4);
         ArrayUtils.reverse(res);
         int integer = (res[0] << 24) & 0xff000000 | (res[1] << 16) & 0x00ff0000 | (res[2] << 8) & 0x0000ff00 | (res[3] << 0) & 0x000000ff;
         return  integer;
@@ -72,8 +67,14 @@ public class Packet {
 
     private String getStringFromBytes(byte[] data, int index, int length){
         byte[] res = new byte[] {};
-        res = Arrays.copyOfRange(data, index, index + length + 1);
-        return "";
+        res = Arrays.copyOfRange(data, index, index + length -1);
+        return new String(res);
+    }
+
+    private byte[] getUint32Bytes(final int value) {
+        byte[] result = ByteBuffer.allocate(4).putInt(value).array();
+        ArrayUtils.reverse(result);
+        return result;
     }
 
     public int getId() {
