@@ -147,6 +147,6 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
             e.printStackTrace();
         }
 
-        arkService.login(server.getPassword());
+
     }
 }

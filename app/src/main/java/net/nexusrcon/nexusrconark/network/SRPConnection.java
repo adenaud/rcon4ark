@@ -98,9 +98,14 @@ public class SRPConnection{
 
                 inputStream.read(response, 0, response.length);
 
+                Packet packet = new Packet(response);
+                Ln.d("receive : " + packet.getBody());
+
                 if (onReceiveListener != null) {
-                    onReceiveListener.onReceive(new ReceiveEvent(SRPConnection.this, new Packet(response)));
+                    onReceiveListener.onReceive(new ReceiveEvent(SRPConnection.this, packet));
                 }
+
+
 
                 beginReceive();
 
