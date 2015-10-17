@@ -80,7 +80,7 @@ public class SRPConnection {
             byte[] data = packet.encode();
             OutputStream outputStream = client.getOutputStream();
             outputStream.write(data);
-            this.outgoingPackets.put(getSequenceNumber(), packet);
+            this.outgoingPackets.put(packet.getId(), packet);
 
             Ln.d("Sending packet");
 
@@ -113,7 +113,7 @@ public class SRPConnection {
                 Packet packet = new Packet(response);
                 Ln.d("receive : " + packet.getBody());
 
-                if (onReceiveListener != null) {
+                if (packet.getId() > 0 && onReceiveListener != null) {
                     onReceiveListener.onReceive(new ReceiveEvent(SRPConnection.this, packet));
                 }
 
@@ -142,5 +142,9 @@ public class SRPConnection {
 
         receiveThread.interrupt();
         connectionThread.interrupt();
+    }
+
+    public synchronized Packet getRequestPacket(int id) {
+        return outgoingPackets.get(id);
     }
 }

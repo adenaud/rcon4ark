@@ -22,7 +22,8 @@ public class Packet {
 
     }
 
-    public Packet(int type, String body) {
+    public Packet(int id, int type, String body) {
+        this.id = id;
         this.type = type;
         this.body = body;
     }
