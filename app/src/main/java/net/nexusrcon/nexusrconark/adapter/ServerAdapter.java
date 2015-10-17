@@ -53,8 +53,11 @@ public class ServerAdapter extends ArrayAdapter<Server> {
 
         Server server = getItem(position);
 
-        TextView textView = (TextView) view.findViewById(R.id.textView_server);
-        textView.setText(server.getHostname()+":"+ String.valueOf(server.getPort()));
+        TextView textViewName = (TextView) view.findViewById(R.id.textView_server_name);
+        textViewName.setText(server.getName());
+
+        TextView textViewDetails = (TextView) view.findViewById(R.id.textView_server_details);
+        textViewDetails.setText(server.getHostname() + ":" + String.valueOf(server.getPort()));
 
         return view;
     }

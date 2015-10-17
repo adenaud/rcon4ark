@@ -24,6 +24,9 @@ public class ServerConnectionActivity extends RoboActionBarActivity {
     @Inject
     private ServerDAO dao;
 
+    @InjectView(R.id.name_edittext)
+    private EditText nameEditText;
+
     @InjectView(R.id.hostname_edittext)
     private EditText hostnameEditText;
 
@@ -47,6 +50,7 @@ public class ServerConnectionActivity extends RoboActionBarActivity {
         server = getIntent().getParcelableExtra("server");
         setTitle(getIntent().getIntExtra("titleId",R.string.edit_server));
 
+        nameEditText.setText(server.getName());
         hostnameEditText.setText(server.getHostname());
         portEditText.setText(String.valueOf(server.getPort()));
         passwordEditText.setText(server.getPassword());
@@ -64,6 +68,7 @@ public class ServerConnectionActivity extends RoboActionBarActivity {
 
         if(id == R.id.save) {
 
+            server.setName(nameEditText.getText().toString());
             server.setHostname(hostnameEditText.getText().toString());
             server.setPort(Integer.parseInt(portEditText.getText().toString()));
             server.setPassword(passwordEditText.getText().toString());

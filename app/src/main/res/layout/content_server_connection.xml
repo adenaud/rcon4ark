@@ -12,6 +12,12 @@
     android:orientation="vertical">
 
     <EditText
+        android:id="@+id/name_edittext"
+        android:layout_width="fill_parent"
+        android:layout_height="48dp"
+        android:hint="@string/server_name"/>
+
+    <EditText
         android:id="@+id/hostname_edittext"
         android:layout_width="fill_parent"
         android:layout_height="48dp"

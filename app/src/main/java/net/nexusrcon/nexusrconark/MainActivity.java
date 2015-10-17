@@ -43,6 +43,8 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
     @Inject
     private ArkService arkService;
 
+    private Server currentServer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,9 +76,10 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
     }
 
     private void refresh() {
+        serverAdapter.refresh();
+        listView.setAdapter(serverAdapter);
+
         if (serverAdapter.getCount() > 0) {
-            serverAdapter.refresh();
-            listView.setAdapter(serverAdapter);
             textViewNoServer.setVisibility(View.GONE);
         }else{
             textViewNoServer.setVisibility(View.VISIBLE);
@@ -131,7 +134,10 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
         Server server = (Server) listView.getItemAtPosition(info.position);
         switch(item.getItemId()){
             case R.id.menu_action_edit :
-                //playerService.killPlayer(player);
+                Intent intent = new Intent(MainActivity.this, ServerConnectionActivity.class);
+                intent.putExtra("server", server);
+                intent.putExtra("titleId",R.string.new_server);
+                startActivityForResult(intent, Codes.REQUEST_EDIT_SERVER);
                 return  true;
             case R.id.menu_action_delete:
                 serverDAO.delete(server);
@@ -144,15 +150,16 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Server server = serverAdapter.getItem(position);
+        currentServer = serverAdapter.getItem(position);
         arkService.setOnConnectListener(this);
-        arkService.connect(server);
+        arkService.connect(currentServer);
 
     }
 
     @Override
     public void onConnect() {
         Intent intent = new Intent(this, RconActivity.class);
+        intent.putExtra("server",currentServer);
         startActivityForResult(intent, Codes.REQUEST_RCON_CLOSE);
     }
 

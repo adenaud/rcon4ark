@@ -33,6 +33,7 @@
     <string name="killdinos_confirm">Do you really want to kill all wild dinos ?</string>
     <string name="yes">Yes</string>
     <string name="cancel">Cancel</string>
+    <string name="server_name">Server name</string>
 
 
 </resources>

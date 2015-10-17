@@ -5,7 +5,13 @@
 
     <TextView
         android:layout_width="fill_parent"
-        android:layout_height="48dp"
+        android:layout_height="24dp"
         android:text=""
-        android:id="@+id/textView_server" />
+        android:id="@+id/textView_server_name"
+        android:textStyle="bold"/>
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="24dp"
+        android:text=""
+        android:id="@+id/textView_server_details" />
 </LinearLayout>

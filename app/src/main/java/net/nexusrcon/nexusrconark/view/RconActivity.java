@@ -14,6 +14,7 @@ import net.nexusrcon.nexusrconark.R;
 import net.nexusrcon.nexusrconark.adapter.RconFragmentPagerAdapter;
 import net.nexusrcon.nexusrconark.fargment.CommandsFragment;
 import net.nexusrcon.nexusrconark.fargment.PlayersFragment;
+import net.nexusrcon.nexusrconark.model.Server;
 
 import roboguice.activity.RoboActionBarActivity;
 import roboguice.inject.InjectView;
@@ -37,6 +38,8 @@ public class RconActivity extends RoboActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rcon);
 
+        Server server = getIntent().getParcelableExtra("server");
+        setTitle(server.getName());
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
