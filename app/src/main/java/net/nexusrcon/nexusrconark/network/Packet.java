@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
+import roboguice.util.Ln;
+
 /**
  * Created by Anthony on 09/10/2015.
  */
@@ -67,8 +69,13 @@ public class Packet {
     }
 
     private String getStringFromBytes(byte[] data, int index, int length){
-        byte[] res = new byte[] {};
-        res = Arrays.copyOfRange(data, index, index + length -1);
+        byte[] res;
+        try {
+           res = Arrays.copyOfRange(data, index, index + length -1);
+        }catch (IllegalArgumentException e){
+            res = "".getBytes();
+            Ln.e("getStringFromBytes -> IllegalArgumentException : " + res.toString() );
+        }
         return new String(res);
     }
 
