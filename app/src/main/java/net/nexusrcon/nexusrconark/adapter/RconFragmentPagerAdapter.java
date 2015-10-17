@@ -41,11 +41,6 @@ public class RconFragmentPagerAdapter extends FragmentPagerAdapter {
     }
 
     @Override
-    public boolean isViewFromObject(View view, Object object) {
-        return false;
-    }
-
-    @Override
     public CharSequence getPageTitle(int position) {
 
         String title = "";

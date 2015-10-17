@@ -23,6 +23,8 @@
 
 
     <string name="fragment_players">Players</string>
+    <string name="no_players">No players connected.</string>
+
     <string name="fragment_commands">Commands</string>
 
 

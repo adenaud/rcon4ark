@@ -19,6 +19,7 @@ import net.nexusrcon.nexusrconark.adapter.ServerAdapter;
 import net.nexusrcon.nexusrconark.dao.ServerDAO;
 import net.nexusrcon.nexusrconark.event.OnConnectListener;
 import net.nexusrcon.nexusrconark.model.Server;
+import net.nexusrcon.nexusrconark.service.ArkService;
 import net.nexusrcon.nexusrconark.view.RconActivity;
 import net.nexusrcon.nexusrconark.view.ServerConnectionActivity;
 

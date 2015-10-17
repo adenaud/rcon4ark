@@ -1,4 +1,4 @@
-package net.nexusrcon.nexusrconark;
+package net.nexusrcon.nexusrconark.service;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -12,6 +12,8 @@ import net.nexusrcon.nexusrconark.model.Server;
 import net.nexusrcon.nexusrconark.network.Packet;
 import net.nexusrcon.nexusrconark.network.PacketType;
 import net.nexusrcon.nexusrconark.network.SRPConnection;
+
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.sql.Time;
@@ -57,8 +59,7 @@ public class ArkService implements OnReceiveListener {
     }
 
     private void login(String password) {
-        Packet packet = new Packet(PacketType.SERVERDATA_AUTH.getValue(), password);
-        packet.setId(connection.getSequenceNumber());
+        Packet packet = new Packet(connection.getSequenceNumber(),PacketType.SERVERDATA_AUTH.getValue(), password);
         try {
             connection.send(packet);
         } catch (IOException e) {
@@ -67,7 +68,7 @@ public class ArkService implements OnReceiveListener {
     }
 
     public void listPlayers() {
-        Packet packet = new Packet(PacketType.SERVERDATA_EXECCOMMAND.getValue(), "ListPlayers");
+        Packet packet = new Packet(connection.getSequenceNumber(),PacketType.SERVERDATA_EXECCOMMAND.getValue(), "ListPlayers");
         try {
             connection.send(packet);
         } catch (IOException e) {
@@ -95,10 +96,15 @@ public class ArkService implements OnReceiveListener {
     public void onReceive(ReceiveEvent event) {
         Packet packet = event.getPacket();
 
+
+
         if (packet.getType() == PacketType.SERVERDATA_RESPONSE_VALUE.getValue()) {
+
+            Packet requestPacket = connection.getRequestPacket(packet.getId());
+
             for (ServerResponseDispatcher dispatcher : serverResponseDispatchers) {
 
-                if(packet.getBody().equals("ListPlayers")){
+                if(StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("ListPlayers")){
                     dispatcher.onListPlayers(new ServerResponseEvent(packet));
                 }
 
