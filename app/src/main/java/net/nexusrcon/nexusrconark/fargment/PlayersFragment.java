@@ -67,7 +67,6 @@ public class PlayersFragment extends RconFragment {
                 }
             }
 
-
             final ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, players);
             context.runOnUiThread(new Runnable() {
                 @Override

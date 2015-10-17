@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="64dp"
+    android:gravity="center_horizontal">
+
+    <Button
+        android:id="@+id/button_changeTime"
+        android:text="@string/changeTime"
+        android:layout_width="300dp"
+        android:layout_height="48dp" />
+
+    <Button
+    android:id="@+id/button_saveWorld"
+        android:text="@string/saveworld"
+    android:layout_width="300dp"
+    android:layout_height="48dp" />
+
+    <Button
+        android:id="@+id/button_killDinos"
+        android:text="@string/killdinos"
+        android:layout_width="300dp"
+        android:layout_marginTop="64dp"
+        android:layout_height="48dp"
+        style="@style/button_danger"/>
+
+</LinearLayout>

@@ -26,6 +26,13 @@
     <string name="no_players">No players connected.</string>
 
     <string name="fragment_commands">Commands</string>
+    <string name="changeTime">Set time of day</string>
+    <string name="saveworld">Save world</string>
+    <string name="killdinos">Kill all wild dinos</string>
+    <string name="fragment_chat">Chat</string>
+    <string name="killdinos_confirm">Do you really want to kill all wild dinos ?</string>
+    <string name="yes">Yes</string>
+    <string name="cancel">Cancel</string>
 
 
 </resources>

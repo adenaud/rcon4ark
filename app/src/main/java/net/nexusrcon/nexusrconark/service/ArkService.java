@@ -81,15 +81,31 @@ public class ArkService implements OnReceiveListener {
     }
 
     public void destroyWildDinos() {
-
+        Packet packet = new Packet(connection.getSequenceNumber(),PacketType.SERVERDATA_EXECCOMMAND.getValue(), "DestroyWildDinos");
+        try {
+            connection.send(packet);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setTimeofDay(int hour, int minute) {
-
+        String command = "SetTimeOfDay " + String.valueOf(hour) + ":" + String.valueOf(minute);
+        Packet packet = new Packet(connection.getSequenceNumber(),PacketType.SERVERDATA_EXECCOMMAND.getValue(), command);
+        try {
+            connection.send(packet);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void saveWorld() {
-
+        Packet packet = new Packet(connection.getSequenceNumber(),PacketType.SERVERDATA_EXECCOMMAND.getValue(), "SaveWorld");
+        try {
+            connection.send(packet);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
