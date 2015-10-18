@@ -1,9 +1,12 @@
 package net.nexusrcon.nexusrconark.service;
 
+import android.content.Context;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import net.nexusrcon.nexusrconark.event.OnConnectListener;
+import net.nexusrcon.nexusrconark.R;
+import net.nexusrcon.nexusrconark.event.ConnectionListener;
 import net.nexusrcon.nexusrconark.event.OnReceiveListener;
 import net.nexusrcon.nexusrconark.event.ReceiveEvent;
 import net.nexusrcon.nexusrconark.event.ServerResponseDispatcher;
@@ -16,7 +19,6 @@ import net.nexusrcon.nexusrconark.network.SRPConnection;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,14 +30,18 @@ import roboguice.util.Ln;
 @Singleton
 public class ArkService implements OnReceiveListener {
 
+    private final Context context;
     @Inject
     private SRPConnection connection;
 
-    private OnConnectListener onConnectListener;
+    private ConnectionListener connectionListener;
 
     private List<ServerResponseDispatcher> serverResponseDispatchers;
 
-    public ArkService() {
+    @Inject
+    public ArkService(Context context)
+    {
+        this.context = context;
         serverResponseDispatchers = new ArrayList<>();
     }
 
@@ -43,7 +49,7 @@ public class ArkService implements OnReceiveListener {
         connection.open(server.getHostname(), server.getPort());
 
         connection.setOnReceiveListener(this);
-        connection.setOnConnectListener(new OnConnectListener() {
+        connection.setConnectionListener(new ConnectionListener() {
             @Override
             public void onConnect() {
                 login(server.getPassword());
@@ -52,6 +58,13 @@ public class ArkService implements OnReceiveListener {
             @Override
             public void onDisconnect() {
 
+            }
+
+            @Override
+            public void onConnectionFail(String message) {
+                if(connectionListener != null){
+                    connectionListener.onConnectionFail(message);
+                }
             }
         });
 
@@ -135,15 +148,16 @@ public class ArkService implements OnReceiveListener {
                     e.printStackTrace();
                 }
                 Ln.d("Auth Fail");
+                connectionListener.onConnectionFail(context.getString(R.string.authentication_fail));
             } else {
                 Ln.d("Auth success");
-                onConnectListener.onConnect();
+                connectionListener.onConnect();
             }
         }
     }
 
-    public void setOnConnectListener(OnConnectListener onConnectListener) {
-        this.onConnectListener = onConnectListener;
+    public void setConnectionListener(ConnectionListener connectionListener) {
+        this.connectionListener = connectionListener;
     }
 
     public void disconnect() {

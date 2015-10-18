@@ -2,6 +2,8 @@
     <string name="app_name">NexusRCON ARK</string>
     <string name="action_settings">Settings</string>
 
+    <string name="yes">Yes</string>
+    <string name="cancel">Cancel</string>
 
     <!-- Main Activity -->
 
@@ -13,27 +15,33 @@
     <string name="new_server">New server</string>
     <string name="edit_server">Edit server</string>
 
+    <string name="server_name">Server name</string>
     <string name="hostname">Hostname</string>
     <string name="port">Port</string>
     <string name="password">Password</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="title_activity_rcon">ARK RCON</string>
-    <string name="section_format">Hello World from section: %1$d</string>
 
+    <!--  Players fragment-->
 
     <string name="fragment_players">Players</string>
     <string name="no_players">No players connected.</string>
+
+    <!--  Commands fragment-->
 
     <string name="fragment_commands">Commands</string>
     <string name="changeTime">Set time of day</string>
     <string name="saveworld">Save world</string>
     <string name="killdinos">Kill all wild dinos</string>
-    <string name="fragment_chat">Chat</string>
     <string name="killdinos_confirm">Do you really want to kill all wild dinos ?</string>
-    <string name="yes">Yes</string>
-    <string name="cancel">Cancel</string>
-    <string name="server_name">Server name</string>
+
+    <string name="fragment_chat">Chat</string>
+
+    <!-- Errors -->
+
+    <string name="connection_fail">The server is unreachable, make sure your IP / Port is correct.</string>
+    <string name="authentication_fail">Authentication fail, make sure your password is correct.</string>
 
 
 </resources>

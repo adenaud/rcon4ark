@@ -1,6 +1,11 @@
 package net.nexusrcon.nexusrconark.network;
 
-import net.nexusrcon.nexusrconark.event.OnConnectListener;
+import android.content.Context;
+
+import com.google.inject.Inject;
+
+import net.nexusrcon.nexusrconark.R;
+import net.nexusrcon.nexusrconark.event.ConnectionListener;
 import net.nexusrcon.nexusrconark.event.OnReceiveListener;
 import net.nexusrcon.nexusrconark.event.ReceiveEvent;
 
@@ -19,6 +24,7 @@ import roboguice.util.Ln;
  */
 public class SRPConnection {
 
+    private final Context context;
     private int sequenceNumber;
 
     private Thread connectionThread;
@@ -31,10 +37,11 @@ public class SRPConnection {
     private boolean isConnected;
 
     private OnReceiveListener onReceiveListener;
-    private OnConnectListener onConnectListener;
+    private ConnectionListener connectionListener;
 
-    public SRPConnection() {
-
+    @Inject
+    public SRPConnection(Context context) {
+        this.context = context;
         outgoingPackets = new ConcurrentHashMap<>();
     }
 
@@ -53,14 +60,16 @@ public class SRPConnection {
                         client.connect(new InetSocketAddress(hostname, port));
 
 
-                        onConnectListener.onConnect();
+                        connectionListener.onConnect();
 
                         runReceiveThread = true;
                         beginReceive();
 
                     } catch (IOException e) {
                         isConnected = false;
-                        e.printStackTrace();
+                        if(connectionListener != null){
+                            connectionListener.onConnectionFail(context.getString(R.string.connection_fail));
+                        }
                     }
                 }
             });
@@ -129,8 +138,8 @@ public class SRPConnection {
         this.onReceiveListener = onReceiveListener;
     }
 
-    public void setOnConnectListener(OnConnectListener onConnectListener) {
-        this.onConnectListener = onConnectListener;
+    public void setConnectionListener(ConnectionListener connectionListener) {
+        this.connectionListener = connectionListener;
     }
 
     public void close() throws IOException {

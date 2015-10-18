@@ -70,10 +70,6 @@ public class RconActivity extends RoboActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
         if(id == android.R.id.home){
             setResult(RESULT_OK,getIntent());
             finish();

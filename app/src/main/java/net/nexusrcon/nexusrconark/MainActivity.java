@@ -12,12 +12,13 @@ import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.inject.Inject;
 
 import net.nexusrcon.nexusrconark.adapter.ServerAdapter;
 import net.nexusrcon.nexusrconark.dao.ServerDAO;
-import net.nexusrcon.nexusrconark.event.OnConnectListener;
+import net.nexusrcon.nexusrconark.event.ConnectionListener;
 import net.nexusrcon.nexusrconark.model.Server;
 import net.nexusrcon.nexusrconark.service.ArkService;
 import net.nexusrcon.nexusrconark.view.RconActivity;
@@ -26,7 +27,7 @@ import net.nexusrcon.nexusrconark.view.ServerConnectionActivity;
 import roboguice.activity.RoboActionBarActivity;
 import roboguice.inject.InjectView;
 
-public class MainActivity extends RoboActionBarActivity implements AdapterView.OnItemClickListener, OnConnectListener {
+public class MainActivity extends RoboActionBarActivity implements AdapterView.OnItemClickListener, ConnectionListener {
 
     @InjectView(R.id.list_servers)
     private ListView listView;
@@ -62,14 +63,13 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
                 Server server = new Server();
                 Intent intent = new Intent(MainActivity.this, ServerConnectionActivity.class);
                 intent.putExtra("server", server);
-                intent.putExtra("titleId",R.string.new_server);
+                intent.putExtra("titleId", R.string.new_server);
 
                 startActivityForResult(intent, Codes.REQUEST_NEW_SERVER);
             }
         });
 
         listView.setOnItemClickListener(this);
-
 
 
         refresh();
@@ -81,7 +81,7 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
 
         if (serverAdapter.getCount() > 0) {
             textViewNoServer.setVisibility(View.GONE);
-        }else{
+        } else {
             textViewNoServer.setVisibility(View.VISIBLE);
         }
     }
@@ -95,26 +95,16 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if(requestCode == Codes.REQUEST_NEW_SERVER || requestCode == Codes.REQUEST_EDIT_SERVER ){
+        if (requestCode == Codes.REQUEST_NEW_SERVER || requestCode == Codes.REQUEST_EDIT_SERVER) {
             refresh();
         }
-        if(requestCode == Codes.REQUEST_RCON_CLOSE){
+        if (requestCode == Codes.REQUEST_RCON_CLOSE) {
             arkService.disconnect();
         }
 
@@ -132,13 +122,13 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         Server server = (Server) listView.getItemAtPosition(info.position);
-        switch(item.getItemId()){
-            case R.id.menu_action_edit :
+        switch (item.getItemId()) {
+            case R.id.menu_action_edit:
                 Intent intent = new Intent(MainActivity.this, ServerConnectionActivity.class);
                 intent.putExtra("server", server);
-                intent.putExtra("titleId",R.string.edit_server);
+                intent.putExtra("titleId", R.string.edit_server);
                 startActivityForResult(intent, Codes.REQUEST_EDIT_SERVER);
-                return  true;
+                return true;
             case R.id.menu_action_delete:
                 serverDAO.delete(server);
                 refresh();
@@ -151,7 +141,7 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         currentServer = serverAdapter.getItem(position);
-        arkService.setOnConnectListener(this);
+        arkService.setConnectionListener(this);
         arkService.connect(currentServer);
 
     }
@@ -159,7 +149,7 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
     @Override
     public void onConnect() {
         Intent intent = new Intent(this, RconActivity.class);
-        intent.putExtra("server",currentServer);
+        intent.putExtra("server", currentServer);
         startActivityForResult(intent, Codes.REQUEST_RCON_CLOSE);
     }
 
@@ -168,5 +158,14 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
 
     }
 
+    @Override
+    public void onConnectionFail(final String message) {
 
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
 }
