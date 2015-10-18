@@ -40,6 +40,7 @@ public class Server implements Parcelable {
     }
 
     public Server(Parcel source){
+        this.id = source.readInt();
         this.name = source.readString();
         this.hostname = source.readString();
         this.port = source.readInt();
@@ -93,6 +94,7 @@ public class Server implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
         dest.writeString(name);
         dest.writeString(hostname);
         dest.writeInt(port);

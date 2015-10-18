@@ -136,7 +136,7 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
             case R.id.menu_action_edit :
                 Intent intent = new Intent(MainActivity.this, ServerConnectionActivity.class);
                 intent.putExtra("server", server);
-                intent.putExtra("titleId",R.string.new_server);
+                intent.putExtra("titleId",R.string.edit_server);
                 startActivityForResult(intent, Codes.REQUEST_EDIT_SERVER);
                 return  true;
             case R.id.menu_action_delete:
