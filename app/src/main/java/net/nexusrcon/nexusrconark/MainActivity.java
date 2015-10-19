@@ -1,5 +1,6 @@
 package net.nexusrcon.nexusrconark;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -45,6 +46,7 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
     private ArkService arkService;
 
     private Server currentServer;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,6 +146,10 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
         arkService.setConnectionListener(this);
         arkService.connect(currentServer);
 
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setMessage(getString(R.string.connecting));
+        progressDialog.show();
     }
 
     @Override
@@ -151,6 +157,13 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
         Intent intent = new Intent(this, RconActivity.class);
         intent.putExtra("server", currentServer);
         startActivityForResult(intent, Codes.REQUEST_RCON_CLOSE);
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                progressDialog.hide();
+            }
+        });
     }
 
     @Override
@@ -164,6 +177,7 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                progressDialog.hide();
                 Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
             }
         });

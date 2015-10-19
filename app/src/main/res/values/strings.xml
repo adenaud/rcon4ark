@@ -8,6 +8,7 @@
     <!-- Main Activity -->
 
     <string name="no_server">No server.\n Press the + button to add one.</string>
+    <string name="connecting">Connecting to the server …</string>
 
     <!--  New / Edit Server Activity-->
 
