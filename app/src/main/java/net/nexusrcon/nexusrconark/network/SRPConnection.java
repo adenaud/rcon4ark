@@ -122,7 +122,7 @@ public class SRPConnection {
                 Packet packet = new Packet(response);
                 Ln.d("receive : " + packet.getBody());
 
-                if (packet.getId() > 0 && onReceiveListener != null) {
+                if ((packet.getId() == -1 || packet.getId() > 0) && onReceiveListener != null) {
                     onReceiveListener.onReceive(new ReceiveEvent(SRPConnection.this, packet));
                 }
 
