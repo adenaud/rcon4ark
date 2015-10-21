@@ -11,6 +11,7 @@ import net.nexusrcon.nexusrconark.event.OnReceiveListener;
 import net.nexusrcon.nexusrconark.event.ReceiveEvent;
 import net.nexusrcon.nexusrconark.event.ServerResponseDispatcher;
 import net.nexusrcon.nexusrconark.event.ServerResponseEvent;
+import net.nexusrcon.nexusrconark.model.Player;
 import net.nexusrcon.nexusrconark.model.Server;
 import net.nexusrcon.nexusrconark.network.Packet;
 import net.nexusrcon.nexusrconark.network.PacketType;
@@ -21,6 +22,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import roboguice.util.Ln;
 
@@ -134,7 +137,7 @@ public class ArkService implements OnReceiveListener {
             for (ServerResponseDispatcher dispatcher : serverResponseDispatchers) {
 
                 if(StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("ListPlayers")){
-                    dispatcher.onListPlayers(new ServerResponseEvent(packet));
+                    dispatcher.onListPlayers(getPlayers(packet.getBody()));
                 }
 
             }
@@ -170,6 +173,27 @@ public class ArkService implements OnReceiveListener {
 
     public void addServerResponseDispatcher(ServerResponseDispatcher dispatcher) {
         this.serverResponseDispatchers.add(dispatcher);
+    }
+
+    private List<Player> getPlayers(String messageBody){
+        List<Player> players = new ArrayList<>();
+        String[] playersArray = messageBody.split("\n");
+
+        for (int i = 0; i<playersArray.length; i++) {
+            if (playersArray[i].length() > 20) { // 20 = playerId + steamId min length
+
+                Pattern pattern = Pattern.compile("(\\d)\\. (.+), ([1-9]+)");
+                Matcher matcher = pattern.matcher(playersArray[i]);
+
+                int ue4Id = Integer.parseInt(matcher.group(1));
+                String name = matcher.group(2);
+                String steamId = matcher.group(3);
+
+                Player player = new Player(ue4Id,name,steamId);
+                players.add(player);
+            }
+        }
+        return players;
     }
 
 }

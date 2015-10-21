@@ -43,6 +43,9 @@
 
     <string name="connection_fail">The server is unreachable, make sure your IP / Port is correct.</string>
     <string name="authentication_fail">Authentication fail, make sure your password is correct.</string>
+    <string name="kill">Kill</string>
+    <string name="kick">Kick</string>
+    <string name="ban">Ban</string>
 
 
 </resources>

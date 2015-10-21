@@ -2,6 +2,9 @@ package net.nexusrcon.nexusrconark.fargment;
 
 import net.nexusrcon.nexusrconark.event.ServerResponseDispatcher;
 import net.nexusrcon.nexusrconark.event.ServerResponseEvent;
+import net.nexusrcon.nexusrconark.model.Player;
+
+import java.util.List;
 
 import roboguice.fragment.RoboFragment;
 
@@ -10,7 +13,7 @@ import roboguice.fragment.RoboFragment;
  */
 public class RconFragment extends RoboFragment implements ServerResponseDispatcher {
     @Override
-    public void onListPlayers(ServerResponseEvent event) {
+    public void onListPlayers(List<Player> players) {
 
     }
 }

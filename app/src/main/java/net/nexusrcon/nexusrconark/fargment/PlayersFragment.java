@@ -3,15 +3,22 @@ package net.nexusrcon.nexusrconark.fargment;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.inject.Inject;
 
+import net.nexusrcon.nexusrconark.adapter.PlayerArrayAdapter;
+import net.nexusrcon.nexusrconark.model.Player;
+import net.nexusrcon.nexusrconark.model.Server;
 import net.nexusrcon.nexusrconark.service.ArkService;
 import net.nexusrcon.nexusrconark.R;
 import net.nexusrcon.nexusrconark.event.ServerResponseEvent;
@@ -34,8 +41,12 @@ public class PlayersFragment extends RconFragment {
 
     private Activity context;
 
+    @Inject
+    private PlayerArrayAdapter playerArrayAdapter;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        registerForContextMenu(listViewPlayers);
         return inflater.inflate(R.layout.fragment_rcon_players, container, false);
     }
 
@@ -53,28 +64,39 @@ public class PlayersFragment extends RconFragment {
     }
 
     @Override
-    public void onListPlayers(ServerResponseEvent event) {
-        String playersStr = event.getPacket().getBody();
+    public void onListPlayers(List<Player> players) {
 
-        if(!playersStr.startsWith("No Players Connected")){
-
-            List<String> players = new ArrayList<>();
-            String[] playersArray = playersStr.split("\n");
-
-            for (int i = 0; i<playersArray.length; i++) {
-                if (playersArray[i].length() > 20) { // 20 = playerId + steamId min length
-                    players.add(playersArray[i]);
-                }
-            }
-
-            final ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, players);
+        if(players.size() > 0){
+            playerArrayAdapter.setPlayers(players);
             context.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     textViewNoPlayers.setVisibility(View.GONE);
-                    listViewPlayers.setAdapter(adapter);
+                    listViewPlayers.setAdapter(playerArrayAdapter);
                 }
             });
+        }
+    }
+
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = getActivity().getMenuInflater();
+        inflater.inflate(R.menu.menu_players_floating, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        Player player = (Player) listViewPlayers.getItemAtPosition(info.position);
+        switch (item.getItemId()) {
+
+            case R.id.menu_action_kill:
+                return true;
+
+            default:
+                return super.onContextItemSelected(item);
         }
     }
 }
