@@ -118,7 +118,7 @@ public class ArkService implements OnReceiveListener {
     }
 
     public void serverChatTo(Player player, String message){
-        Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "ServerChatTo " + player.getSteamId() + " " + message);
+        Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "ServerChatTo \"" + player.getSteamId() + "\" " + message);
         try {
             connection.send(packet);
         } catch (IOException e) {
@@ -295,7 +295,7 @@ public class ArkService implements OnReceiveListener {
             for (int i = 0; i < playersArray.length; i++) {
                 if (playersArray[i].length() > 20) { // 20 = playerId + steamId min length
 
-                    Pattern pattern = Pattern.compile("(\\d*)\\. (.+), ([0-9]+) ");
+                    Pattern pattern = Pattern.compile("(\\d*)\\. (.+), ([0-9]+) ?");
                     Matcher matcher = pattern.matcher(playersArray[i]);
 
                     if (matcher.matches()) {
