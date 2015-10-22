@@ -2,6 +2,8 @@ package net.nexusrcon.nexusrconark.fargment;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -89,6 +91,10 @@ public class PlayersFragment extends RconFragment {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
+
+        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip;
+
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         Player player = (Player) listViewPlayers.getItemAtPosition(info.position);
         switch (item.getItemId()) {
@@ -104,6 +110,15 @@ public class PlayersFragment extends RconFragment {
             case R.id.menu_action_whitelist:
                 arkService.allowPlayerToJoinNoCheck(player);
                 return true;
+
+            case  R.id.menu_cpy_name:
+                clip = ClipData.newPlainText("player_name",player.getName());
+                clipboard.setPrimaryClip(clip);
+                return true;
+            case  R.id.menu_cpy_steamid:
+                clip = ClipData.newPlainText("player_steamid",player.getSteamId());
+                clipboard.setPrimaryClip(clip);
+                return true;
             default:
                 return super.onContextItemSelected(item);
         }
@@ -117,10 +132,10 @@ public class PlayersFragment extends RconFragment {
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                arkService.serverChatTo(player,editText.getText().toString());
+                arkService.serverChatTo(player, editText.getText().toString());
             }
         });
-        builder.setNegativeButton(R.string.cancel,null);
+        builder.setNegativeButton(R.string.cancel, null);
         builder.show();
     }
 }

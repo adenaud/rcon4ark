@@ -53,6 +53,8 @@
     <string name="unban">Unban player</string>
     <string name="player_name">Player name :</string>
     <string name="player_steamid">Steam Id :</string>
+    <string name="copy_name">Copy name</string>
+    <string name="copy_steamid">Copy Steam ID</string>
 
 
 </resources>
