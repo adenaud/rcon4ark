@@ -202,7 +202,7 @@ public class ArkService implements OnReceiveListener {
      * @param playerName
      */
     public void unBan(String playerName) {
-        Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "Unban   " + playerName);
+        Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "UnbanPlayer " + playerName);
         try {
             connection.send(packet);
         } catch (IOException e) {
@@ -215,7 +215,7 @@ public class ArkService implements OnReceiveListener {
      * @param player
      */
     public void allowPlayerToJoinNoCheck(Player player) {
-        Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "AllowPlayerToJoinNoCheck  " + player.getSteamId());
+        Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "AllowPlayerToJoinNoCheck " + player.getSteamId());
         try {
             connection.send(packet);
         } catch (IOException e) {

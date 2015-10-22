@@ -49,6 +49,10 @@
     <string name="whitelist">Add to white list</string>
     <string name="send_message">Send message</string>
     <string name="ok">OK</string>
+    <string name="whitelist_remove">Remove player from whitelist</string>
+    <string name="unban">Unban player</string>
+    <string name="player_name">Player name :</string>
+    <string name="player_steamid">Steam Id :</string>
 
 
 </resources>

@@ -110,9 +110,7 @@ public class PlayersFragment extends RconFragment {
     }
 
     private void openMessageDialog(final Player player){
-
         final EditText editText = new EditText(context);
-
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(R.string.send_message);
         builder.setView(editText);

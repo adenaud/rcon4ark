@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TimePicker;
 
 import com.google.inject.Inject;
@@ -33,6 +34,14 @@ public class CommandsFragment extends RconFragment implements View.OnClickListen
     @InjectView(R.id.button_killDinos)
     private Button buttonKillDinos;
 
+
+    @InjectView(R.id.button_unban_player)
+    private Button buttonUnBan;
+
+    @InjectView(R.id.button_whitelist_remove)
+    private Button buttonWhiteListRemove;
+
+
     private Activity context;
 
     @Override
@@ -48,6 +57,8 @@ public class CommandsFragment extends RconFragment implements View.OnClickListen
         buttonChangeTime.setOnClickListener(this);
         buttonSaveWorld.setOnClickListener(this);
         buttonKillDinos.setOnClickListener(this);
+        buttonUnBan.setOnClickListener(this);
+        buttonWhiteListRemove.setOnClickListener(this);
     }
 
     @Override
@@ -64,6 +75,36 @@ public class CommandsFragment extends RconFragment implements View.OnClickListen
         }
         if (v.equals(buttonSaveWorld)) {
             arkService.saveWorld();
+        }
+        if(v.equals(buttonUnBan)){
+            final EditText editText = new EditText(context);
+            android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(context);
+            builder.setTitle(R.string.unban);
+            builder.setMessage(R.string.player_name);
+            builder.setView(editText);
+            builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    arkService.unBan(editText.getText().toString());
+                }
+            });
+            builder.setNegativeButton(R.string.cancel,null);
+            builder.show();
+        }
+        if(v.equals(buttonWhiteListRemove)){
+            final EditText editText = new EditText(context);
+            android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(context);
+            builder.setTitle(R.string.whitelist_remove);
+            builder.setMessage(R.string.player_steamid);
+            builder.setView(editText);
+            builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    arkService.disallowPlayerToJoinNoCheck(editText.getText().toString());
+                }
+            });
+            builder.setNegativeButton(R.string.cancel,null);
+            builder.show();
         }
         if (v.equals(buttonKillDinos)) {
             new AlertDialog.Builder(context)
