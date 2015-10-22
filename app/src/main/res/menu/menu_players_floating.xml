@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/menu_action_kill" android:title="@string/kill" />
+    <item android:id="@+id/menu_send_message" android:title="@string/send_message" />
     <item android:id="@+id/menu_action_kick" android:title="@string/kick" />
     <item android:id="@+id/menu_action_ban" android:title="@string/ban" />
+    <item android:id="@+id/menu_action_whitelist" android:title="@string/whitelist" />
 </menu>

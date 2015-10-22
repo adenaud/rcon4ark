@@ -46,6 +46,9 @@
     <string name="kill">Kill</string>
     <string name="kick">Kick</string>
     <string name="ban">Ban</string>
+    <string name="whitelist">Add to white list</string>
+    <string name="send_message">Send message</string>
+    <string name="ok">OK</string>
 
 
 </resources>

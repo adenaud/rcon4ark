@@ -1,7 +1,9 @@
 package net.nexusrcon.nexusrconark.fargment;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -10,7 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -18,12 +20,8 @@ import com.google.inject.Inject;
 
 import net.nexusrcon.nexusrconark.adapter.PlayerArrayAdapter;
 import net.nexusrcon.nexusrconark.model.Player;
-import net.nexusrcon.nexusrconark.model.Server;
 import net.nexusrcon.nexusrconark.service.ArkService;
 import net.nexusrcon.nexusrconark.R;
-import net.nexusrcon.nexusrconark.event.ServerResponseEvent;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import roboguice.inject.InjectView;
@@ -46,13 +44,16 @@ public class PlayersFragment extends RconFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        registerForContextMenu(listViewPlayers);
+
         return inflater.inflate(R.layout.fragment_rcon_players, container, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        registerForContextMenu(listViewPlayers);
+
         arkService.addServerResponseDispatcher(this);
         arkService.listPlayers();
     }
@@ -91,12 +92,37 @@ public class PlayersFragment extends RconFragment {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         Player player = (Player) listViewPlayers.getItemAtPosition(info.position);
         switch (item.getItemId()) {
-
-            case R.id.menu_action_kill:
+            case R.id.menu_send_message:
+                openMessageDialog(player);
                 return true;
-
+            case R.id.menu_action_kick:
+                arkService.kickPlayer(player);
+                return true;
+            case R.id.menu_action_ban:
+                arkService.banPlayer(player);
+                return true;
+            case R.id.menu_action_whitelist:
+                arkService.allowPlayerToJoinNoCheck(player);
+                return true;
             default:
                 return super.onContextItemSelected(item);
         }
+    }
+
+    private void openMessageDialog(final Player player){
+
+        final EditText editText = new EditText(context);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(R.string.send_message);
+        builder.setView(editText);
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                arkService.serverChatTo(player,editText.getText().toString());
+            }
+        });
+        builder.setNegativeButton(R.string.cancel,null);
+        builder.show();
     }
 }
