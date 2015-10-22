@@ -12,6 +12,7 @@ import com.google.inject.Inject;
 
 import net.nexusrcon.nexusrconark.R;
 import net.nexusrcon.nexusrconark.adapter.RconFragmentPagerAdapter;
+import net.nexusrcon.nexusrconark.fargment.ChatFragment;
 import net.nexusrcon.nexusrconark.fargment.CommandsFragment;
 import net.nexusrcon.nexusrconark.fargment.PlayersFragment;
 import net.nexusrcon.nexusrconark.model.Server;
@@ -26,9 +27,11 @@ public class RconActivity extends RoboActionBarActivity {
 
     @Inject
     private PlayersFragment playersFragment;
-
     @Inject
     private CommandsFragment commandsFragment;
+    @Inject
+    private ChatFragment chatFragment;
+
 
     @InjectView(R.id.container)
     private ViewPager mViewPager;
@@ -50,6 +53,7 @@ public class RconActivity extends RoboActionBarActivity {
         rconFragmentPagerAdapter = new RconFragmentPagerAdapter(this,getSupportFragmentManager());
         rconFragmentPagerAdapter.addFragment(playersFragment);
         rconFragmentPagerAdapter.addFragment(commandsFragment);
+        rconFragmentPagerAdapter.addFragment(chatFragment);
 
 
         mViewPager.setAdapter(rconFragmentPagerAdapter);

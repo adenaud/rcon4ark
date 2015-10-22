@@ -41,6 +41,8 @@ public class ArkService implements OnReceiveListener {
 
     private List<ServerResponseDispatcher> serverResponseDispatchers;
 
+    private Thread chatThread;
+
     @Inject
     public ArkService(Context context) {
         this.context = context;
@@ -58,9 +60,7 @@ public class ArkService implements OnReceiveListener {
             }
 
             @Override
-            public void onDisconnect() {
-
-            }
+            public void onDisconnect() {}
 
             @Override
             public void onConnectionFail(String message) {
@@ -250,7 +250,9 @@ public class ArkService implements OnReceiveListener {
                 if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("ListPlayers")) {
                     dispatcher.onListPlayers(getPlayers(packet.getBody()));
                 }
-
+                if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("getchat") && !packet.getBody().contains("Server received, But no response!!")) {
+                    dispatcher.onGetChat(packet.getBody());
+                }
             }
         }
 
@@ -266,8 +268,33 @@ public class ArkService implements OnReceiveListener {
             } else {
                 Ln.d("Auth success");
                 connectionListener.onConnect();
+
+                startChatThread();
             }
         }
+    }
+
+    private void startChatThread() {
+        chatThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                while (connection.isConnected()){
+
+                    Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "getchat");
+                    try {
+                        connection.send(packet);
+                        Thread.sleep(1000);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        connectionListener.onDisconnect();
+                    }
+                }
+
+            }
+        }, "CHAT_THREAD");
+        chatThread.start();
     }
 
     public void setConnectionListener(ConnectionListener connectionListener) {
@@ -313,5 +340,4 @@ public class ArkService implements OnReceiveListener {
         }
         return players;
     }
-
 }

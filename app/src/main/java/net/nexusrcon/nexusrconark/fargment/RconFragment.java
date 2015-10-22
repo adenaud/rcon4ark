@@ -16,4 +16,9 @@ public class RconFragment extends RoboFragment implements ServerResponseDispatch
     public void onListPlayers(List<Player> players) {
 
     }
+
+    @Override
+    public void onGetChat(String chatBuffer) {
+
+    }
 }

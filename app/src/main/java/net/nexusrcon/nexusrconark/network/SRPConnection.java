@@ -91,7 +91,7 @@ public class SRPConnection {
             outputStream.write(data);
             this.outgoingPackets.put(packet.getId(), packet);
 
-            Ln.d("Sending packet");
+            Ln.d("Sending packet : " +packet.getBody());
 
         } else {
             Ln.e("Connection is closed");
@@ -151,6 +151,11 @@ public class SRPConnection {
 
         receiveThread.interrupt();
         connectionThread.interrupt();
+    }
+
+
+    public boolean isConnected(){
+        return client.isConnected();
     }
 
     public synchronized Packet getRequestPacket(int id) {

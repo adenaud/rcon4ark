@@ -9,5 +9,5 @@ import java.util.List;
  */
 public interface ServerResponseDispatcher {
     void onListPlayers(List<Player> players);
-
+    void onGetChat(String chatBuffer);
 }

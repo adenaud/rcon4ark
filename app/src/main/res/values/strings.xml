@@ -56,5 +56,8 @@
     <string name="copy_name">Copy name</string>
     <string name="copy_steamid">Copy Steam ID</string>
 
+    <string name="send">Send to All</string>
+    <string name="broadcast">Broadcast</string>
+
 
 </resources>
