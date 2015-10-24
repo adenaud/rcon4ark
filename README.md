@@ -1,7 +1,7 @@
 # NexusRcon - ARK
 ARK : Survival Evolved Server manager for Android
 
-![Banner](http://nexusrcon.net/screenshots/banner.jpg)
+![Banner](http://nexusrcon.net/screenshots/ark-banner.jpg)
 
 ![Screenshot 1](http://nexusrcon.net/screenshots/ark/small/01.png)
 ![Screenshot 1](http://nexusrcon.net/screenshots/ark/small/02.png)
