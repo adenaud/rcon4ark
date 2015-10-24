@@ -66,9 +66,11 @@ public class ChatFragment extends RconFragment implements View.OnClickListener {
     public void onClick(View v) {
         if (v.equals(buttonChat)) {
             arkService.serverChat(editTextChatSend.getText().toString());
+            editTextChatSend.setText("");
         }
         if(v.equals(buttonBroadcast)){
             arkService.broadcast(editTextChatSend.getText().toString());
+            editTextChatSend.setText("");
         }
     }
 
