@@ -27,6 +27,7 @@ import net.nexusrcon.nexusrconark.view.ServerConnectionActivity;
 
 import roboguice.activity.RoboActionBarActivity;
 import roboguice.inject.InjectView;
+import roboguice.util.Ln;
 
 public class MainActivity extends RoboActionBarActivity implements AdapterView.OnItemClickListener, ConnectionListener {
 
@@ -110,6 +111,11 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
             arkService.disconnect();
         }
 
+        if(resultCode == Codes.RESULT_CONNECTION_DROP){
+            Toast.makeText(this, getString(R.string.conneciton_lost), Toast.LENGTH_LONG).show();
+        }
+
+
         super.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -143,7 +149,7 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         currentServer = serverAdapter.getItem(position);
-        arkService.setConnectionListener(this);
+        arkService.addConnectionListener(this);
         arkService.connect(currentServer);
 
         progressDialog = new ProgressDialog(this);
@@ -168,7 +174,14 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
 
     @Override
     public void onDisconnect() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
 
+                Ln.d("onDisconnect");
+                Toast.makeText(MainActivity.this, getString(R.string.conneciton_lost), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     @Override

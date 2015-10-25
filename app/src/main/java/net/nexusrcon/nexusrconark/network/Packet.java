@@ -34,18 +34,16 @@ public class Packet {
         decode(rawPacket);
     }
 
-    public byte[] encode() {
+    public byte[] encode() throws IOException {
         ByteArrayOutputStream packetOutput = new ByteArrayOutputStream();
 
-        try {
+
             packetOutput.write(getUint32Bytes( body.length() + 10));
             packetOutput.write(getUint32Bytes(id));
             packetOutput.write(getUint32Bytes(type));
             packetOutput.write((body + '\0').getBytes());
             packetOutput.write(0x00);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
 
 
         return packetOutput.toByteArray();

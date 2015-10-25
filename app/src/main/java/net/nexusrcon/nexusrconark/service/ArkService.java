@@ -10,7 +10,6 @@ import net.nexusrcon.nexusrconark.event.ConnectionListener;
 import net.nexusrcon.nexusrconark.event.OnReceiveListener;
 import net.nexusrcon.nexusrconark.event.ReceiveEvent;
 import net.nexusrcon.nexusrconark.event.ServerResponseDispatcher;
-import net.nexusrcon.nexusrconark.event.ServerResponseEvent;
 import net.nexusrcon.nexusrconark.model.Player;
 import net.nexusrcon.nexusrconark.model.Server;
 import net.nexusrcon.nexusrconark.network.Packet;
@@ -27,9 +26,6 @@ import java.util.regex.Pattern;
 
 import roboguice.util.Ln;
 
-/**
- * Created by Anthony on 12/10/2015.
- */
 @Singleton
 public class ArkService implements OnReceiveListener {
 
@@ -37,15 +33,14 @@ public class ArkService implements OnReceiveListener {
     @Inject
     private SRPConnection connection;
 
-    private ConnectionListener connectionListener;
+    private List<ConnectionListener> connectionListeners;
 
     private List<ServerResponseDispatcher> serverResponseDispatchers;
-
-    private Thread chatThread;
 
     @Inject
     public ArkService(Context context) {
         this.context = context;
+        connectionListeners = new ArrayList<>();
         serverResponseDispatchers = new ArrayList<>();
     }
 
@@ -60,12 +55,14 @@ public class ArkService implements OnReceiveListener {
             }
 
             @Override
-            public void onDisconnect() {}
+            public void onDisconnect() {
+                sendOnDisconnectEvent();
+            }
 
             @Override
             public void onConnectionFail(String message) {
-                if (connectionListener != null) {
-                    connectionListener.onConnectionFail(message);
+                for (ConnectionListener listener : connectionListeners) {
+                    listener.onConnectionFail(message);
                 }
             }
         });
@@ -78,7 +75,7 @@ public class ArkService implements OnReceiveListener {
         try {
             connection.send(packet);
         } catch (IOException e) {
-            e.printStackTrace();
+            sendOnDisconnectEvent();
         }
     }
 
@@ -87,12 +84,13 @@ public class ArkService implements OnReceiveListener {
         try {
             connection.send(packet);
         } catch (IOException e) {
-            e.printStackTrace();
+            sendOnDisconnectEvent();
         }
     }
 
     /**
      * Broadcast a message to all players on the server.
+     *
      * @param message
      */
     public void broadcast(String message) {
@@ -100,29 +98,30 @@ public class ArkService implements OnReceiveListener {
         try {
             connection.send(packet);
         } catch (IOException e) {
-            e.printStackTrace();
+            sendOnDisconnectEvent();
         }
     }
 
     /**
      * Sends a chat message to all currently connected players.
+     *
      * @param message
      */
-    public void serverChat(String message){
+    public void serverChat(String message) {
         Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "ServerChat " + message);
         try {
             connection.send(packet);
         } catch (IOException e) {
-            e.printStackTrace();
+            sendOnDisconnectEvent();
         }
     }
 
-    public void serverChatTo(Player player, String message){
+    public void serverChatTo(Player player, String message) {
         Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "ServerChatTo \"" + player.getSteamId() + "\" " + message);
         try {
             connection.send(packet);
         } catch (IOException e) {
-            e.printStackTrace();
+            sendOnDisconnectEvent();
         }
     }
 
@@ -132,7 +131,7 @@ public class ArkService implements OnReceiveListener {
         try {
             connection.send(packet);
         } catch (IOException e) {
-            e.printStackTrace();
+            sendOnDisconnectEvent();
         }
     }
 
@@ -142,7 +141,7 @@ public class ArkService implements OnReceiveListener {
         try {
             connection.send(packet);
         } catch (IOException e) {
-            e.printStackTrace();
+            sendOnDisconnectEvent();
         }
     }
 
@@ -151,7 +150,7 @@ public class ArkService implements OnReceiveListener {
         try {
             connection.send(packet);
         } catch (IOException e) {
-            e.printStackTrace();
+            sendOnDisconnectEvent();
         }
     }
 
@@ -165,7 +164,7 @@ public class ArkService implements OnReceiveListener {
         try {
             connection.send(packet);
         } catch (IOException e) {
-            e.printStackTrace();
+            sendOnDisconnectEvent();
         }
     }
 
@@ -179,7 +178,7 @@ public class ArkService implements OnReceiveListener {
         try {
             connection.send(packet);
         } catch (IOException e) {
-            e.printStackTrace();
+            sendOnDisconnectEvent();
         }
     }
 
@@ -193,12 +192,13 @@ public class ArkService implements OnReceiveListener {
         try {
             connection.send(packet);
         } catch (IOException e) {
-            e.printStackTrace();
+            sendOnDisconnectEvent();
         }
     }
 
     /**
      * Remove the specified player from the server's banned list.
+     *
      * @param playerName
      */
     public void unBan(String playerName) {
@@ -206,9 +206,10 @@ public class ArkService implements OnReceiveListener {
         try {
             connection.send(packet);
         } catch (IOException e) {
-            e.printStackTrace();
+            sendOnDisconnectEvent();
         }
     }
+
     /**
      * Adds the player specified by the their Integer encoded Steam ID to the server's whitelist.
      *
@@ -219,20 +220,21 @@ public class ArkService implements OnReceiveListener {
         try {
             connection.send(packet);
         } catch (IOException e) {
-            e.printStackTrace();
+            sendOnDisconnectEvent();
         }
     }
 
     /**
-     *  	Removes the specified player from the server's whitelist.
+     * Removes the specified player from the server's whitelist.
+     *
      * @param steamId
      */
-    public void disallowPlayerToJoinNoCheck(String steamId){
+    public void disallowPlayerToJoinNoCheck(String steamId) {
         Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "DisallowPlayerToJoinNoCheck  " + steamId);
         try {
             connection.send(packet);
         } catch (IOException e) {
-            e.printStackTrace();
+            sendOnDisconnectEvent();
         }
     }
 
@@ -258,16 +260,17 @@ public class ArkService implements OnReceiveListener {
 
         if (packet.getType() == PacketType.SERVERDATA_AUTH_RESPONSE.getValue()) {
             if (packet.getId() == -1) {
-                try {
-                    connection.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+
+                disconnect();
+
+                for (ConnectionListener listener : connectionListeners) {
+                    listener.onConnectionFail(context.getString(R.string.authentication_fail));
                 }
-                Ln.d("Auth Fail");
-                connectionListener.onConnectionFail(context.getString(R.string.authentication_fail));
+
             } else {
-                Ln.d("Auth success");
-                connectionListener.onConnect();
+                for (ConnectionListener listener : connectionListeners) {
+                    listener.onConnect();
+                }
 
                 startChatThread();
             }
@@ -275,20 +278,20 @@ public class ArkService implements OnReceiveListener {
     }
 
     private void startChatThread() {
-        chatThread = new Thread(new Runnable() {
+        Thread chatThread = new Thread(new Runnable() {
             @Override
             public void run() {
 
-                while (connection.isConnected()){
+                while (connection.isConnected()) {
 
                     Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "getchat");
                     try {
                         connection.send(packet);
                         Thread.sleep(1000);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (InterruptedException e) {
-                        connectionListener.onDisconnect();
+                    } catch (IOException | InterruptedException e) {
+                        disconnect();
+                        Ln.e("startChatThread exception",e);
+                        sendOnDisconnectEvent();
                     }
                 }
 
@@ -297,15 +300,11 @@ public class ArkService implements OnReceiveListener {
         chatThread.start();
     }
 
-    public void setConnectionListener(ConnectionListener connectionListener) {
-        this.connectionListener = connectionListener;
-    }
-
     public void disconnect() {
         try {
             connection.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            Ln.e("ark service disconnect exception",e);
         }
     }
 
@@ -340,4 +339,21 @@ public class ArkService implements OnReceiveListener {
         }
         return players;
     }
+
+    private void sendOnDisconnectEvent(){
+        for (ConnectionListener listener : connectionListeners) {
+            listener.onDisconnect();
+        }
+        removeAllConnectionListener();
+    }
+
+    public synchronized void addConnectionListener(ConnectionListener connectionListener) {
+        connectionListeners.add(connectionListener);
+    }
+
+    public synchronized void removeAllConnectionListener() {
+        connectionListeners.clear();
+    }
 }
+
+

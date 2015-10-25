@@ -58,6 +58,7 @@
 
     <string name="send">Send to All</string>
     <string name="broadcast">Broadcast</string>
+    <string name="conneciton_lost">Connection lost</string>
 
 
 </resources>
