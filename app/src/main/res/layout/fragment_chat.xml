@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="1"
+    android:padding="8dp">
+
+    <TextView
+        android:id="@+id/textview_chat"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:scrollbars="vertical"
+        android:layout_weight="0.8" />
+
+
+    <EditText
+        android:id="@+id/editext_chat_send"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_weight="0.05"
+        android:inputType="text" />
+
+    <LinearLayout
+        android:layout_weight="0.05"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_chat"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:text="@string/send" />
+
+        <Button
+            android:id="@+id/btn_broadcast"
+            android:text="@string/broadcast"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="48dp" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

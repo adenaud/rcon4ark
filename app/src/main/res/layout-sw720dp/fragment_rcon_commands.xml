@@ -18,6 +18,19 @@
     android:layout_width="300dp"
     android:layout_height="48dp" />
 
+
+    <Button
+        android:id="@+id/button_unban_player"
+        android:text="@string/unban"
+        android:layout_width="300dp"
+        android:layout_height="48dp" />
+
+    <Button
+        android:id="@+id/button_whitelist_remove"
+        android:text="@string/whitelist_remove"
+        android:layout_width="300dp"
+        android:layout_height="48dp" />
+
     <Button
         android:id="@+id/button_killDinos"
         android:text="@string/killdinos"
