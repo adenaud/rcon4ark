@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -34,16 +35,18 @@ public class SRPConnection {
 
     private OnReceiveListener onReceiveListener;
     private ConnectionListener connectionListener;
+    private Date lastPacketTime;
 
     @Inject
     public SRPConnection(Context context) {
         this.context = context;
         outgoingPackets = new ConcurrentHashMap<>();
+
     }
 
 
     public void open(final String hostname, final int port) {
-
+        lastPacketTime = new Date();
         if (!isConnected) {
             client = new Socket();
             connectionThread = new Thread(new Runnable() {
@@ -58,7 +61,7 @@ public class SRPConnection {
 
                     } catch (IOException e) {
                         isConnected = false;
-                        if(connectionListener != null){
+                        if (connectionListener != null) {
                             connectionListener.onConnectionFail(context.getString(R.string.connection_fail));
                         }
                     }
@@ -76,17 +79,19 @@ public class SRPConnection {
 
     public void send(final Packet packet) throws IOException {
 
-        if (client != null &&client.isConnected()) {
+        if (client != null && client.isConnected()) {
             byte[] data = packet.encode();
             OutputStream outputStream = client.getOutputStream();
             outputStream.write(data);
             this.outgoingPackets.put(packet.getId(), packet);
         } else {
             isConnected = false;
-            connectionListener.onDisconnect();
-
+            if (connectionListener != null) {
+                connectionListener.onDisconnect();
+            }
         }
     }
+
     private void beginReceive() {
         receiveThread = new Thread(new Runnable() {
             @Override
@@ -103,12 +108,18 @@ public class SRPConnection {
             InputStream inputStream;
             try {
 
+                if(new Date().getTime() - lastPacketTime.getTime() > 3000 ){
+                    close();
+                }
+
                 byte[] response = new byte[4096];
                 inputStream = client.getInputStream();
                 inputStream.read(response, 0, response.length);
 
                 Packet packet = new Packet(response);
                 if ((packet.getId() == -1 || packet.getId() > 0) && onReceiveListener != null) {
+
+                    lastPacketTime = new Date();
                     onReceiveListener.onReceive(new ReceiveEvent(SRPConnection.this, packet));
                 }
                 receive();
@@ -137,7 +148,7 @@ public class SRPConnection {
     }
 
 
-    public boolean isConnected(){
+    public boolean isConnected() {
         return client.isConnected();
     }
 

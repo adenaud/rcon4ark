@@ -5,6 +5,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
@@ -41,7 +42,7 @@ public class Packet {
             packetOutput.write(getUint32Bytes( body.length() + 10));
             packetOutput.write(getUint32Bytes(id));
             packetOutput.write(getUint32Bytes(type));
-            packetOutput.write((body + '\0').getBytes());
+            packetOutput.write((body + '\0').getBytes("US-ASCII"));
             packetOutput.write(0x00);
 
 
@@ -67,14 +68,16 @@ public class Packet {
     }
 
     private String getStringFromBytes(byte[] data, int index, int length){
+        String string ="";
         byte[] res;
         try {
            res = Arrays.copyOfRange(data, index, index + length -1);
-        }catch (IllegalArgumentException e){
+            string = new String(res,"US-ASCII");
+        }catch (IllegalArgumentException | UnsupportedEncodingException e){
             res = "".getBytes();
             Ln.e("getStringFromBytes -> IllegalArgumentException : " + res.toString() );
         }
-        return new String(res);
+        return string;
     }
 
     private byte[] getUint32Bytes(final int value) {

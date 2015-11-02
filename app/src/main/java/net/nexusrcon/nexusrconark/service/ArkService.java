@@ -289,7 +289,7 @@ public class ArkService implements OnReceiveListener {
                     Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "getchat");
                     try {
                         connection.send(packet);
-                        Thread.sleep(2000);
+                        Thread.sleep(1000);
                     } catch (IOException | InterruptedException e) {
                         disconnect();
                         Ln.e("startChatThread exception",e);
