@@ -17,7 +17,6 @@ import java.net.Socket;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import roboguice.util.Ln;
 
 public class SRPConnection {
 
@@ -109,12 +108,10 @@ public class SRPConnection {
                 inputStream.read(response, 0, response.length);
 
                 Packet packet = new Packet(response);
-                Ln.d("receive : " + packet.getBody());
-
                 if ((packet.getId() == -1 || packet.getId() > 0) && onReceiveListener != null) {
                     onReceiveListener.onReceive(new ReceiveEvent(SRPConnection.this, packet));
                 }
-                beginReceive();
+                receive();
             } catch (IOException e) {
                 connectionListener.onDisconnect();
             }

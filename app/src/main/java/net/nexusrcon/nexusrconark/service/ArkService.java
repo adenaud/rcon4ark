@@ -261,13 +261,11 @@ public class ArkService implements OnReceiveListener {
         if (packet.getType() == PacketType.SERVERDATA_AUTH_RESPONSE.getValue()) {
             if (packet.getId() == -1) {
 
-                disconnect();
-
                 for (ConnectionListener listener : connectionListeners) {
                     listener.onConnectionFail(context.getString(R.string.authentication_fail));
                 }
-
-            } else {
+                disconnect();
+                } else {
                 for (ConnectionListener listener : connectionListeners) {
                     listener.onConnect();
                 }
@@ -287,7 +285,7 @@ public class ArkService implements OnReceiveListener {
                     Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "getchat");
                     try {
                         connection.send(packet);
-                        Thread.sleep(1000);
+                        Thread.sleep(2000);
                     } catch (IOException | InterruptedException e) {
                         disconnect();
                         Ln.e("startChatThread exception",e);
