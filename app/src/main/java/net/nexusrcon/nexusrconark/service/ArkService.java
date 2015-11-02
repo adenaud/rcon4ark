@@ -249,6 +249,10 @@ public class ArkService implements OnReceiveListener {
 
             for (ServerResponseDispatcher dispatcher : serverResponseDispatchers) {
 
+                if(requestPacket == null){
+                    Ln.e(String.valueOf(packet.getId()) + packet.getBody());
+                }
+
                 if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("ListPlayers")) {
                     dispatcher.onListPlayers(getPlayers(packet.getBody()));
                 }
@@ -307,7 +311,9 @@ public class ArkService implements OnReceiveListener {
     }
 
     public void addServerResponseDispatcher(ServerResponseDispatcher dispatcher) {
-        this.serverResponseDispatchers.add(dispatcher);
+        if(!serverResponseDispatchers.contains(dispatcher)) {
+            this.serverResponseDispatchers.add(dispatcher);
+        }
     }
 
     private List<Player> getPlayers(String messageBody) {

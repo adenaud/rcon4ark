@@ -3,6 +3,7 @@ package net.nexusrcon.nexusrconark.fargment;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import net.nexusrcon.nexusrconark.R;
 import net.nexusrcon.nexusrconark.service.ArkService;
 
 import roboguice.inject.InjectView;
+import roboguice.util.Ln;
 
 /**
  * Created by Anthony on 22/10/2015.
@@ -40,6 +42,8 @@ public class ChatFragment extends RconFragment implements View.OnClickListener {
 
 
     private Activity context;
+    private String chat;
+    private String message;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -51,9 +55,13 @@ public class ChatFragment extends RconFragment implements View.OnClickListener {
         super.onViewCreated(view, savedInstanceState);
         arkService.addServerResponseDispatcher(this);
 
+        textViewChat.setMovementMethod(new ScrollingMovementMethod());
+
         buttonChat.setOnClickListener(this);
         buttonBroadcast.setOnClickListener(this);
 
+        textViewChat.setText(chat);
+        editTextChatSend.setText(message);
     }
 
     @Override
@@ -68,7 +76,7 @@ public class ChatFragment extends RconFragment implements View.OnClickListener {
             arkService.serverChat(editTextChatSend.getText().toString());
             editTextChatSend.setText("");
         }
-        if(v.equals(buttonBroadcast)){
+        if (v.equals(buttonBroadcast)) {
             arkService.broadcast(editTextChatSend.getText().toString());
             editTextChatSend.setText("");
         }
@@ -80,11 +88,23 @@ public class ChatFragment extends RconFragment implements View.OnClickListener {
         context.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-
-                textViewChat.setText(textViewChat.getText().toString() + chatBuffer);
+                textViewChat.append(chatBuffer + "\n");
+                final int scrollAmount = textViewChat.getLayout().getLineTop(textViewChat.getLineCount()) - textViewChat.getHeight();
+                if (scrollAmount > 0) {
+                    textViewChat.scrollTo(0, scrollAmount);
+                } else {
+                    textViewChat.scrollTo(0, 0);
+                }
 
             }
         });
 
+    }
+
+    @Override
+    public void onDestroyView() {
+        chat = textViewChat.getText().toString();
+        message = editTextChatSend.getText().toString();
+        super.onDestroyView();
     }
 }
