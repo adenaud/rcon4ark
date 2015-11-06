@@ -88,7 +88,7 @@ public class ChatFragment extends RconFragment implements View.OnClickListener {
         context.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                textViewChat.append(chatBuffer + "\n");
+                textViewChat.append(chatBuffer);
                 final int scrollAmount = textViewChat.getLayout().getLineTop(textViewChat.getLineCount()) - textViewChat.getHeight();
                 if (scrollAmount > 0) {
                     textViewChat.scrollTo(0, scrollAmount);
