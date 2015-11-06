@@ -108,6 +108,7 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
             refresh();
         }
         if (requestCode == Codes.REQUEST_RCON_CLOSE) {
+            arkService.removeAllConnectionListener();
             arkService.disconnect();
         }
 

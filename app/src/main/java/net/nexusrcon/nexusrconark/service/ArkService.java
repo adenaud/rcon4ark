@@ -249,6 +249,10 @@ public class ArkService implements OnReceiveListener {
 
             for (ServerResponseDispatcher dispatcher : serverResponseDispatchers) {
 
+                if(requestPacket == null){
+                    Ln.e(String.valueOf(packet.getId()) + packet.getBody());
+                }
+
                 if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("ListPlayers")) {
                     dispatcher.onListPlayers(getPlayers(packet.getBody()));
                 }
@@ -261,13 +265,11 @@ public class ArkService implements OnReceiveListener {
         if (packet.getType() == PacketType.SERVERDATA_AUTH_RESPONSE.getValue()) {
             if (packet.getId() == -1) {
 
-                disconnect();
-
                 for (ConnectionListener listener : connectionListeners) {
                     listener.onConnectionFail(context.getString(R.string.authentication_fail));
                 }
-
-            } else {
+                disconnect();
+                } else {
                 for (ConnectionListener listener : connectionListeners) {
                     listener.onConnect();
                 }
@@ -309,7 +311,9 @@ public class ArkService implements OnReceiveListener {
     }
 
     public void addServerResponseDispatcher(ServerResponseDispatcher dispatcher) {
-        this.serverResponseDispatchers.add(dispatcher);
+        if(!serverResponseDispatchers.contains(dispatcher)) {
+            this.serverResponseDispatchers.add(dispatcher);
+        }
     }
 
     private List<Player> getPlayers(String messageBody) {

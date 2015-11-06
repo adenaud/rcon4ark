@@ -4,21 +4,24 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:weightSum="1"
-    android:padding="8dp">
+    android:paddingBottom="64dp"
+    android:paddingLeft="8dp"
+    android:paddingTop="8dp"
+    android:paddingRight="8dp">
 
     <TextView
         android:id="@+id/textview_chat"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:scrollbars="vertical"
-        android:layout_weight="0.8" />
+        android:layout_weight="1"/>
 
 
     <EditText
         android:id="@+id/editext_chat_send"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:layout_weight="0.05"
+        android:layout_weight="0"
         android:inputType="text" />
 
     <LinearLayout

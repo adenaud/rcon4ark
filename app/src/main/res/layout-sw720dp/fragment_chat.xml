@@ -3,7 +3,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:padding="16dp"
+    android:paddingBottom="72dp"
+    android:paddingLeft="8dp"
+    android:paddingTop="8dp"
+    android:paddingRight="8dp"
     android:orientation="vertical">
 
 
@@ -12,7 +15,7 @@
         android:id="@+id/textview_chat"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.9"
+        android:layout_weight="1"
         android:scrollbars="vertical" />
 
 
@@ -20,7 +23,6 @@
         android:id="@+id/sendlayout"
         android:layout_width="fill_parent"
         android:layout_height="48dp"
-        android:layout_weight="0.1"
         android:orientation="horizontal">
 
         <EditText

@@ -59,6 +59,7 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        //chatFragment.setRetainInstance(true);
 
         rconFragmentPagerAdapter = new RconFragmentPagerAdapter(this,getSupportFragmentManager());
         rconFragmentPagerAdapter.addFragment(playersFragment);
