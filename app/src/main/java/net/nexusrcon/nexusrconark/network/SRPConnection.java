@@ -15,6 +15,7 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -28,7 +29,7 @@ public class SRPConnection {
     private Thread receiveThread;
 
     private Socket client;
-    private Map<Integer, Packet> outgoingPackets;
+    private final Map<Integer, Packet> outgoingPackets;
 
     private boolean runReceiveThread;
     private boolean isConnected;
@@ -40,7 +41,7 @@ public class SRPConnection {
     @Inject
     public SRPConnection(Context context) {
         this.context = context;
-        outgoingPackets = new ConcurrentHashMap<>();
+        outgoingPackets = new HashMap<>();
 
     }
 
@@ -79,11 +80,14 @@ public class SRPConnection {
 
     public void send(final Packet packet) throws IOException {
 
+        synchronized (outgoingPackets){
+            this.outgoingPackets.put(packet.getId(), packet);
+        }
+
         if (client != null && client.isConnected()) {
             byte[] data = packet.encode();
             OutputStream outputStream = client.getOutputStream();
             outputStream.write(data);
-            this.outgoingPackets.put(packet.getId(), packet);
         } else {
             isConnected = false;
             if (connectionListener != null) {
@@ -108,7 +112,7 @@ public class SRPConnection {
             InputStream inputStream;
             try {
 
-                if(new Date().getTime() - lastPacketTime.getTime() > 3000 ){
+                if (new Date().getTime() - lastPacketTime.getTime() > 3000) {
                     close();
                 }
 
@@ -138,13 +142,13 @@ public class SRPConnection {
     }
 
     public void close() throws IOException {
-        client.close();
-
-        isConnected = false;
-        runReceiveThread = false;
-
-        receiveThread.interrupt();
-        connectionThread.interrupt();
+        if (client != null) {
+            client.close();
+            isConnected = false;
+            runReceiveThread = false;
+            receiveThread.interrupt();
+            connectionThread.interrupt();
+        }
     }
 
 
