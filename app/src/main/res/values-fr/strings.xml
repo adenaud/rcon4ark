@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">NexusRCON ARK</string>
+
+    <string name="yes">Oui</string>
+    <string name="cancel">Annuler</string>
+
+    <!-- Main Activity -->
+
+    <string name="no_server">Aucun serveur.\n Appuyez sur le bouton + pour en ajouter un.</string>
+    <string name="connecting">Connecting to the server …</string>
+
+    <!--  New / Edit Server Activity-->
+
+    <string name="title_activity_server_connection">Serveur</string>
+    <string name="new_server">Nouveau serveur</string>
+    <string name="edit_server">Modifier serveur</string>
+
+    <string name="server_name">Nom</string>
+    <string name="hostname">Ip / Domaine</string>
+    <string name="port">Port</string>
+    <string name="password">Mot de passe</string>
+    <string name="edit">Modifier</string>
+    <string name="delete">Supprimer</string>
+    <string name="title_activity_rcon">ARK RCON</string>
+
+    <!--  Players fragment-->
+
+    <string name="fragment_players">Joueurs</string>
+    <string name="no_players">Aucun joueur connecté.</string>
+
+    <!--  Commands fragment-->
+
+    <string name="fragment_commands">Commandes</string>
+    <string name="changeTime">Changer l\'heure</string>
+    <string name="saveworld">Sauvegarde de la carte</string>
+    <string name="killdinos">Tuer tous les dinos</string>
+    <string name="killdinos_confirm">Voulez-vous vraiment tuer tous les dinos ?</string>
+
+    <string name="fragment_chat">Chat</string>
+
+    <!-- Errors -->
+
+    <string name="connection_fail">Le serveur est inaccessible, veuillez vérifier l\'IP / Port.</string>
+    <string name="authentication_fail">Echec d\'autentification, veuillez vérifier le mot de passe.</string>
+    <string name="kill">Tuer</string>
+    <string name="kick">Exclure</string>
+    <string name="ban">Bannir</string>
+    <string name="whitelist">Ajouter à la whitelist</string>
+    <string name="send_message">Envoyer un message</string>
+    <string name="ok">OK</string>
+    <string name="whitelist_remove">Supprimer un joueur de la whitelist</string>
+    <string name="unban">Dé-bannir un joueur</string>
+    <string name="player_name">Nom du joueur :</string>
+    <string name="player_steamid">Steam Id :</string>
+    <string name="copy_name">Copier nom</string>
+    <string name="copy_steamid">Copier Steam ID</string>
+
+    <string name="send">Envoyer à tous</string>
+    <string name="broadcast">Diffuser annonce</string>
+    <string name="conneciton_lost">Connexion perdue</string>
+
+
+</resources>
