@@ -9,12 +9,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.inject.Inject;
 
 import net.nexusrcon.nexusrconark.R;
 import net.nexusrcon.nexusrconark.dao.ServerDAO;
 import net.nexusrcon.nexusrconark.model.Server;
+
+import org.apache.commons.lang3.StringUtils;
 
 import roboguice.activity.RoboActionBarActivity;
 import roboguice.inject.InjectView;
@@ -68,17 +71,34 @@ public class ServerConnectionActivity extends RoboActionBarActivity {
 
         if(id == R.id.save) {
 
-            server.setName(nameEditText.getText().toString());
-            server.setHostname(hostnameEditText.getText().toString());
-            server.setPort(Integer.parseInt(portEditText.getText().toString()));
-            server.setPassword(passwordEditText.getText().toString());
+            try {
 
-            dao.save(server);
+                String host = hostnameEditText.getText().toString();
+                int port = Integer.parseInt(portEditText.getText().toString());
 
-            getIntent().putExtra("server",server);
-            setResult(RESULT_OK,getIntent());
+                if(port > 0 && port < 65535){
+                    if(StringUtils.isNotEmpty(host)){
+                        server.setName(nameEditText.getText().toString());
+                        server.setHostname(host);
+                        server.setPort(port);
+                        server.setPassword(passwordEditText.getText().toString());
 
-            finish();
+                        dao.save(server);
+
+                        getIntent().putExtra("server", server);
+                        setResult(RESULT_OK, getIntent());
+
+                        finish();
+                    }else{
+                        Toast.makeText(this,R.string.hostname_not_valid,Toast.LENGTH_SHORT).show();
+                    }
+                }else {
+                    Toast.makeText(this,R.string.port_not_valid,Toast.LENGTH_SHORT).show();
+                }
+            }
+            catch (NumberFormatException e){
+                Toast.makeText(this,R.string.port_not_valid,Toast.LENGTH_SHORT).show();
+            }
             return true;
         }
 
