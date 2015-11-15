@@ -59,6 +59,8 @@
     <string name="send">Send to All</string>
     <string name="broadcast">Broadcast</string>
     <string name="conneciton_lost">Connection lost</string>
+    <string name="port_not_valid">Port is not correct</string>
+    <string name="hostname_not_valid">Hostname is not correct</string>
 
 
 </resources>
