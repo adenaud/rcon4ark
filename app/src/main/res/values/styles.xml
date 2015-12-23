@@ -15,7 +15,7 @@
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="button_danger" parent="Base.Widget.AppCompat.Button">
-        <item name="android:background">#C9302C</item>
+        <item name="android:background">@drawable/red_btn</item>
         <item name="android:textColor">#FFFFFF</item>
     </style>
 

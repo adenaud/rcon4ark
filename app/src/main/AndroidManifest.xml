@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="net.nexusrcon.nexusrconark" >
+    package="com.anthonydenaud.rconark" >
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".MainActivity"
+            android:name="com.anthonydenaud.rconark.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" >
             <intent-filter>
@@ -21,22 +21,22 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.ServerConnectionActivity"
+            android:name="com.anthonydenaud.rconark.view.ServerConnectionActivity"
             android:label="@string/title_activity_server_connection"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="com.anthonydenaud.rconark.MainActivity"
             android:theme="@style/AppTheme.NoActionBar" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="net.nexusrcon.nexusrconark.MainActivity" />
+                android:value="com.anthonydenaud.rconark.MainActivity" />
         </activity>
         <activity
-            android:name=".view.RconActivity"
+            android:name="com.anthonydenaud.rconark.view.RconActivity"
             android:label="@string/title_activity_rcon"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="com.anthonydenaud.rconark.MainActivity"
             android:theme="@style/AppTheme.NoActionBar" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="net.nexusrcon.nexusrconark.MainActivity" />
+                android:value="com.anthonydenaud.rconark.MainActivity" />
         </activity>
     </application>
 
