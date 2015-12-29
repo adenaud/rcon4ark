@@ -35,7 +35,7 @@ public class ArkService implements OnReceiveListener {
 
     private List<ConnectionListener> connectionListeners;
 
-    private List<ServerResponseDispatcher> serverResponseDispatchers;
+    private final List<ServerResponseDispatcher> serverResponseDispatchers;
 
     @Inject
     public ArkService(Context context) {
@@ -247,17 +247,19 @@ public class ArkService implements OnReceiveListener {
 
             Packet requestPacket = connection.getRequestPacket(packet.getId());
 
-            for (ServerResponseDispatcher dispatcher : serverResponseDispatchers) {
+            synchronized (serverResponseDispatchers) {
+                for (ServerResponseDispatcher dispatcher : serverResponseDispatchers) {
 
-                if(requestPacket == null){
-                    Ln.e(String.valueOf(packet.getId()) + packet.getBody());
-                }
+                    if (requestPacket == null) {
+                        Ln.e(String.valueOf(packet.getId()) + packet.getBody());
+                    }
 
-                if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("ListPlayers")) {
-                    dispatcher.onListPlayers(getPlayers(packet.getBody()));
-                }
-                if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("getchat") && !packet.getBody().contains("Server received, But no response!!")) {
-                    dispatcher.onGetChat(packet.getBody());
+                    if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("ListPlayers")) {
+                        dispatcher.onListPlayers(getPlayers(packet.getBody()));
+                    }
+                    if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("getchat") && !packet.getBody().contains("Server received, But no response!!")) {
+                        dispatcher.onGetChat(packet.getBody());
+                    }
                 }
             }
         }
@@ -269,7 +271,7 @@ public class ArkService implements OnReceiveListener {
                     listener.onConnectionFail(context.getString(R.string.authentication_fail));
                 }
                 disconnect();
-                } else {
+            } else {
                 for (ConnectionListener listener : connectionListeners) {
                     listener.onConnect();
                 }
@@ -292,7 +294,7 @@ public class ArkService implements OnReceiveListener {
                         Thread.sleep(1000);
                     } catch (IOException | InterruptedException e) {
                         disconnect();
-                        Ln.e("startChatThread exception",e);
+                        Ln.e("startChatThread exception", e);
                         sendOnDisconnectEvent();
                     }
                 }
@@ -306,13 +308,15 @@ public class ArkService implements OnReceiveListener {
         try {
             connection.close();
         } catch (IOException e) {
-            Ln.e("ark service disconnect exception",e);
+            Ln.e("ark service disconnect exception", e);
         }
     }
 
     public void addServerResponseDispatcher(ServerResponseDispatcher dispatcher) {
-        if(!serverResponseDispatchers.contains(dispatcher)) {
-            this.serverResponseDispatchers.add(dispatcher);
+        synchronized (serverResponseDispatchers) {
+            if (!serverResponseDispatchers.contains(dispatcher)) {
+                this.serverResponseDispatchers.add(dispatcher);
+            }
         }
     }
 
@@ -322,11 +326,11 @@ public class ArkService implements OnReceiveListener {
 
         if (!messageBody.startsWith("No Players Connected")) {
 
-            for (int i = 0; i < playersArray.length; i++) {
-                if (playersArray[i].length() > 20) { // 20 = playerId + steamId min length
+            for (String aPlayersArray : playersArray) {
+                if (aPlayersArray.length() > 20) { // 20 = playerId + steamId min length
 
                     Pattern pattern = Pattern.compile("(\\d*)\\. (.+), ([0-9]+) ?");
-                    Matcher matcher = pattern.matcher(playersArray[i]);
+                    Matcher matcher = pattern.matcher(aPlayersArray);
 
                     if (matcher.matches()) {
 
@@ -344,7 +348,7 @@ public class ArkService implements OnReceiveListener {
         return players;
     }
 
-    private void sendOnDisconnectEvent(){
+    private void sendOnDisconnectEvent() {
         for (ConnectionListener listener : connectionListeners) {
             listener.onDisconnect();
         }

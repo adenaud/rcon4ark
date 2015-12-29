@@ -1,6 +1,8 @@
 package com.anthonydenaud.rconark.network;
 
 
+import com.anthonydenaud.rconark.exception.PacketParseException;
+
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.ByteArrayOutputStream;
@@ -15,6 +17,8 @@ import roboguice.util.Ln;
  * Created by Anthony on 09/10/2015.
  */
 public class Packet {
+
+    public static int PACKET_MAX_LENGTH = 8192;
 
     private int size;
     private int id;
@@ -31,7 +35,7 @@ public class Packet {
         this.body = body;
     }
 
-    public Packet(byte[] rawPacket) {
+    public Packet(byte[] rawPacket) throws PacketParseException {
         decode(rawPacket);
     }
 
@@ -39,43 +43,44 @@ public class Packet {
         ByteArrayOutputStream packetOutput = new ByteArrayOutputStream();
 
 
-            packetOutput.write(getUint32Bytes( body.length() + 10));
-            packetOutput.write(getUint32Bytes(id));
-            packetOutput.write(getUint32Bytes(type));
-            packetOutput.write((body + '\0').getBytes("US-ASCII"));
-            packetOutput.write(0x00);
-
+        packetOutput.write(getUint32Bytes(body.length() + 10));
+        packetOutput.write(getUint32Bytes(id));
+        packetOutput.write(getUint32Bytes(type));
+        packetOutput.write((body + '\0').getBytes("US-ASCII"));
+        packetOutput.write(0x00);
 
 
         return packetOutput.toByteArray();
     }
 
-    public Packet decode(byte[] rawPacket) {
+    public Packet decode(byte[] rawPacket) throws PacketParseException {
 
-        size = getIntFromBytes(rawPacket,0);
-        id = getIntFromBytes(rawPacket,4);
-        type = getIntFromBytes(rawPacket,8);
-        body = getStringFromBytes(rawPacket,12,size - 9);
+        size = getIntFromBytes(rawPacket, 0);
+        id = getIntFromBytes(rawPacket, 4);
+        type = getIntFromBytes(rawPacket, 8);
+        body = getStringFromBytes(rawPacket, 12, size - 9);
         return this;
     }
 
-    private int getIntFromBytes(byte[] data, int index){
-        byte[] res = ByteBuffer.allocate(4).array();
+    private int getIntFromBytes(byte[] data, int index) {
+        byte[] res;
         res = Arrays.copyOfRange(data, index, index + 4);
         ArrayUtils.reverse(res);
-        int integer = (res[0] << 24) & 0xff000000 | (res[1] << 16) & 0x00ff0000 | (res[2] << 8) & 0x0000ff00 | (res[3] << 0) & 0x000000ff;
-        return  integer;
+        return (res[0] << 24) & 0xff000000 | (res[1] << 16) & 0x00ff0000 | (res[2] << 8) & 0x0000ff00 | (res[3]) & 0x000000ff;
     }
 
-    private String getStringFromBytes(byte[] data, int index, int length){
-        String string ="";
+    private String getStringFromBytes(byte[] data, int index, int length) throws PacketParseException {
+        String string = "";
         byte[] res;
         try {
-           res = Arrays.copyOfRange(data, index, index + length -1);
-            string = new String(res,"US-ASCII");
-        }catch (IllegalArgumentException | UnsupportedEncodingException e){
+            if (length > PACKET_MAX_LENGTH) {
+                throw new PacketParseException("Error bad length ( > "+PACKET_MAX_LENGTH+" ) : " + length + " raw data : " + new String(data));
+            }
+            res = Arrays.copyOfRange(data, index, index + length - 1);
+            string = new String(res, "US-ASCII");
+        } catch (IllegalArgumentException | UnsupportedEncodingException e) {
             res = "".getBytes();
-            Ln.e("getStringFromBytes -> IllegalArgumentException : " + res.toString() );
+            Ln.e("getStringFromBytes -> IllegalArgumentException : " + res.toString());
         }
         return string;
     }

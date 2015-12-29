@@ -2,6 +2,7 @@ package com.anthonydenaud.rconark.network;
 
 import android.content.Context;
 
+import com.anthonydenaud.rconark.exception.PacketParseException;
 import com.google.inject.Inject;
 
 import com.anthonydenaud.rconark.R;
@@ -14,9 +15,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public class SRPConnection {
@@ -28,7 +33,7 @@ public class SRPConnection {
     private Thread receiveThread;
 
     private Socket client;
-    private final Map<Integer, Packet> outgoingPackets;
+    private final LinkedHashMap<Integer, Packet> outgoingPackets;
 
     private boolean runReceiveThread;
     private boolean isConnected;
@@ -37,11 +42,11 @@ public class SRPConnection {
     private ConnectionListener connectionListener;
     private Date lastPacketTime;
 
+
     @Inject
     public SRPConnection(Context context) {
         this.context = context;
-        outgoingPackets = new HashMap<>();
-
+        outgoingPackets = new LinkedHashMap<>();
     }
 
 
@@ -79,9 +84,10 @@ public class SRPConnection {
 
     public void send(final Packet packet) throws IOException {
 
-        synchronized (outgoingPackets){
+        synchronized (outgoingPackets) {
             this.outgoingPackets.put(packet.getId(), packet);
         }
+
 
         if (client != null && client.isConnected()) {
             byte[] data = packet.encode();
@@ -93,6 +99,7 @@ public class SRPConnection {
                 connectionListener.onDisconnect();
             }
         }
+
     }
 
     private void beginReceive() {
@@ -110,20 +117,28 @@ public class SRPConnection {
         if (runReceiveThread) {
             InputStream inputStream;
             try {
-
+/*
                 if (new Date().getTime() - lastPacketTime.getTime() > 3000) {
                     close();
                 }
-
-                byte[] response = new byte[4096];
+*/
+                byte[] response = new byte[Packet.PACKET_MAX_LENGTH];
                 inputStream = client.getInputStream();
-                inputStream.read(response, 0, response.length);
+                int totalRead = inputStream.read(response, 0, response.length);
 
-                Packet packet = new Packet(response);
-                if ((packet.getId() == -1 || packet.getId() > 0) && onReceiveListener != null) {
-
-                    lastPacketTime = new Date();
-                    onReceiveListener.onReceive(new ReceiveEvent(SRPConnection.this, packet));
+                try {
+                    if (totalRead > 0) {
+                        Packet packet = new Packet(response);
+                        if ((packet.getId() == -1 || packet.getId() > 0) && onReceiveListener != null) {
+                            lastPacketTime = new Date();
+                            onReceiveListener.onReceive(new ReceiveEvent(SRPConnection.this, packet));
+                        }
+                    }
+                } catch (PacketParseException e) {
+                    e.printStackTrace();
+                    synchronized (outgoingPackets) {
+                        send(outgoingPackets.get(outgoingPackets.size()));
+                    }
                 }
                 receive();
             } catch (IOException e) {
