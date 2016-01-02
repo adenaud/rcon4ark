@@ -160,17 +160,19 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
     }
 
     @Override
-    public void onConnect() {
-        Intent intent = new Intent(this, RconActivity.class);
-        intent.putExtra("server", currentServer);
-        startActivityForResult(intent, Codes.REQUEST_RCON_CLOSE);
+    public void onConnect(boolean reconnecting) {
+        if(!reconnecting){
+            Intent intent = new Intent(this, RconActivity.class);
+            intent.putExtra("server", currentServer);
+            startActivityForResult(intent, Codes.REQUEST_RCON_CLOSE);
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                progressDialog.hide();
-            }
-        });
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    progressDialog.hide();
+                }
+            });
+        }
     }
 
     @Override

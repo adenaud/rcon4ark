@@ -93,7 +93,7 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
     }
 
     @Override
-    public void onConnect() {
+    public void onConnect(boolean reconnecting) {
 
     }
 

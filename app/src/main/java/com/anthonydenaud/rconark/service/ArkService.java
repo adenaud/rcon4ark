@@ -2,6 +2,7 @@ package com.anthonydenaud.rconark.service;
 
 import android.content.Context;
 
+import com.anthonydenaud.rconark.event.OnServerStopRespondingListener;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -37,6 +38,7 @@ public class ArkService implements OnReceiveListener {
 
     private final List<ServerResponseDispatcher> serverResponseDispatchers;
 
+
     @Inject
     public ArkService(Context context) {
         this.context = context;
@@ -45,12 +47,13 @@ public class ArkService implements OnReceiveListener {
     }
 
     public void connect(final Server server) {
+
         connection.open(server.getHostname(), server.getPort());
 
         connection.setOnReceiveListener(this);
         connection.setConnectionListener(new ConnectionListener() {
             @Override
-            public void onConnect() {
+            public void onConnect(boolean reconnecting) {
                 login(server.getPassword());
             }
 
@@ -67,10 +70,19 @@ public class ArkService implements OnReceiveListener {
             }
         });
 
+        connection.setOnServerStopRespondingListener(new OnServerStopRespondingListener() {
+            @Override
+            public void onServerStopResponding() {
+
+                connection.open(server.getHostname(), server.getPort());
+            }
+        });
+
 
     }
 
     private void login(String password) {
+        Ln.d("Login ...");
         Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_AUTH.getValue(), password);
         try {
             connection.send(packet);
@@ -273,7 +285,7 @@ public class ArkService implements OnReceiveListener {
                 disconnect();
             } else {
                 for (ConnectionListener listener : connectionListeners) {
-                    listener.onConnect();
+                    listener.onConnect(connection.isReconnecting());
                 }
 
                 startChatThread();
@@ -306,6 +318,7 @@ public class ArkService implements OnReceiveListener {
 
     public void disconnect() {
         try {
+            connection.setReconnecting(false);
             connection.close();
         } catch (IOException e) {
             Ln.e("ark service disconnect exception", e);
