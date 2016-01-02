@@ -38,4 +38,10 @@
         android:inputType="textPassword"
         android:hint="@string/password"/>
 
+    <EditText
+        android:id="@+id/admin_name_edittext"
+        android:layout_width="fill_parent"
+        android:layout_height="48dp"
+        android:hint="@string/admin_name"/>
+
 </LinearLayout>

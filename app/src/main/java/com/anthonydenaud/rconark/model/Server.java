@@ -25,11 +25,15 @@ public class Server implements Parcelable {
     @DatabaseField
     private String password;
 
+    @DatabaseField
+    private String adminName;
+
     public Server(){
         name = "";
         hostname = "";
         port = 32330;
         password = "";
+        adminName = "";
     }
 
     public Server(String name, String hostname, int port) {
@@ -37,6 +41,7 @@ public class Server implements Parcelable {
         this.hostname = hostname;
         this.port = port;
         this.password = "";
+        this.adminName = "";
     }
 
     public Server(Parcel source){
@@ -45,6 +50,7 @@ public class Server implements Parcelable {
         this.hostname = source.readString();
         this.port = source.readInt();
         this.password = source.readString();
+        this.adminName = source.readString();
     }
 
     public int getId() {
@@ -87,6 +93,14 @@ public class Server implements Parcelable {
         this.password = password;
     }
 
+    public String getAdminName() {
+        return adminName;
+    }
+
+    public void setAdminName(String adminname) {
+        this.adminName = adminname;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -99,6 +113,7 @@ public class Server implements Parcelable {
         dest.writeString(hostname);
         dest.writeInt(port);
         dest.writeString(password);
+        dest.writeString(adminName);
     }
 
     public static final Creator<Server> CREATOR = new Creator<Server>() {
@@ -112,4 +127,6 @@ public class Server implements Parcelable {
             return new Server[size];
         }
     };
+
+
 }

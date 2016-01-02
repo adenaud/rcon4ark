@@ -35,6 +35,9 @@ public class ServerConnectionActivity extends RoboActionBarActivity {
     @InjectView(R.id.password_edittext)
     private EditText passwordEditText;
 
+    @InjectView(R.id.admin_name_edittext)
+    private EditText adminNameEditText;
+
     private Server server;
 
     @Override
@@ -53,6 +56,7 @@ public class ServerConnectionActivity extends RoboActionBarActivity {
         hostnameEditText.setText(server.getHostname());
         portEditText.setText(String.valueOf(server.getPort()));
         passwordEditText.setText(server.getPassword());
+        adminNameEditText.setText(server.getAdminName());
     }
 
     @Override
@@ -72,18 +76,24 @@ public class ServerConnectionActivity extends RoboActionBarActivity {
                 String host = hostnameEditText.getText().toString();
                 int port = Integer.parseInt(portEditText.getText().toString());
 
+                String adminName = adminNameEditText.getText().toString();
+                if(StringUtils.isEmpty(adminName)){
+                    adminName = getString(R.string.default_admin_name);
+                }
+
+
                 if(port > 0 && port < 65535){
                     if(StringUtils.isNotEmpty(host)){
                         server.setName(nameEditText.getText().toString());
                         server.setHostname(host);
                         server.setPort(port);
                         server.setPassword(passwordEditText.getText().toString());
+                        server.setAdminName(adminName);
 
                         dao.save(server);
 
                         getIntent().putExtra("server", server);
                         setResult(RESULT_OK, getIntent());
-
                         finish();
                     }else{
                         Toast.makeText(this,R.string.hostname_not_valid,Toast.LENGTH_SHORT).show();
