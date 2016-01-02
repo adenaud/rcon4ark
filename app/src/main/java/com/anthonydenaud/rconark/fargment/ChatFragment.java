@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -21,7 +23,7 @@ import roboguice.inject.InjectView;
 /**
  * Created by Anthony on 22/10/2015.
  */
-public class ChatFragment extends RconFragment implements View.OnClickListener {
+public class ChatFragment extends RconFragment implements View.OnClickListener, TextView.OnEditorActionListener {
 
     @Inject
     private ArkService arkService;
@@ -61,6 +63,7 @@ public class ChatFragment extends RconFragment implements View.OnClickListener {
 
         textViewChat.setText(chat);
         editTextChatSend.setText(message);
+        editTextChatSend.setOnEditorActionListener(this);
     }
 
     @Override
@@ -105,5 +108,16 @@ public class ChatFragment extends RconFragment implements View.OnClickListener {
         chat = textViewChat.getText().toString();
         message = editTextChatSend.getText().toString();
         super.onDestroyView();
+    }
+
+    @Override
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        boolean handled = false;
+        if(v.equals(editTextChatSend) && actionId == EditorInfo.IME_ACTION_SEND){
+            arkService.serverChat(editTextChatSend.getText().toString());
+            editTextChatSend.setText("");
+            handled = true;
+        }
+        return handled;
     }
 }

@@ -37,6 +37,7 @@ public class ArkService implements OnReceiveListener {
     private List<ConnectionListener> connectionListeners;
 
     private final List<ServerResponseDispatcher> serverResponseDispatchers;
+    private Server server;
 
 
     @Inject
@@ -47,6 +48,8 @@ public class ArkService implements OnReceiveListener {
     }
 
     public void connect(final Server server) {
+
+        this.server = server;
 
         connection.open(server.getHostname(), server.getPort());
 
@@ -114,13 +117,21 @@ public class ArkService implements OnReceiveListener {
         }
     }
 
+    private String getAdminName() {
+        String adminName = context.getString(R.string.default_admin_name);
+        if(StringUtils.isNotEmpty(server.getAdminName())){
+            adminName = server.getAdminName();
+        }
+        return adminName;
+    }
+
     /**
      * Sends a chat message to all currently connected players.
      *
      * @param message
      */
     public void serverChat(String message) {
-        Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "ServerChat " + message);
+        Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "ServerChat " + getAdminName() + " : " + message);
         try {
             connection.send(packet);
         } catch (IOException e) {
@@ -128,8 +139,10 @@ public class ArkService implements OnReceiveListener {
         }
     }
 
+
+
     public void serverChatTo(Player player, String message) {
-        Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "ServerChatTo \"" + player.getSteamId() + "\" " + message);
+        Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "ServerChatTo \"" + player.getSteamId() + "\" " + getAdminName() + " : " +message);
         try {
             connection.send(packet);
         } catch (IOException e) {
