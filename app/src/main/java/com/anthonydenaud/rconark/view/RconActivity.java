@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.anthonydenaud.rconark.fargment.GameLogFragment;
 import com.google.inject.Inject;
 
 import com.anthonydenaud.rconark.Codes;
@@ -34,6 +35,9 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
     private CommandsFragment commandsFragment;
     @Inject
     private ChatFragment chatFragment;
+    @Inject
+    private GameLogFragment gameLogFragment;
+
 
     @Inject
     private ArkService arkService;
@@ -64,6 +68,7 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
         rconFragmentPagerAdapter.addFragment(playersFragment);
         rconFragmentPagerAdapter.addFragment(commandsFragment);
         rconFragmentPagerAdapter.addFragment(chatFragment);
+        rconFragmentPagerAdapter.addFragment(gameLogFragment);
 
 
         mViewPager.setAdapter(rconFragmentPagerAdapter);

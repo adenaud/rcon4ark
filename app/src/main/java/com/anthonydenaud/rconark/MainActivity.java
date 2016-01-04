@@ -48,6 +48,7 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
 
     private Server currentServer;
     private ProgressDialog progressDialog;
+    private boolean rconActivityStarted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +111,7 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
         if (requestCode == Codes.REQUEST_RCON_CLOSE) {
             arkService.removeAllConnectionListener();
             arkService.disconnect();
+            rconActivityStarted = false;
         }
 
         if(resultCode == Codes.RESULT_CONNECTION_DROP){
@@ -161,7 +163,7 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
 
     @Override
     public void onConnect(boolean reconnecting) {
-        if(!reconnecting){
+        if(!rconActivityStarted){
             Intent intent = new Intent(this, RconActivity.class);
             intent.putExtra("server", currentServer);
             startActivityForResult(intent, Codes.REQUEST_RCON_CLOSE);
@@ -172,6 +174,7 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
                     progressDialog.hide();
                 }
             });
+            rconActivityStarted = true;
         }
     }
 

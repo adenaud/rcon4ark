@@ -20,4 +20,11 @@ public class RconFragment extends RoboFragment implements ServerResponseDispatch
     public void onGetChat(String chatBuffer) {
 
     }
+
+    @Override
+    public void onGetLog(String logBuffer) {
+
+    }
+
+
 }

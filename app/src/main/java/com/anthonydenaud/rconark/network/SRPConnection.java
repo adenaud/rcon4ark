@@ -18,13 +18,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import roboguice.util.Ln;
 
@@ -39,7 +34,6 @@ public class SRPConnection {
 
     private Socket client;
     private final LinkedHashMap<Integer, Packet> outgoingPackets;
-    private final LinkedHashMap<Integer, Packet> sendQueue;
 
     private boolean runReceiveThread;
     private boolean isConnected;
@@ -49,10 +43,6 @@ public class SRPConnection {
     private OnServerStopRespondingListener onServerStopRespondingListener;
     private boolean reconnecting = false;
 
-    public void setOnServerStopRespondingListener(OnServerStopRespondingListener onServerStopRespondingListener) {
-        this.onServerStopRespondingListener = onServerStopRespondingListener;
-    }
-
     private Date lastPacketTime;
 
 
@@ -60,12 +50,11 @@ public class SRPConnection {
     public SRPConnection(Context context) {
         this.context = context;
         outgoingPackets = new LinkedHashMap<>();
-        sendQueue = new LinkedHashMap<>();
     }
 
 
     public void open(final String hostname, final int port) {
-        Ln.d("Connecting to %s:%d ...",hostname,port);
+        Ln.d("Connecting to %s:%d ...", hostname, port);
 
         lastPacketTime = new Date();
         if (!isConnected) {
@@ -78,6 +67,8 @@ public class SRPConnection {
                         client.connect(new InetSocketAddress(hostname, port));
                         connectionListener.onConnect(reconnecting);
                         runReceiveThread = true;
+                        reconnecting=false;
+                        Ln.d("Connected");
                         beginReceive();
 
                     } catch (IOException e) {
@@ -100,34 +91,22 @@ public class SRPConnection {
 
     public void send(final Packet packet) throws IOException {
 
-        if (StringUtils.isNotEmpty(packet.getBody())) {
-            Ln.d("Send : %s", packet.getBody());
-        }
-
-
         synchronized (outgoingPackets) {
             this.outgoingPackets.put(packet.getId(), packet);
         }
 
-        synchronized (sendQueue) {
-            sendQueue.put(packet.getId(), packet);
-
-            int key = sendQueue.entrySet().iterator().next().getKey();
-
-            if (client != null && client.isConnected()) {
-                byte[] data = sendQueue.get(key).encode();
-                OutputStream outputStream = client.getOutputStream();
-                outputStream.write(data);
-            } else {
-                isConnected = false;
-                if (connectionListener != null) {
-                    Ln.e("Unable to send packet : connection closed.");
-                   // connectionListener.onDisconnect();
-                }
+        if (client != null && client.isConnected()) {
+            if (StringUtils.isNotEmpty(packet.getBody())) {
+                Ln.i("Send : %s", packet.getBody());
             }
+
+            byte[] data = packet.encode();
+            OutputStream outputStream = client.getOutputStream();
+            outputStream.write(data);
+        } else {
+            isConnected = false;
+            Ln.e("Unable to send packet : connection closed.");
         }
-
-
     }
 
     private void beginReceive() {
@@ -159,15 +138,11 @@ public class SRPConnection {
                         Packet packet = new Packet(response);
                         if ((packet.getId() == -1 || packet.getId() > 0) && onReceiveListener != null) {
 
-                            synchronized (sendQueue) {
-                                sendQueue.remove(packet.getId());
-                            }
-
                             lastPacketTime = new Date();
                             onReceiveListener.onReceive(new ReceiveEvent(SRPConnection.this, packet));
 
-                            if(StringUtils.isNotEmpty(packet.getBody())){
-                                Ln.d("Receive : %s",packet.getBody());
+                            if (StringUtils.isNotEmpty(packet.getBody())) {
+                                Ln.d("Receive : %s", packet.getBody());
                             }
                         }
                     }
@@ -179,26 +154,24 @@ public class SRPConnection {
                 }
                 receive();
             } catch (IOException e) {
-                Ln.e("Unable to send packet : %s", e.getMessage());
+                Ln.e("Unable to receive packet : %s", e.getMessage());
             }
         }
     }
 
-    private void reconnect() {
-
-        reconnecting = true;
-
-        try {
-            close();
-
-        } catch (IOException e) {
-            Ln.e("Unable to close client : %s", e.getLocalizedMessage());
-        }
-
-        Ln.e("The server has stopped to responding to RCON requests.");
-        Ln.e("Reconnecting ...");
-        if(onServerStopRespondingListener !=null){
-            onServerStopRespondingListener.onServerStopResponding();
+    public void reconnect() {
+        if(!reconnecting){
+            reconnecting = true;
+            try {
+                close();
+            } catch (IOException e) {
+                Ln.e("Unable to close client : %s", e.getLocalizedMessage());
+            }
+            Ln.e("The server has stopped to responding to RCON requests.");
+            Ln.e("Reconnecting ...");
+            if (onServerStopRespondingListener != null) {
+                onServerStopRespondingListener.onServerStopResponding();
+            }
         }
     }
 
@@ -218,10 +191,8 @@ public class SRPConnection {
             receiveThread.interrupt();
             connectionThread.interrupt();
         }
-        sendQueue.clear();
         outgoingPackets.clear();
     }
-
 
     public boolean isConnected() {
         return client.isConnected();
@@ -237,5 +208,9 @@ public class SRPConnection {
 
     public void setReconnecting(boolean reconnecting) {
         this.reconnecting = reconnecting;
+    }
+
+    public void setOnServerStopRespondingListener(OnServerStopRespondingListener onServerStopRespondingListener) {
+        this.onServerStopRespondingListener = onServerStopRespondingListener;
     }
 }

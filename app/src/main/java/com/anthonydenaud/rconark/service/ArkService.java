@@ -22,6 +22,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,6 +40,8 @@ public class ArkService implements OnReceiveListener {
 
     private final List<ServerResponseDispatcher> serverResponseDispatchers;
     private Server server;
+    private Timer chatTimer;
+    private Timer logTimer;
 
 
     @Inject
@@ -76,7 +80,8 @@ public class ArkService implements OnReceiveListener {
         connection.setOnServerStopRespondingListener(new OnServerStopRespondingListener() {
             @Override
             public void onServerStopResponding() {
-
+                chatTimer.cancel();
+                logTimer.cancel();
                 connection.open(server.getHostname(), server.getPort());
             }
         });
@@ -119,7 +124,7 @@ public class ArkService implements OnReceiveListener {
 
     private String getAdminName() {
         String adminName = context.getString(R.string.default_admin_name);
-        if(StringUtils.isNotEmpty(server.getAdminName())){
+        if (StringUtils.isNotEmpty(server.getAdminName())) {
             adminName = server.getAdminName();
         }
         return adminName;
@@ -140,9 +145,8 @@ public class ArkService implements OnReceiveListener {
     }
 
 
-
     public void serverChatTo(Player player, String message) {
-        Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "ServerChatTo \"" + player.getSteamId() + "\" " + getAdminName() + " : " +message);
+        Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "ServerChatTo \"" + player.getSteamId() + "\" " + getAdminName() + " : " + message);
         try {
             connection.send(packet);
         } catch (IOException e) {
@@ -285,6 +289,9 @@ public class ArkService implements OnReceiveListener {
                     if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("getchat") && !packet.getBody().contains("Server received, But no response!!")) {
                         dispatcher.onGetChat(packet.getBody());
                     }
+                    if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("getgamelog") && !packet.getBody().contains("Server received, But no response!!")) {
+                        dispatcher.onGetLog(packet.getBody());
+                    }
                 }
             }
         }
@@ -301,43 +308,61 @@ public class ArkService implements OnReceiveListener {
                     listener.onConnect(connection.isReconnecting());
                 }
 
-                startChatThread();
+                startLogAndChatTimers();
             }
         }
     }
 
-    private void startChatThread() {
-        Thread chatThread = new Thread(new Runnable() {
+    private void startLogAndChatTimers() {
+
+        int chatDelay = context.getResources().getInteger(R.integer.chat_timer_delay);
+        int logDelay = context.getResources().getInteger(R.integer.log_timer_delay);
+
+        chatTimer = new Timer("ChatTimer");
+        chatTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-
-                while (connection.isConnected()) {
-
-                    Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "getchat");
+                if (connection.isConnected()) {
                     try {
+                        Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "getchat");
                         connection.send(packet);
-                        Thread.sleep(1000);
-                    } catch (IOException | InterruptedException e) {
+                    } catch (IOException e) {
                         disconnect();
-                        Ln.e("startChatThread exception", e);
-                        sendOnDisconnectEvent();
+                        Ln.e("getchat exception : " + e.getMessage(), e);
+                        connection.reconnect();
                     }
                 }
 
             }
-        }, "CHAT_THREAD");
-        chatThread.start();
-    }
+        },chatDelay, chatDelay);
 
+        logTimer = new Timer("LogTimer");
+        logTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if (connection.isConnected()) {
+                    Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "getgamelog");
+                    try {
+                        connection.send(packet);
+                    } catch (IOException e) {
+                        disconnect();
+                        Ln.e("getgamelog exception : " + e.getMessage(), e);
+                        connection.reconnect();
+                    }
+                }
+            }
+        }, logDelay, logDelay);
+    }
     public void disconnect() {
+        logTimer.cancel();
+        chatTimer.cancel();
+        connection.setReconnecting(false);
         try {
-            connection.setReconnecting(false);
             connection.close();
         } catch (IOException e) {
             Ln.e("ark service disconnect exception", e);
         }
     }
-
     public void addServerResponseDispatcher(ServerResponseDispatcher dispatcher) {
         synchronized (serverResponseDispatchers) {
             if (!serverResponseDispatchers.contains(dispatcher)) {
