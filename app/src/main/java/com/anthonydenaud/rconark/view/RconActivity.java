@@ -1,5 +1,7 @@
 package com.anthonydenaud.rconark.view;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v7.widget.Toolbar;
 
@@ -7,6 +9,7 @@ import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 
 import com.anthonydenaud.rconark.fargment.CustomCommandsFragment;
 import com.anthonydenaud.rconark.fargment.GameLogFragment;
@@ -49,14 +52,25 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
 
     @InjectView(R.id.container)
     private ViewPager mViewPager;
+    private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rcon);
 
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        if(preferences.getBoolean("keep_screen_on",false)){
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        }
+
+
         Server server = getIntent().getParcelableExtra("server");
         setTitle(server.getName());
+
+
 
 
         arkService.addConnectionListener(this);

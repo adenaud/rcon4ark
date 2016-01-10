@@ -1,6 +1,8 @@
 package com.anthonydenaud.rconark.service;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import com.anthonydenaud.rconark.event.OnServerStopRespondingListener;
 import com.google.inject.Inject;
@@ -46,10 +48,13 @@ public class ArkService implements OnReceiveListener {
     private Timer chatTimer;
     private Timer logTimer;
 
+    private SharedPreferences preferences;
+
 
     @Inject
     public ArkService(Context context) {
         this.context = context;
+        preferences = PreferenceManager.getDefaultSharedPreferences(context);
         connectionListeners = new ArrayList<>();
         serverResponseDispatchers = new ArrayList<>();
         customCommands = new ArrayList<>();
@@ -323,8 +328,11 @@ public class ArkService implements OnReceiveListener {
 
     private void startLogAndChatTimers() {
 
-        int chatDelay = context.getResources().getInteger(R.integer.chat_timer_delay);
-        int logDelay = context.getResources().getInteger(R.integer.log_timer_delay);
+        int defaultChatDelay = context.getResources().getInteger(R.integer.chat_timer_delay);
+        int defaultLogDelay = context.getResources().getInteger(R.integer.log_timer_delay);
+
+        int chatDelay = Integer.valueOf(preferences.getString("chat_delay", String.valueOf(defaultChatDelay)));
+        int logDelay = Integer.valueOf(preferences.getString("log_delay", String.valueOf(defaultLogDelay)));
 
         chatTimer = new Timer("ChatTimer");
         chatTimer.scheduleAtFixedRate(new TimerTask() {

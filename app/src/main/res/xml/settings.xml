@@ -5,7 +5,7 @@
         android:defaultValue="2000"
         android:entries="@array/refresh_rates_title"
         android:entryValues="@array/refresh_rates_values"
-        android:key="refresh_rate"
+        android:key="chat_delay"
         android:summary="@string/chat_refresh_rate_summary"
         android:title="@string/chat_refresh_rate" />
 
@@ -13,7 +13,7 @@
         android:defaultValue="5000"
         android:entries="@array/refresh_rates_title"
         android:entryValues="@array/refresh_rates_values"
-        android:key="refresh_rate"
+        android:key="log_delay"
         android:summary="@string/log_refresh_rate_summary"
         android:title="@string/log_refresh_rate" />
 
