@@ -26,5 +26,10 @@ public class RconFragment extends RoboFragment implements ServerResponseDispatch
 
     }
 
+    @Override
+    public void onCustomCommandResult(String result) {
+
+    }
+
 
 }

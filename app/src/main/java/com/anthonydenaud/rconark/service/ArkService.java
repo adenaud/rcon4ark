@@ -39,6 +39,9 @@ public class ArkService implements OnReceiveListener {
     private List<ConnectionListener> connectionListeners;
 
     private final List<ServerResponseDispatcher> serverResponseDispatchers;
+
+    private List<Integer> customCommands;
+
     private Server server;
     private Timer chatTimer;
     private Timer logTimer;
@@ -49,6 +52,7 @@ public class ArkService implements OnReceiveListener {
         this.context = context;
         connectionListeners = new ArrayList<>();
         serverResponseDispatchers = new ArrayList<>();
+        customCommands = new ArrayList<>();
     }
 
     public void connect(final Server server) {
@@ -283,13 +287,17 @@ public class ArkService implements OnReceiveListener {
                         Ln.e(String.valueOf(packet.getId()) + packet.getBody());
                     }
 
-                    if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("ListPlayers")) {
+                    else if(customCommands.contains(packet.getId())){
+                        dispatcher.onCustomCommandResult(packet.getBody());
+                    }
+
+                    else if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("ListPlayers")) {
                         dispatcher.onListPlayers(getPlayers(packet.getBody()));
                     }
-                    if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("getchat") && !packet.getBody().contains("Server received, But no response!!")) {
+                    else if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("getchat") && !packet.getBody().contains("Server received, But no response!!")) {
                         dispatcher.onGetChat(packet.getBody());
                     }
-                    if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("getgamelog") && !packet.getBody().contains("Server received, But no response!!")) {
+                    else if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("getgamelog") && !packet.getBody().contains("Server received, But no response!!")) {
                         dispatcher.onGetLog(packet.getBody());
                     }
                 }
@@ -412,6 +420,17 @@ public class ArkService implements OnReceiveListener {
 
     public synchronized void removeAllConnectionListener() {
         connectionListeners.clear();
+    }
+
+    public void sendRawCommand(String command) {
+        int id = connection.getSequenceNumber();
+        customCommands.add(id);
+        Packet packet = new Packet(id,PacketType.SERVERDATA_EXECCOMMAND.getValue(),command);
+        try {
+            connection.send(packet);
+        } catch (IOException e) {
+            sendOnDisconnectEvent();
+        }
     }
 }
 

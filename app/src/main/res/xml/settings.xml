@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:defaultValue="2000"
+        android:entries="@array/refresh_rates_title"
+        android:entryValues="@array/refresh_rates_values"
+        android:key="refresh_rate"
+        android:summary="@string/chat_refresh_rate_summary"
+        android:title="@string/chat_refresh_rate" />
+
+    <ListPreference
+        android:defaultValue="5000"
+        android:entries="@array/refresh_rates_title"
+        android:entryValues="@array/refresh_rates_values"
+        android:key="refresh_rate"
+        android:summary="@string/log_refresh_rate_summary"
+        android:title="@string/log_refresh_rate" />
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="save_log"
+        android:title="@string/save_log"
+        android:summary="@string/save_log_summary"/>
+
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="keep_screen_on"
+        android:title="@string/keep_screen_on"
+        android:summary="@string/keep_screen_on_summary"/>
+
+</PreferenceScreen>

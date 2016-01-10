@@ -48,9 +48,12 @@ public class RconFragmentPagerAdapter extends FragmentPagerAdapter {
             title = context.getString(R.string.fragment_commands);
         }
         if(position == 2){
-            title = context.getString(R.string.fragment_chat);
+            title = context.getString(R.string.fragment_custom_commands);
         }
         if(position == 3){
+            title = context.getString(R.string.fragment_chat);
+        }
+        if(position == 4){
             title = context.getString(R.string.fragment_log);
         }
         return title;

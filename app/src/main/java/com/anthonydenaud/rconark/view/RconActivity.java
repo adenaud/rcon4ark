@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.anthonydenaud.rconark.fargment.CustomCommandsFragment;
 import com.anthonydenaud.rconark.fargment.GameLogFragment;
 import com.google.inject.Inject;
 
@@ -38,6 +39,9 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
     @Inject
     private GameLogFragment gameLogFragment;
 
+    @Inject
+    private CustomCommandsFragment customCommandsFragment;
+
 
     @Inject
     private ArkService arkService;
@@ -62,14 +66,12 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        //chatFragment.setRetainInstance(true);
-
         rconFragmentPagerAdapter = new RconFragmentPagerAdapter(this,getSupportFragmentManager());
         rconFragmentPagerAdapter.addFragment(playersFragment);
         rconFragmentPagerAdapter.addFragment(commandsFragment);
+        rconFragmentPagerAdapter.addFragment(customCommandsFragment);
         rconFragmentPagerAdapter.addFragment(chatFragment);
         rconFragmentPagerAdapter.addFragment(gameLogFragment);
-
 
         mViewPager.setAdapter(rconFragmentPagerAdapter);
 

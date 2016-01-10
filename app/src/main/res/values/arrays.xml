@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="commands">
+        <item>AllowPlayerToJoinNoCheck</item>
+        <item>AutoCycle</item>
+        <item>BanPlayer</item>
+        <item>Broadcast</item>
+        <item>ClearPlayerInventory</item>
+        <item>DestroyAll</item>
+        <item>DestroyAllEnemies</item>
+        <item>DestroyStructures</item>
+        <item>DestroyWildDinos</item>
+        <item>DisallowPlayerToJoinNoCheck</item>
+        <item>DoExit</item>
+        <item>ForcePlayerToJoinTribe</item>
+        <item>ForceTribes</item>
+        <item>GameCommand</item>
+        <item>GetChat</item>
+        <item>GetGameLog</item>
+        <item>GiveExpToPlayer</item>
+        <item>GiveItemToPlayer</item>
+        <item>GiveItemNumToPlayer</item>
+        <item>KickPlayer</item>
+        <item>KillPlayer</item>
+        <item>ListPlayers</item>
+        <item>OpenMap</item>
+        <item>PlayersOnly</item>
+        <item>PrintColors</item>
+        <item>RemoveTribeAdmin</item>
+        <item>RenamePlayer</item>
+        <item>RenameTribe</item>
+        <item>ReportLeastSpawnManagers</item>
+        <item>ReportSpawnManagers</item>
+        <item>SaveWorld</item>
+        <item>ScriptCommand</item>
+        <item>ServerChat</item>
+        <item>ServerChatTo</item>
+        <item>ServerChatToPlayer</item>
+        <item>SetGlobalPause</item>
+        <item>SetMessageOfTheDay</item>
+        <item>SetTimeOfDay</item>
+        <item>Slomo</item>
+        <item>TestSteamRefreshItems</item>
+        <item>Unban</item>
+    </string-array>
+
+    <string-array name="refresh_rates_title">
+        <item>1s</item>
+        <item>2s</item>
+        <item>5s</item>
+        <item>10s</item>
+        <item>30s</item>
+        <item>1m</item>
+        <item>2m</item>
+        <item>5m</item>
+        <item>10m</item>
+        <item>30m</item>
+    </string-array>
+
+    <string-array name="refresh_rates_values">
+        <item>1000</item>
+        <item>2000</item>
+        <item>5000</item>
+        <item>10000</item>
+        <item>30000</item>
+        <item>60000</item>
+        <item>120000</item>
+        <item>300000</item>
+        <item>600000</item>
+        <item>1800000</item>
+    </string-array>
+
+</resources>
