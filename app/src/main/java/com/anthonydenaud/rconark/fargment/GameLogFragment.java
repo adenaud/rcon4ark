@@ -2,7 +2,9 @@ package com.anthonydenaud.rconark.fargment;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +12,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.anthonydenaud.rconark.R;
+import com.anthonydenaud.rconark.model.Server;
 import com.anthonydenaud.rconark.service.ArkService;
+import com.anthonydenaud.rconark.service.LogService;
 import com.google.inject.Inject;
 
 import roboguice.inject.InjectView;
@@ -20,6 +24,9 @@ public class GameLogFragment extends RconFragment {
     @Inject
     private ArkService arkService;
 
+    @Inject
+    private LogService logService;
+
     @InjectView(R.id.textview_log)
     private TextView textViewLog;
     private Activity context;
@@ -28,12 +35,21 @@ public class GameLogFragment extends RconFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_gamelog, container, false);
+        View view =  inflater.inflate(R.layout.fragment_gamelog, container, false);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+        if(preferences.getBoolean("save_log",false)){
+            Server server = getActivity().getIntent().getParcelableExtra("server");
+            log = logService.read(getActivity(),server);
+        }
+
+        return view;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         arkService.addServerResponseDispatcher(this);
         textViewLog.setMovementMethod(new ScrollingMovementMethod());
         textViewLog.setText(log);
@@ -65,5 +81,9 @@ public class GameLogFragment extends RconFragment {
     public void onDestroyView() {
         log = textViewLog.getText().toString();
         super.onDestroyView();
+    }
+
+    public String getLog() {
+        return textViewLog.getText().toString();
     }
 }

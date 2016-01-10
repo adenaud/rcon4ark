@@ -61,6 +61,7 @@ public class RconFragmentPagerAdapter extends FragmentPagerAdapter {
 
     public void addFragment(RconFragment fragment) {
         this.fragments.add(fragment);
-
     }
+
+
 }

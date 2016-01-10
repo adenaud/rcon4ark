@@ -86,6 +86,7 @@
     <string name="save_log_summary">The log will be kept between each connection</string>
     <string name="keep_screen_on">Keep screen ON</string>
     <string name="keep_screen_on_summary">The screen will not turn off while the app is running</string>
+    <string name="error_log_write">Unable to write the log file</string>
 
 
     <!-- Settings -->

@@ -1,7 +1,9 @@
 package com.anthonydenaud.rconark.view;
 
 import android.content.SharedPreferences;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v7.widget.Toolbar;
 
@@ -13,6 +15,7 @@ import android.view.WindowManager;
 
 import com.anthonydenaud.rconark.fargment.CustomCommandsFragment;
 import com.anthonydenaud.rconark.fargment.GameLogFragment;
+import com.anthonydenaud.rconark.service.LogService;
 import com.google.inject.Inject;
 
 import com.anthonydenaud.rconark.Codes;
@@ -49,10 +52,14 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
     @Inject
     private ArkService arkService;
 
+    @Inject
+    private LogService logService;
+
 
     @InjectView(R.id.container)
     private ViewPager mViewPager;
     private SharedPreferences preferences;
+    private Server server;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,16 +68,14 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        if(preferences.getBoolean("keep_screen_on",false)){
+        if (preferences.getBoolean("keep_screen_on", false)) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         }
 
 
-        Server server = getIntent().getParcelableExtra("server");
+        server = getIntent().getParcelableExtra("server");
         setTitle(server.getName());
-
-
 
 
         arkService.addConnectionListener(this);
@@ -80,7 +85,7 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        rconFragmentPagerAdapter = new RconFragmentPagerAdapter(this,getSupportFragmentManager());
+        rconFragmentPagerAdapter = new RconFragmentPagerAdapter(this, getSupportFragmentManager());
         rconFragmentPagerAdapter.addFragment(playersFragment);
         rconFragmentPagerAdapter.addFragment(commandsFragment);
         rconFragmentPagerAdapter.addFragment(customCommandsFragment);
@@ -105,8 +110,8 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if(id == android.R.id.home){
-            setResult(RESULT_OK,getIntent());
+        if (id == android.R.id.home) {
+            setResult(RESULT_OK, getIntent());
             finish();
             return true;
         }
@@ -123,7 +128,7 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                setResult(Codes.RESULT_CONNECTION_DROP,getIntent());
+                setResult(Codes.RESULT_CONNECTION_DROP, getIntent());
                 finish();
             }
         });
@@ -133,4 +138,15 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
     public void onConnectionFail(String message) {
 
     }
+
+    @Override
+    public void finish() {
+        if(preferences.getBoolean("save_log",false)){
+            if(!logService.write(this,server,gameLogFragment.getLog())){
+                Snackbar.make(findViewById(android.R.id.content),R.string.error_log_write,Snackbar.LENGTH_SHORT).show();
+            }
+        }
+        super.finish();
+    }
+
 }
