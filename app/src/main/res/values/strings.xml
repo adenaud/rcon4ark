@@ -4,6 +4,7 @@
 
     <string name="yes">Yes</string>
     <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
 
     <!-- Main Activity -->
 
@@ -31,39 +32,66 @@
     <string name="fragment_players">Players</string>
     <string name="no_players">No players connected.</string>
 
-    <!--  Commands fragment-->
-
-    <string name="fragment_commands">Commands</string>
-    <string name="changeTime">Set time of day</string>
-    <string name="saveworld">Save world</string>
-    <string name="killdinos">Kill all wild dinos</string>
-    <string name="killdinos_confirm">Do you really want to kill all wild dinos ?</string>
-
-    <string name="fragment_chat">Chat</string>
-
-    <!-- Errors -->
-
-    <string name="connection_fail">The server is unreachable, make sure your IP / Port is correct.</string>
-    <string name="authentication_fail">Authentication fail, make sure your password is correct.</string>
     <string name="kill">Kill</string>
     <string name="kick">Kick</string>
     <string name="ban">Ban</string>
     <string name="whitelist">Add to white list</string>
     <string name="send_message">Send message</string>
-    <string name="ok">OK</string>
-    <string name="whitelist_remove">Remove player from whitelist</string>
-    <string name="unban">Unban player</string>
-    <string name="player_name">Player name :</string>
-    <string name="player_steamid">Steam Id :</string>
     <string name="copy_name">Copy name</string>
     <string name="copy_steamid">Copy Steam ID</string>
 
+    <!--  basic Commands fragment-->
+
+    <string name="fragment_commands">BASIC COMMANDS</string>
+    <string name="changeTime">Set time of day</string>
+    <string name="saveworld">Save world</string>
+    <string name="whitelist_remove">Remove player from whitelist</string>
+    <string name="unban">Unban player</string>
+    <string name="killdinos">Kill all wild dinos</string>
+    <string name="killdinos_confirm">Do you really want to kill all wild dinos ?</string>
+    <string name="player_name">Player name :</string>
+    <string name="player_steamid">Steam Id :</string>
+
+    <!--  chat fragment-->
+
+    <string name="fragment_chat">Chat</string>
     <string name="send">Send to All</string>
     <string name="broadcast">Broadcast</string>
+
+    <!--  gamelog fragment-->
+
+    <string name="fragment_log">Game Log</string>
+
+    <!--  custom commands fragment-->
+
+    <string name="fragment_custom_commands">CUSTOM COMMANDS</string>
+    <string name="exec">Exec</string>
+    <string name="output">Output</string>
+    <string name="command">Command</string>
+    <string name="params">Parameters</string>
+
+    <!-- Errors -->
+
+    <string name="connection_fail">The server is unreachable, make sure your IP / Port is correct.</string>
+    <string name="authentication_fail">Authentication fail, make sure your password is correct.</string>
     <string name="conneciton_lost">Connection lost</string>
     <string name="port_not_valid">Port is not correct</string>
     <string name="hostname_not_valid">Hostname is not correct</string>
-    <string name="fragment_log">Game Log</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="chat_refresh_rate_summary">Every %s</string>
+    <string name="chat_refresh_rate">Chat refresh delay</string>
+    <string name="log_refresh_rate_summary">Every %s</string>
+    <string name="log_refresh_rate">Game log refresh delay</string>
+    <string name="save_log">Save game log</string>
+    <string name="save_log_summary">The log will be kept between each connection</string>
+    <string name="keep_screen_on">Keep screen ON</string>
+    <string name="keep_screen_on_summary">The screen will not turn off while the app is running</string>
+    <string name="error_log_write">Unable to write the log file</string>
+
+
+    <!-- Settings -->
+
+
 
 
 </resources>

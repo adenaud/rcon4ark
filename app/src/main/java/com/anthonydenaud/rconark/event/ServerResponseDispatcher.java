@@ -11,4 +11,5 @@ public interface ServerResponseDispatcher {
     void onListPlayers(List<Player> players);
     void onGetChat(String chatBuffer);
     void onGetLog(String logBuffer);
+    void onCustomCommandResult(String result);
 }

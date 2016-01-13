@@ -15,6 +15,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.anthonydenaud.rconark.view.SettingsActivity;
 import com.google.inject.Inject;
 
 import com.anthonydenaud.rconark.adapter.ServerAdapter;
@@ -92,13 +93,16 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.save){
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivityForResult(intent,Codes.REQUEST_SETTINGS);
+        }
         return super.onOptionsItemSelected(item);
     }
 

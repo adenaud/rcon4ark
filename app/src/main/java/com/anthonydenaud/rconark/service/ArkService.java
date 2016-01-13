@@ -1,6 +1,8 @@
 package com.anthonydenaud.rconark.service;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import com.anthonydenaud.rconark.event.OnServerStopRespondingListener;
 import com.google.inject.Inject;
@@ -39,16 +41,23 @@ public class ArkService implements OnReceiveListener {
     private List<ConnectionListener> connectionListeners;
 
     private final List<ServerResponseDispatcher> serverResponseDispatchers;
+
+    private List<Integer> customCommands;
+
     private Server server;
     private Timer chatTimer;
     private Timer logTimer;
+
+    private SharedPreferences preferences;
 
 
     @Inject
     public ArkService(Context context) {
         this.context = context;
+        preferences = PreferenceManager.getDefaultSharedPreferences(context);
         connectionListeners = new ArrayList<>();
         serverResponseDispatchers = new ArrayList<>();
+        customCommands = new ArrayList<>();
     }
 
     public void connect(final Server server) {
@@ -283,13 +292,17 @@ public class ArkService implements OnReceiveListener {
                         Ln.e(String.valueOf(packet.getId()) + packet.getBody());
                     }
 
-                    if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("ListPlayers")) {
+                    else if(customCommands.contains(packet.getId())){
+                        dispatcher.onCustomCommandResult(packet.getBody());
+                    }
+
+                    else if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("ListPlayers")) {
                         dispatcher.onListPlayers(getPlayers(packet.getBody()));
                     }
-                    if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("getchat") && !packet.getBody().contains("Server received, But no response!!")) {
+                    else if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("getchat") && !packet.getBody().contains("Server received, But no response!!")) {
                         dispatcher.onGetChat(packet.getBody());
                     }
-                    if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("getgamelog") && !packet.getBody().contains("Server received, But no response!!")) {
+                    else if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("getgamelog") && !packet.getBody().contains("Server received, But no response!!")) {
                         dispatcher.onGetLog(packet.getBody());
                     }
                 }
@@ -315,8 +328,11 @@ public class ArkService implements OnReceiveListener {
 
     private void startLogAndChatTimers() {
 
-        int chatDelay = context.getResources().getInteger(R.integer.chat_timer_delay);
-        int logDelay = context.getResources().getInteger(R.integer.log_timer_delay);
+        int defaultChatDelay = context.getResources().getInteger(R.integer.chat_timer_delay);
+        int defaultLogDelay = context.getResources().getInteger(R.integer.log_timer_delay);
+
+        int chatDelay = Integer.valueOf(preferences.getString("chat_delay", String.valueOf(defaultChatDelay)));
+        int logDelay = Integer.valueOf(preferences.getString("log_delay", String.valueOf(defaultLogDelay)));
 
         chatTimer = new Timer("ChatTimer");
         chatTimer.scheduleAtFixedRate(new TimerTask() {
@@ -412,6 +428,17 @@ public class ArkService implements OnReceiveListener {
 
     public synchronized void removeAllConnectionListener() {
         connectionListeners.clear();
+    }
+
+    public void sendRawCommand(String command) {
+        int id = connection.getSequenceNumber();
+        customCommands.add(id);
+        Packet packet = new Packet(id,PacketType.SERVERDATA_EXECCOMMAND.getValue(),command);
+        try {
+            connection.send(packet);
+        } catch (IOException e) {
+            sendOnDisconnectEvent();
+        }
     }
 }
 

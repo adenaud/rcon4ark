@@ -46,7 +46,6 @@ public class ServerConnectionActivity extends RoboActionBarActivity {
         setContentView(R.layout.activity_server_connection);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_server_connection);
         setSupportActionBar(toolbar);
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         server = getIntent().getParcelableExtra("server");
