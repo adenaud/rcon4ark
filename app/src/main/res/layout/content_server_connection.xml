@@ -8,7 +8,7 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_server_connection"
-    tools:context="com.anthonydenaud.rconark.view.ServerConnectionActivity"
+    tools:context="com.anthonydenaud.arkrcon.view.ServerConnectionActivity"
     android:orientation="vertical">
 
     <EditText

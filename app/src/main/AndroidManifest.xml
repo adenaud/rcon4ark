@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.anthonydenaud.rconark">
+    package="com.anthonydenaud.arkrcon">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name="com.anthonydenaud.arkrcon.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -24,31 +24,31 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.ServerConnectionActivity"
+            android:name="com.anthonydenaud.arkrcon.view.ServerConnectionActivity"
             android:label="@string/title_activity_server_connection"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="com.anthonydenaud.arkrcon.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.anthonydenaud.rconark.MainActivity" />
+                android:value="com.anthonydenaud.arkrcon.MainActivity" />
         </activity>
         <activity
-            android:name=".view.RconActivity"
+            android:name="com.anthonydenaud.arkrcon.view.RconActivity"
             android:label="@string/title_activity_rcon"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="com.anthonydenaud.arkrcon.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.anthonydenaud.rconark.MainActivity" />
+                android:value="com.anthonydenaud.arkrcon.MainActivity" />
         </activity>
         <activity
-            android:name=".view.SettingsActivity"
+            android:name="com.anthonydenaud.arkrcon.view.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="com.anthonydenaud.arkrcon.MainActivity"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.anthonydenaud.rconark.MainActivity" />
+                android:value="com.anthonydenaud.arkrcon.MainActivity" />
         </activity>
     </application>
 
