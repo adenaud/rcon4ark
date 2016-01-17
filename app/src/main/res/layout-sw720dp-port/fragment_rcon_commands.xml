@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:padding="32dp">
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        style="@style/sectionTitleVeritcal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/quick_commands"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical" />
+
+        <ImageButton
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:id="@+id/btn_expand_quick_cmd"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/ic_expand_less" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/layout_quick_commands">
+        <Button
+            android:id="@+id/button_changeTime"
+            android:layout_width="250dp"
+            android:layout_height="48dp"
+            android:text="@string/changeTime"
+            android:layout_gravity="center_horizontal" />
+
+        <Button
+            android:id="@+id/button_saveWorld"
+            android:layout_width="250dp"
+            android:layout_height="48dp"
+            android:text="@string/saveworld"
+            android:layout_gravity="center_horizontal" />
+
+        <Button
+            android:id="@+id/button_unban_player"
+            android:layout_width="250dp"
+            android:layout_height="48dp"
+            android:text="@string/unban"
+            android:layout_gravity="center_horizontal" />
+
+        <Button
+            android:id="@+id/button_whitelist_remove"
+            android:layout_width="250dp"
+            android:layout_height="48dp"
+            android:text="@string/whitelist_remove"
+            android:textSize="6pt"
+            android:layout_gravity="center_horizontal" />
+
+        <Button
+            android:id="@+id/button_killDinos"
+            style="@style/button_danger"
+            android:layout_width="244dp"
+            android:layout_height="38dp"
+            android:text="@string/killdinos"
+            android:layout_gravity="center_horizontal" />
+
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        style="@style/sectionTitleVeritcal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/custom_commands"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical" />
+
+        <ImageButton
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:id="@+id/btn_expend_custom_cmd"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/ic_expand_less" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/layout_custom_commands"
+        android:paddingBottom="56dp">
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:id="@+id/textview_output"
+            android:scrollbars="vertical"
+            android:layout_weight="1"
+            android:background="@drawable/output_background"
+            android:layout_marginTop="8dp" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="48dp">
+
+            <AutoCompleteTextView
+                android:id="@+id/editext_command"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:inputType="text"
+                android:singleLine="true"
+                android:imeActionLabel="@string/exec"
+                android:imeOptions="actionSend"/>
+
+            <Button
+                android:id="@+id/btn_exec"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:text="@string/exec" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>
+
