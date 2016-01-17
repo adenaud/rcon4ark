@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="default_admin_name">Admin</string>
-    <integer name="chat_timer_delay">2000</integer>
-    <integer name="log_timer_delay">5000</integer>
+    <integer name="log_timer_delay">2000</integer>
 </resources>
