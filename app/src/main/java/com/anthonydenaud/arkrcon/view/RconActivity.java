@@ -12,7 +12,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
 
-import com.anthonydenaud.arkrcon.fargment.CustomCommandsFragment;
 import com.anthonydenaud.arkrcon.service.LogService;
 import com.google.inject.Inject;
 
@@ -29,7 +28,7 @@ import com.anthonydenaud.arkrcon.service.ArkService;
 import roboguice.activity.RoboActionBarActivity;
 import roboguice.inject.InjectView;
 
-public class RconActivity extends RoboActionBarActivity implements ConnectionListener {
+public class RconActivity extends RoboActionBarActivity implements ConnectionListener, ViewPager.OnPageChangeListener {
 
 
     private RconFragmentPagerAdapter rconFragmentPagerAdapter;
@@ -84,6 +83,7 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
         rconFragmentPagerAdapter.addFragment(chatLogFragment);
 
         mViewPager.setOffscreenPageLimit(rconFragmentPagerAdapter.getCount());
+        mViewPager.addOnPageChangeListener(this);
         mViewPager.setAdapter(rconFragmentPagerAdapter);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -133,12 +133,30 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
 
     @Override
     public void finish() {
+        /*
         if(preferences.getBoolean("save_log",false)){
             if(!logService.write(this, server, chatLogFragment.getLog())){
                 Snackbar.make(findViewById(android.R.id.content),R.string.error_log_write,Snackbar.LENGTH_SHORT).show();
             }
-        }
+        }*/
         super.finish();
     }
 
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        if(rconFragmentPagerAdapter.getItem(position) instanceof ChatLogFragment){
+            ChatLogFragment fragment = (ChatLogFragment) rconFragmentPagerAdapter.getItem(position);
+            fragment.scrollDown();
+        }
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
+    }
 }

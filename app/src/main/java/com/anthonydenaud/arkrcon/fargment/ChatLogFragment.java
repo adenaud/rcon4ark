@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.Snackbar;
+import android.text.Html;
 import android.text.method.ScrollingMovementMethod;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -22,6 +24,8 @@ import com.google.inject.Inject;
 import com.anthonydenaud.arkrcon.R;
 import com.anthonydenaud.arkrcon.service.ArkService;
 
+import org.apache.commons.lang3.StringUtils;
+
 import roboguice.inject.InjectView;
 
 public class ChatLogFragment extends RconFragment implements View.OnClickListener, TextView.OnEditorActionListener {
@@ -33,7 +37,7 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
     private LogService logService;
 
     @InjectView(R.id.textview_chat)
-    private TextView textViewOuput;
+    private TextView textViewOutput;
 
     @InjectView(R.id.editext_chat_send)
     private EditText editTextChatSend;
@@ -48,11 +52,18 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
     private Activity context;
     private String output;
     private String message;
+    private SharedPreferences preferences;
+
+    @Override
+    public void onAttach(Context context) {
+        this.context = (Activity) context;
+        super.onAttach(context);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         arkService.addServerResponseDispatcher(this);
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         output = "";
         if (preferences.getBoolean("save_log", false)) {
             Server server = getActivity().getIntent().getParcelableExtra("server");
@@ -64,21 +75,26 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        textViewOuput.setMovementMethod(new ScrollingMovementMethod());
+        textViewOutput.setMovementMethod(new ScrollingMovementMethod());
 
         buttonChat.setOnClickListener(this);
         buttonBroadcast.setOnClickListener(this);
 
-        textViewOuput.setText(output);
+        addLogText(output);
         editTextChatSend.setText(message);
         editTextChatSend.setOnEditorActionListener(this);
     }
 
     @Override
-    public void onAttach(Context context) {
-        this.context = (Activity) context;
-        super.onAttach(context);
+    public void onDestroyView() {
+        message = editTextChatSend.getText().toString();
+
+        super.onDestroyView();
+    }
+    @Override
+    public void onDestroy() {
+        arkService.removeServerResponseDispatcher(this);
+        super.onDestroy();
     }
 
     @Override
@@ -95,26 +111,19 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
 
     @Override
     public void onGetLog(final String logBuffer) {
-        output = output + logBuffer;
-        context.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                textViewOuput.setText(output);
-                final int scrollAmount = textViewOuput.getLayout().getLineTop(textViewOuput.getLineCount()) - textViewOuput.getHeight();
-                if (scrollAmount > 0) {
-                    textViewOuput.scrollTo(0, scrollAmount);
-                } else {
-                    textViewOuput.scrollTo(0, 0);
+        if (StringUtils.isNotEmpty(logBuffer)) {
+            output = output + logBuffer;
+            writeLog(logBuffer);
+            context.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    addLogText(logBuffer);
+                    scrollDown();
                 }
-            }
-        });
+            });
+        }
     }
 
-    @Override
-    public void onDestroyView() {
-        message = editTextChatSend.getText().toString();
-        super.onDestroyView();
-    }
 
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -127,13 +136,47 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
         return handled;
     }
 
-    @Override
-    public void onDestroy() {
-        arkService.removeServerResponseDispatcher(this);
-        super.onDestroy();
+    private void addLogText(final String text) {
+        Thread htmlThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final String html = formatHtml(text);
+                context.runOnUiThread(new Runnable() {
+                                          @Override
+                                          public void run() {
+                                              textViewOutput.append(Html.fromHtml(html));
+                                          }
+                                      }
+                );
+            }
+        }, "HtmlThread");
+        htmlThread.start();
     }
 
-    public String getLog() {
-        return output;
+    private String formatHtml(String content) {
+        String html = content.replaceAll("(.*)left this ARK!", "<font color=\"#0000CD\">$0!</font>");
+        html = html.replaceAll("(.*)joined this ARK!", "<font color=\"#0000CD\">$0</font>");
+        html = html.replaceAll("(.*)was killed by(.*)", "<font color=\"#DC143C\">$0</font>");
+        html = html.replaceAll("(.*)was killed!", "<font color=\"#DC143C\">$0</font>");
+        html = html.replaceAll("(.*)Tamed a ([A-z]+) \\- (.*)", "<font color=\"#008000\">$0</font>");
+        html = html.replaceAll("\\n", "<br>");
+        return html;
+    }
+
+    public void scrollDown() {
+        final int scrollAmount = textViewOutput.getLayout().getLineTop(textViewOutput.getLineCount()) - textViewOutput.getHeight();
+        if (scrollAmount > 0) {
+            textViewOutput.scrollTo(0, scrollAmount);
+        } else {
+            textViewOutput.scrollTo(0, 0);
+        }
+    }
+
+    private void writeLog(String log) {
+        if(preferences.getBoolean("save_log",false)){
+            if(!logService.write(getActivity(), (Server) getActivity().getIntent().getParcelableExtra("server"), log)){
+                Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_log_write, Snackbar.LENGTH_SHORT).show();
+            }
+        }
     }
 }

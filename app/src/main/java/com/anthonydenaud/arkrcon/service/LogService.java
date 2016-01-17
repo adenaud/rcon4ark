@@ -33,7 +33,7 @@ public class LogService {
             String filename = String.format("server_%s_%d.log", server.getHostname().replaceAll("\\.", "-"), server.getPort());
             File logFile = new File(path, filename);
             try {
-                FileWriter writer = new FileWriter(logFile, false);
+                FileWriter writer = new FileWriter(logFile, true);
                 writer.write(log);
                 writer.close();
                 success= true;
