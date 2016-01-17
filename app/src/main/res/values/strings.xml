@@ -42,7 +42,8 @@
 
     <!--  basic Commands fragment-->
 
-    <string name="fragment_commands">BASIC COMMANDS</string>
+    <string name="quick_commands">Quick commands</string>
+    <string name="custom_commands">Custom commands</string>
     <string name="changeTime">Set time of day</string>
     <string name="saveworld">Save world</string>
     <string name="whitelist_remove">Remove player from whitelist</string>
@@ -87,6 +88,8 @@
     <string name="keep_screen_on">Keep screen ON</string>
     <string name="keep_screen_on_summary">The screen will not turn off while the app is running</string>
     <string name="error_log_write">Unable to write the log file</string>
+    <string name="fragment_chat_log"><![CDATA[Chat & Log]]></string>
+    <string name="fragment_commands">Commands</string>
 
 
     <!-- Settings -->

@@ -20,7 +20,7 @@ public class RconFragmentPagerAdapter extends FragmentPagerAdapter {
     private Context context;
 
 
-    public RconFragmentPagerAdapter(Context context,FragmentManager fm) {
+    public RconFragmentPagerAdapter(Context context, FragmentManager fm) {
         super(fm);
         this.fragments = new ArrayList<>();
         this.context = context;
@@ -41,20 +41,14 @@ public class RconFragmentPagerAdapter extends FragmentPagerAdapter {
 
         String title = "";
 
-        if(position == 0){
+        if (position == 0) {
             title = context.getString(R.string.fragment_players);
         }
-        if(position == 1){
+        if (position == 1) {
             title = context.getString(R.string.fragment_commands);
         }
-        if(position == 2){
-            title = context.getString(R.string.fragment_custom_commands);
-        }
-        if(position == 3){
-            title = context.getString(R.string.fragment_chat);
-        }
-        if(position == 4){
-            title = context.getString(R.string.fragment_log);
+        if (position == 2) {
+            title = context.getString(R.string.fragment_chat_log);
         }
         return title;
     }
@@ -62,6 +56,4 @@ public class RconFragmentPagerAdapter extends FragmentPagerAdapter {
     public void addFragment(RconFragment fragment) {
         this.fragments.add(fragment);
     }
-
-
 }

@@ -5,4 +5,6 @@
     <color name="colorAccent">#ffc107</color>
     <color name="btnRed">#C9302C</color>
     <color name="btnRedPressed">#741816</color>
+    <color name="textColor">#202020</color>
+    <color name="output_background">#e8eaf6</color>
 </resources>

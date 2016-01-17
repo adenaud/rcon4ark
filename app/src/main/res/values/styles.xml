@@ -6,6 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColor">@color/textColor</item>
     </style>
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
@@ -17,6 +18,16 @@
     <style name="button_danger" parent="Base.Widget.AppCompat.Button">
         <item name="android:background">@drawable/red_btn</item>
         <item name="android:textColor">#FFFFFF</item>
+        <item name="android:layout_marginTop">6dp</item>
+        <item name="android:layout_marginLeft">4dp</item>
+        <item name="android:layout_marginRight">4dp</item>
+        <item name="android:layout_marginBottom">6dp</item>
+    </style>
+
+    <style name="sectionTitleVeritcal">
+        <item name="android:padding">4dp</item>
+        <item name="android:textColor">#FF0000</item>
+        <item name="android:background">@drawable/section_title_background_vertical</item>
     </style>
 
 </resources>

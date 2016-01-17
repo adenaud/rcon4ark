@@ -2,7 +2,9 @@ package com.anthonydenaud.arkrcon.fargment;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.method.ScrollingMovementMethod;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -13,6 +15,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.anthonydenaud.arkrcon.model.Server;
+import com.anthonydenaud.arkrcon.service.LogService;
 import com.google.inject.Inject;
 
 import com.anthonydenaud.arkrcon.R;
@@ -20,17 +24,16 @@ import com.anthonydenaud.arkrcon.service.ArkService;
 
 import roboguice.inject.InjectView;
 
-/**
- * Created by Anthony on 22/10/2015.
- */
-public class ChatFragment extends RconFragment implements View.OnClickListener, TextView.OnEditorActionListener {
+public class ChatLogFragment extends RconFragment implements View.OnClickListener, TextView.OnEditorActionListener {
 
     @Inject
     private ArkService arkService;
 
+    @Inject
+    private LogService logService;
 
     @InjectView(R.id.textview_chat)
-    private TextView textViewChat;
+    private TextView textViewOuput;
 
     @InjectView(R.id.editext_chat_send)
     private EditText editTextChatSend;
@@ -43,25 +46,31 @@ public class ChatFragment extends RconFragment implements View.OnClickListener, 
 
 
     private Activity context;
-    private String chat;
+    private String output;
     private String message;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        arkService.addServerResponseDispatcher(this);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        output = "";
+        if (preferences.getBoolean("save_log", false)) {
+            Server server = getActivity().getIntent().getParcelableExtra("server");
+            output = logService.read(getActivity(), server);
+        }
         return inflater.inflate(R.layout.fragment_chat, container, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        arkService.addServerResponseDispatcher(this);
 
-        textViewChat.setMovementMethod(new ScrollingMovementMethod());
+        textViewOuput.setMovementMethod(new ScrollingMovementMethod());
 
         buttonChat.setOnClickListener(this);
         buttonBroadcast.setOnClickListener(this);
 
-        textViewChat.setText(chat);
+        textViewOuput.setText(output);
         editTextChatSend.setText(message);
         editTextChatSend.setOnEditorActionListener(this);
     }
@@ -85,27 +94,24 @@ public class ChatFragment extends RconFragment implements View.OnClickListener, 
     }
 
     @Override
-    public void onGetChat(final String chatBuffer) {
-
+    public void onGetLog(final String logBuffer) {
+        output = output + logBuffer;
         context.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                textViewChat.append(chatBuffer);
-                final int scrollAmount = textViewChat.getLayout().getLineTop(textViewChat.getLineCount()) - textViewChat.getHeight();
+                textViewOuput.setText(output);
+                final int scrollAmount = textViewOuput.getLayout().getLineTop(textViewOuput.getLineCount()) - textViewOuput.getHeight();
                 if (scrollAmount > 0) {
-                    textViewChat.scrollTo(0, scrollAmount);
+                    textViewOuput.scrollTo(0, scrollAmount);
                 } else {
-                    textViewChat.scrollTo(0, 0);
+                    textViewOuput.scrollTo(0, 0);
                 }
-
             }
         });
-
     }
 
     @Override
     public void onDestroyView() {
-        chat = textViewChat.getText().toString();
         message = editTextChatSend.getText().toString();
         super.onDestroyView();
     }
@@ -113,11 +119,21 @@ public class ChatFragment extends RconFragment implements View.OnClickListener, 
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         boolean handled = false;
-        if(v.equals(editTextChatSend) && actionId == EditorInfo.IME_ACTION_SEND){
+        if (v.equals(editTextChatSend) && actionId == EditorInfo.IME_ACTION_SEND) {
             arkService.serverChat(editTextChatSend.getText().toString());
             editTextChatSend.setText("");
             handled = true;
         }
         return handled;
+    }
+
+    @Override
+    public void onDestroy() {
+        arkService.removeServerResponseDispatcher(this);
+        super.onDestroy();
+    }
+
+    public String getLog() {
+        return output;
     }
 }

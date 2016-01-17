@@ -45,7 +45,6 @@ public class ArkService implements OnReceiveListener {
     private List<Integer> customCommands;
 
     private Server server;
-    private Timer chatTimer;
     private Timer logTimer;
 
     private SharedPreferences preferences;
@@ -89,7 +88,6 @@ public class ArkService implements OnReceiveListener {
         connection.setOnServerStopRespondingListener(new OnServerStopRespondingListener() {
             @Override
             public void onServerStopResponding() {
-                chatTimer.cancel();
                 logTimer.cancel();
                 connection.open(server.getHostname(), server.getPort());
             }
@@ -290,20 +288,22 @@ public class ArkService implements OnReceiveListener {
 
                     if (requestPacket == null) {
                         Ln.e(String.valueOf(packet.getId()) + packet.getBody());
-                    }
-
-                    else if(customCommands.contains(packet.getId())){
+                    } else if (customCommands.contains(packet.getId())) {
                         dispatcher.onCustomCommandResult(packet.getBody());
-                    }
-
-                    else if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("ListPlayers")) {
+                    } else if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("ListPlayers")) {
                         dispatcher.onListPlayers(getPlayers(packet.getBody()));
-                    }
-                    else if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("getchat") && !packet.getBody().contains("Server received, But no response!!")) {
+                    } else if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("getchat") && !packet.getBody().contains("Server received, But no response!!")) {
                         dispatcher.onGetChat(packet.getBody());
-                    }
-                    else if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("getgamelog") && !packet.getBody().contains("Server received, But no response!!")) {
-                        dispatcher.onGetLog(packet.getBody());
+                    } else if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("getgamelog")) {
+                        if (!packet.getBody().contains("Server received, But no response!!")) {
+                            dispatcher.onGetLog(packet.getBody());
+                            if (packet.getBody().contains("left this ARK!") || packet.getBody().contains("joined this ARK!")) {
+                                listPlayers();
+                            }
+                        } else {
+                            dispatcher.onGetLog("");
+                        }
+
                     }
                 }
             }
@@ -328,29 +328,8 @@ public class ArkService implements OnReceiveListener {
 
     private void startLogAndChatTimers() {
 
-        int defaultChatDelay = context.getResources().getInteger(R.integer.chat_timer_delay);
         int defaultLogDelay = context.getResources().getInteger(R.integer.log_timer_delay);
-
-        int chatDelay = Integer.valueOf(preferences.getString("chat_delay", String.valueOf(defaultChatDelay)));
         int logDelay = Integer.valueOf(preferences.getString("log_delay", String.valueOf(defaultLogDelay)));
-
-        chatTimer = new Timer("ChatTimer");
-        chatTimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                if (connection.isConnected()) {
-                    try {
-                        Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "getchat");
-                        connection.send(packet);
-                    } catch (IOException e) {
-                        disconnect();
-                        Ln.e("getchat exception : " + e.getMessage(), e);
-                        connection.reconnect();
-                    }
-                }
-
-            }
-        },chatDelay, chatDelay);
 
         logTimer = new Timer("LogTimer");
         logTimer.scheduleAtFixedRate(new TimerTask() {
@@ -369,9 +348,11 @@ public class ArkService implements OnReceiveListener {
             }
         }, logDelay, logDelay);
     }
+
     public void disconnect() {
-        logTimer.cancel();
-        chatTimer.cancel();
+        if (logTimer != null) {
+            logTimer.cancel();
+        }
         connection.setReconnecting(false);
         try {
             connection.close();
@@ -379,6 +360,7 @@ public class ArkService implements OnReceiveListener {
             Ln.e("ark service disconnect exception", e);
         }
     }
+
     public void addServerResponseDispatcher(ServerResponseDispatcher dispatcher) {
         synchronized (serverResponseDispatchers) {
             if (!serverResponseDispatchers.contains(dispatcher)) {
@@ -433,11 +415,17 @@ public class ArkService implements OnReceiveListener {
     public void sendRawCommand(String command) {
         int id = connection.getSequenceNumber();
         customCommands.add(id);
-        Packet packet = new Packet(id,PacketType.SERVERDATA_EXECCOMMAND.getValue(),command);
+        Packet packet = new Packet(id, PacketType.SERVERDATA_EXECCOMMAND.getValue(), command);
         try {
             connection.send(packet);
         } catch (IOException e) {
             sendOnDisconnectEvent();
+        }
+    }
+
+    public void removeServerResponseDispatcher(ServerResponseDispatcher serverResponseDispatcher) {
+        synchronized (serverResponseDispatchers) {
+            serverResponseDispatchers.remove(serverResponseDispatcher);
         }
     }
 }

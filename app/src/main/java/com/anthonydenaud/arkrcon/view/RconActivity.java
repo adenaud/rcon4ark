@@ -13,7 +13,6 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 
 import com.anthonydenaud.arkrcon.fargment.CustomCommandsFragment;
-import com.anthonydenaud.arkrcon.fargment.GameLogFragment;
 import com.anthonydenaud.arkrcon.service.LogService;
 import com.google.inject.Inject;
 
@@ -21,7 +20,7 @@ import com.anthonydenaud.arkrcon.Codes;
 import com.anthonydenaud.arkrcon.R;
 import com.anthonydenaud.arkrcon.adapter.RconFragmentPagerAdapter;
 import com.anthonydenaud.arkrcon.event.ConnectionListener;
-import com.anthonydenaud.arkrcon.fargment.ChatFragment;
+import com.anthonydenaud.arkrcon.fargment.ChatLogFragment;
 import com.anthonydenaud.arkrcon.fargment.CommandsFragment;
 import com.anthonydenaud.arkrcon.fargment.PlayersFragment;
 import com.anthonydenaud.arkrcon.model.Server;
@@ -40,12 +39,7 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
     @Inject
     private CommandsFragment commandsFragment;
     @Inject
-    private ChatFragment chatFragment;
-    @Inject
-    private GameLogFragment gameLogFragment;
-
-    @Inject
-    private CustomCommandsFragment customCommandsFragment;
+    private ChatLogFragment chatLogFragment;
 
 
     @Inject
@@ -87,10 +81,9 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
         rconFragmentPagerAdapter = new RconFragmentPagerAdapter(this, getSupportFragmentManager());
         rconFragmentPagerAdapter.addFragment(playersFragment);
         rconFragmentPagerAdapter.addFragment(commandsFragment);
-        rconFragmentPagerAdapter.addFragment(customCommandsFragment);
-        rconFragmentPagerAdapter.addFragment(chatFragment);
-        rconFragmentPagerAdapter.addFragment(gameLogFragment);
+        rconFragmentPagerAdapter.addFragment(chatLogFragment);
 
+        mViewPager.setOffscreenPageLimit(rconFragmentPagerAdapter.getCount());
         mViewPager.setAdapter(rconFragmentPagerAdapter);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -141,7 +134,7 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
     @Override
     public void finish() {
         if(preferences.getBoolean("save_log",false)){
-            if(!logService.write(this,server,gameLogFragment.getLog())){
+            if(!logService.write(this, server, chatLogFragment.getLog())){
                 Snackbar.make(findViewById(android.R.id.content),R.string.error_log_write,Snackbar.LENGTH_SHORT).show();
             }
         }

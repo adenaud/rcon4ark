@@ -11,6 +11,7 @@ import com.anthonydenaud.arkrcon.event.ConnectionListener;
 import com.anthonydenaud.arkrcon.event.OnReceiveListener;
 import com.anthonydenaud.arkrcon.event.ReceiveEvent;
 
+import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -33,7 +34,7 @@ public class SRPConnection {
     private Thread receiveThread;
 
     private Socket client;
-    private final LinkedHashMap<Integer, Packet> outgoingPackets;
+    private final LinkedMap<Integer, Packet> outgoingPackets;
 
     private boolean runReceiveThread;
     private boolean isConnected;
@@ -49,7 +50,7 @@ public class SRPConnection {
     @Inject
     public SRPConnection(Context context) {
         this.context = context;
-        outgoingPackets = new LinkedHashMap<>();
+        outgoingPackets = new LinkedMap<>();
     }
 
 
@@ -149,7 +150,7 @@ public class SRPConnection {
                 } catch (PacketParseException e) {
                     e.printStackTrace();
                     synchronized (outgoingPackets) {
-                        send(outgoingPackets.get(outgoingPackets.size()));
+                        send(outgoingPackets.get(outgoingPackets.lastKey()));
                     }
                 }
                 receive();
@@ -199,7 +200,7 @@ public class SRPConnection {
     }
 
     public synchronized Packet getRequestPacket(int id) {
-        return outgoingPackets.get(id);
+        return outgoingPackets.get((Integer) id);
     }
 
     public boolean isReconnecting() {
