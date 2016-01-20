@@ -6,5 +6,5 @@
         android:id="@+id/save"
         android:icon="@drawable/ic_settings_white_48dp"
         android:title="@string/action_settings"
-        app:showAsAction="never" />
+        app:showAsAction="always" />
 </menu>

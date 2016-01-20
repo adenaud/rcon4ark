@@ -10,7 +10,7 @@
         android:title="@string/log_refresh_rate" />
 
     <SwitchPreference
-        android:defaultValue="false"
+        android:defaultValue="true"
         android:key="save_log"
         android:title="@string/save_log"
         android:summary="@string/save_log_summary"/>

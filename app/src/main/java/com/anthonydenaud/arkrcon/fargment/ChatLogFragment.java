@@ -80,7 +80,7 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
         buttonChat.setOnClickListener(this);
         buttonBroadcast.setOnClickListener(this);
 
-        addLogText(output);
+        addLogTextBefore(output);
         editTextChatSend.setText(message);
         editTextChatSend.setOnEditorActionListener(this);
     }
@@ -117,7 +117,7 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
             context.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    addLogText(logBuffer);
+                    addLogTextAfter(logBuffer);
                     scrollDown();
                 }
             });
@@ -136,7 +136,7 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
         return handled;
     }
 
-    private void addLogText(final String text) {
+    private void addLogTextAfter(final String text) {
         Thread htmlThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -152,13 +152,29 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
         }, "HtmlThread");
         htmlThread.start();
     }
-
+    private void addLogTextBefore(final String text) {
+        Thread htmlThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final String html = formatHtml(text);
+                context.runOnUiThread(new Runnable() {
+                                          @Override
+                                          public void run() {
+                                              String previous = textViewOutput.getText().toString();
+                                              textViewOutput.setText(Html.fromHtml(previous + html));
+                                          }
+                                      }
+                );
+            }
+        }, "HtmlThread");
+        htmlThread.start();
+    }
     private String formatHtml(String content) {
         String html = content.replaceAll("(.*)left this ARK!", "<font color=\"#0000CD\">$0!</font>");
         html = html.replaceAll("(.*)joined this ARK!", "<font color=\"#0000CD\">$0</font>");
         html = html.replaceAll("(.*)was killed by(.*)", "<font color=\"#DC143C\">$0</font>");
         html = html.replaceAll("(.*)was killed!", "<font color=\"#DC143C\">$0</font>");
-        html = html.replaceAll("(.*)Tamed a ([A-z]+) \\- (.*)", "<font color=\"#008000\">$0</font>");
+        html = html.replaceAll("(.*)Tamed a ([A-z ]*) \\- (.*)", "<font color=\"#008000\">$0</font>");
         html = html.replaceAll("\\n", "<br>");
         return html;
     }
