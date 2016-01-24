@@ -13,34 +13,34 @@
 
     <EditText
         android:id="@+id/name_edittext"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="48dp"
         android:hint="@string/server_name"/>
 
     <EditText
         android:id="@+id/hostname_edittext"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="48dp"
         android:inputType="textUri"
         android:hint="@string/hostname"/>
 
     <EditText
         android:id="@+id/port_edittext"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="48dp"
         android:inputType="number"
         android:hint="@string/port"/>
 
     <EditText
         android:id="@+id/password_edittext"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="48dp"
         android:inputType="textPassword"
         android:hint="@string/password"/>
 
     <EditText
         android:id="@+id/admin_name_edittext"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="48dp"
         android:hint="@string/admin_name"/>
 
