@@ -88,7 +88,9 @@ public class ArkService implements OnReceiveListener {
         connection.setOnServerStopRespondingListener(new OnServerStopRespondingListener() {
             @Override
             public void onServerStopResponding() {
-                logTimer.cancel();
+                if(logTimer!=null){
+                    logTimer.cancel();
+                }
                 connection.open(server.getHostname(), server.getPort());
             }
         });
