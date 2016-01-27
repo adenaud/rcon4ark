@@ -6,14 +6,11 @@
     android:weightSum="1"
     android:padding="8dp">
 
-    <TextView
-        android:id="@+id/textview_chat"
+    <WebView
+        android:id="@+id/webview_log"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:scrollbars="vertical"
-        android:layout_weight="1"
-        android:background="@drawable/output_background" />
-
+        android:layout_weight="1"/>
 
     <EditText
         android:id="@+id/editext_chat_send"
