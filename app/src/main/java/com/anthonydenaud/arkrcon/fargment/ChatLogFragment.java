@@ -3,6 +3,7 @@ package com.anthonydenaud.arkrcon.fargment;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Path;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
@@ -13,8 +14,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.anthonydenaud.arkrcon.model.Server;
@@ -24,9 +29,13 @@ import com.google.inject.Inject;
 import com.anthonydenaud.arkrcon.R;
 import com.anthonydenaud.arkrcon.service.ArkService;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.IOException;
+
 import roboguice.inject.InjectView;
+import roboguice.util.Ln;
 
 public class ChatLogFragment extends RconFragment implements View.OnClickListener, TextView.OnEditorActionListener {
 
@@ -36,8 +45,10 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
     @Inject
     private LogService logService;
 
-    @InjectView(R.id.textview_chat)
-    private TextView textViewOutput;
+
+    @InjectView(R.id.webview_log)
+    private WebView webViewLog;
+
 
     @InjectView(R.id.editext_chat_send)
     private EditText editTextChatSend;
@@ -50,7 +61,7 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
 
 
     private Activity context;
-    private String output;
+    private String output = "";
     private String message;
     private SharedPreferences preferences;
 
@@ -64,7 +75,8 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         arkService.addServerResponseDispatcher(this);
         preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        output = "";
+
+
         if (preferences.getBoolean("save_log", false)) {
             Server server = getActivity().getIntent().getParcelableExtra("server");
             output = logService.read(getActivity(), server);
@@ -75,7 +87,20 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        textViewOutput.setMovementMethod(new ScrollingMovementMethod());
+        //textViewOutput.setMovementMethod(new ScrollingMovementMethod());
+
+        WebSettings webSettings = webViewLog.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+
+
+        String template = "";
+        try {
+            template = IOUtils.toString(getResources().openRawResource(R.raw.template));
+        } catch (IOException e) {
+            Ln.e(e);
+        }
+        final String finalTemplate = template;
+        webViewLog.loadData(finalTemplate, "text/html", "UTF-8");
 
         buttonChat.setOnClickListener(this);
         buttonBroadcast.setOnClickListener(this);
@@ -91,6 +116,7 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
 
         super.onDestroyView();
     }
+
     @Override
     public void onDestroy() {
         arkService.removeServerResponseDispatcher(this);
@@ -112,13 +138,11 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
     @Override
     public void onGetLog(final String logBuffer) {
         if (StringUtils.isNotEmpty(logBuffer)) {
-            output = output + logBuffer;
-            writeLog(logBuffer);
+            writeLog(formatHtml(logBuffer));
             context.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     addLogTextAfter(logBuffer);
-                    scrollDown();
                 }
             });
         }
@@ -140,11 +164,13 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
         Thread htmlThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                final String html = formatHtml(text);
+                final String htmlToAdd = formatHtml(text);
+                output = output + htmlToAdd;
                 context.runOnUiThread(new Runnable() {
                                           @Override
                                           public void run() {
-                                              textViewOutput.append(Html.fromHtml(html));
+                                              webViewLog.loadUrl("javascript:addLogTextAfter('" + htmlToAdd + "')");
+
                                           }
                                       }
                 );
@@ -156,12 +182,12 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
         Thread htmlThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                final String html = formatHtml(text);
+                final String htmlToAdd = formatHtml(text);
+                output = htmlToAdd + output;
                 context.runOnUiThread(new Runnable() {
                                           @Override
                                           public void run() {
-                                              String previous = textViewOutput.getText().toString();
-                                              textViewOutput.setText(Html.fromHtml(previous + html));
+                                              webViewLog.loadUrl("javascript:addLogTextBefore('" + htmlToAdd + "')");
                                           }
                                       }
                 );
@@ -169,28 +195,32 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
         }, "HtmlThread");
         htmlThread.start();
     }
+
     private String formatHtml(String content) {
-        String html = content.replaceAll("(.*)left this ARK!", "<font color=\"#0000CD\">$0!</font>");
-        html = html.replaceAll("(.*)joined this ARK!", "<font color=\"#0000CD\">$0</font>");
-        html = html.replaceAll("(.*)was killed by(.*)", "<font color=\"#DC143C\">$0</font>");
-        html = html.replaceAll("(.*)was killed!", "<font color=\"#DC143C\">$0</font>");
-        html = html.replaceAll("(.*)Tamed a ([A-z ]*) \\- (.*)", "<font color=\"#008000\">$0</font>");
-        html = html.replaceAll("\\n", "<br>");
+        String html = content.replaceAll("(.*)left this ARK!", "<span class=\"joinleft\">$0!</span>");
+        html = html.replaceAll("(.*)joined this ARK!", "<span class=\"joinleft\">$0</span>");
+        html = html.replaceAll("(.*)was killed by(.*)", "<span class=\"kill\">$0</span>");
+        html = html.replaceAll("(.*)was killed!", "<span class=\"kill\">$0</span>");
+        html = html.replaceAll("(.*)Tamed a ([A-z ]*) \\- (.*)", "<span class=\"tame\">$0</span>");
+        html = html.replaceAll("(.*)SERVER:(.*)", "<span class=\"server\">$0</span>");
+        html = html.replaceAll("\\n", "<br>\n");
         return html;
     }
 
     public void scrollDown() {
-        final int scrollAmount = textViewOutput.getLayout().getLineTop(textViewOutput.getLineCount()) - textViewOutput.getHeight();
+        //scrollView.fullScroll(View.FOCUS_DOWN);
+       /* final int scrollAmount = textViewOutput.getLayout().getLineTop(textViewOutput.getLineCount()) - textViewOutput.getHeight();
         if (scrollAmount > 0) {
             textViewOutput.scrollTo(0, scrollAmount);
         } else {
             textViewOutput.scrollTo(0, 0);
-        }
+        }*/
     }
 
+
     private void writeLog(String log) {
-        if(preferences.getBoolean("save_log",false)){
-            if(!logService.write(getActivity(), (Server) getActivity().getIntent().getParcelableExtra("server"), log)){
+        if (preferences.getBoolean("save_log", false)) {
+            if (!logService.write(getActivity(), (Server) getActivity().getIntent().getParcelableExtra("server"), log)) {
                 Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_log_write, Snackbar.LENGTH_SHORT).show();
             }
         }
