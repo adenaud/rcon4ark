@@ -1,5 +1,6 @@
 package com.anthonydenaud.arkrcon.fargment;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -77,20 +78,28 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
         preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
 
+        return inflater.inflate(R.layout.fragment_chat, container, false);
+    }
+
+    @SuppressLint("SetJavaScriptEnabled")
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        WebSettings webSettings = webViewLog.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+
+        buttonChat.setOnClickListener(this);
+        buttonBroadcast.setOnClickListener(this);
+
         if (preferences.getBoolean("save_log", false)) {
             Server server = getActivity().getIntent().getParcelableExtra("server");
             output = logService.read(getActivity(), server);
         }
-        return inflater.inflate(R.layout.fragment_chat, container, false);
-    }
 
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        //textViewOutput.setMovementMethod(new ScrollingMovementMethod());
 
-        WebSettings webSettings = webViewLog.getSettings();
-        webSettings.setJavaScriptEnabled(true);
+        editTextChatSend.setText(message);
+        editTextChatSend.setOnEditorActionListener(this);
 
 
         String template = "";
@@ -101,13 +110,12 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
         }
         final String finalTemplate = template;
         webViewLog.loadData(finalTemplate, "text/html", "UTF-8");
-
-        buttonChat.setOnClickListener(this);
-        buttonBroadcast.setOnClickListener(this);
-
-        addLogTextBefore(output);
-        editTextChatSend.setText(message);
-        editTextChatSend.setOnEditorActionListener(this);
+        webViewLog.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                addLogTextBefore(output);
+            }
+        });
     }
 
     @Override
@@ -160,6 +168,25 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
         return handled;
     }
 
+    private void addLogTextBefore(final String text) {
+        Thread htmlThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                //formatHtml(text);
+                output = text + output;
+                context.runOnUiThread(new Runnable() {
+                                          @Override
+                                          public void run() {
+                                              webViewLog.loadUrl("javascript:addLogTextBefore(`" + text + "`)");
+
+                                          }
+                                      }
+                );
+            }
+        }, "HtmlThreadBefore");
+        htmlThread.start();
+    }
+
     private void addLogTextAfter(final String text) {
         Thread htmlThread = new Thread(new Runnable() {
             @Override
@@ -169,32 +196,16 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
                 context.runOnUiThread(new Runnable() {
                                           @Override
                                           public void run() {
-                                              webViewLog.loadUrl("javascript:addLogTextAfter('" + htmlToAdd + "')");
+                                              webViewLog.loadUrl("javascript:addLogTextAfter(`" + htmlToAdd + "`)");
 
                                           }
                                       }
                 );
             }
-        }, "HtmlThread");
+        }, "HtmlThreadAfter");
         htmlThread.start();
     }
-    private void addLogTextBefore(final String text) {
-        Thread htmlThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                final String htmlToAdd = formatHtml(text);
-                output = htmlToAdd + output;
-                context.runOnUiThread(new Runnable() {
-                                          @Override
-                                          public void run() {
-                                              webViewLog.loadUrl("javascript:addLogTextBefore('" + htmlToAdd + "')");
-                                          }
-                                      }
-                );
-            }
-        }, "HtmlThread");
-        htmlThread.start();
-    }
+
 
     private String formatHtml(String content) {
         String html = content.replaceAll("(.*)left this ARK!", "<span class=\"joinleft\">$0!</span>");
@@ -204,17 +215,12 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
         html = html.replaceAll("(.*)Tamed a ([A-z ]*) \\- (.*)", "<span class=\"tame\">$0</span>");
         html = html.replaceAll("(.*)SERVER:(.*)", "<span class=\"server\">$0</span>");
         html = html.replaceAll("\\n", "<br>\n");
+        html = html.replaceAll("<br>\\n <br>\\n ", "<br>\n");
         return html;
     }
 
     public void scrollDown() {
-        //scrollView.fullScroll(View.FOCUS_DOWN);
-       /* final int scrollAmount = textViewOutput.getLayout().getLineTop(textViewOutput.getLineCount()) - textViewOutput.getHeight();
-        if (scrollAmount > 0) {
-            textViewOutput.scrollTo(0, scrollAmount);
-        } else {
-            textViewOutput.scrollTo(0, 0);
-        }*/
+        webViewLog.loadUrl("javascript:scrollDown()");
     }
 
 
