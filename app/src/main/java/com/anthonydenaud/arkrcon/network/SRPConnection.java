@@ -14,6 +14,7 @@ import com.anthonydenaud.arkrcon.event.ReceiveEvent;
 import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -68,7 +69,7 @@ public class SRPConnection {
                         client.connect(new InetSocketAddress(hostname, port));
                         connectionListener.onConnect(reconnecting);
                         runReceiveThread = true;
-                        reconnecting=false;
+                        reconnecting = false;
                         Ln.d("Connected");
                         beginReceive();
 
@@ -129,19 +130,26 @@ public class SRPConnection {
                 if (new Date().getTime() - lastPacketTime.getTime() > 3000) {
                     reconnect();
                 }
-
-                byte[] response = new byte[Packet.PACKET_MAX_LENGTH];
                 inputStream = client.getInputStream();
-                int totalRead = inputStream.read(response, 0, response.length);
+                byte[] packetSize = new byte[4];
+                int packetSizeInt = 0;
+                int sizeLength = inputStream.read(packetSize, 0, packetSize.length);
+                if (sizeLength == 4 && !PacketUtils.isText(packetSize)) {
+                    packetSizeInt = PacketUtils.getPacketSize(packetSize) + 10;
+                }
+                byte[] response = new byte[packetSizeInt];
+                int responseLength = inputStream.read(response, 0, response.length);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                baos.write(packetSize);
+                baos.write(response);
+                byte[] packetBuffer = baos.toByteArray();
 
                 try {
-                    if (totalRead > 0) {
-                        Packet packet = new Packet(response);
+                    if (responseLength > 0) {
+                        Packet packet = new Packet(packetBuffer);
                         if ((packet.getId() == -1 || packet.getId() > 0) && onReceiveListener != null) {
-
                             lastPacketTime = new Date();
                             onReceiveListener.onReceive(new ReceiveEvent(SRPConnection.this, packet));
-
                             if (StringUtils.isNotEmpty(packet.getBody())) {
                                 Ln.d("Receive : %s", packet.getBody());
                             }
@@ -161,7 +169,7 @@ public class SRPConnection {
     }
 
     public void reconnect() {
-        if(!reconnecting){
+        if (!reconnecting) {
             reconnecting = true;
             try {
                 close();
