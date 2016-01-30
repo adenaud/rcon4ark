@@ -76,8 +76,6 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         arkService.addServerResponseDispatcher(this);
         preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-
-
         return inflater.inflate(R.layout.fragment_chat, container, false);
     }
 
@@ -172,7 +170,6 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
         Thread htmlThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                //formatHtml(text);
                 output = text + output;
                 context.runOnUiThread(new Runnable() {
                                           @Override
@@ -197,7 +194,6 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
                                           @Override
                                           public void run() {
                                               webViewLog.loadUrl("javascript:addLogTextAfter(`" + htmlToAdd + "`)");
-
                                           }
                                       }
                 );
@@ -206,8 +202,9 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
         htmlThread.start();
     }
 
-
     private String formatHtml(String content) {
+        content = content.trim();
+        content += "\n";
         String html = content.replaceAll("(.*)left this ARK!", "<span class=\"joinleft\">$0!</span>");
         html = html.replaceAll("(.*)joined this ARK!", "<span class=\"joinleft\">$0</span>");
         html = html.replaceAll("(.*)was killed by(.*)", "<span class=\"kill\">$0</span>");
@@ -216,6 +213,7 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
         html = html.replaceAll("(.*)SERVER:(.*)", "<span class=\"server\">$0</span>");
         html = html.replaceAll("\\n", "<br>\n");
         html = html.replaceAll("<br>\\n <br>\\n ", "<br>\n");
+
         return html;
     }
 

@@ -1,7 +1,6 @@
 package com.anthonydenaud.arkrcon.network;
 
 
-import com.anthonydenaud.arkrcon.exception.PacketParseException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -25,7 +24,7 @@ public class Packet {
         this.body = body;
     }
 
-    public Packet(byte[] rawPacket) throws PacketParseException {
+    public Packet(byte[] rawPacket) {
         decode(rawPacket);
     }
 
@@ -41,7 +40,7 @@ public class Packet {
         return packetOutput.toByteArray();
     }
 
-    public Packet decode(byte[] rawPacket) throws PacketParseException {
+    public Packet decode(byte[] rawPacket) {
 
         size = PacketUtils.getIntFromBytes(rawPacket, 0);
         id = PacketUtils.getIntFromBytes(rawPacket, 4);

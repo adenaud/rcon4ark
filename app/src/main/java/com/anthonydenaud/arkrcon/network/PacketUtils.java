@@ -1,7 +1,5 @@
 package com.anthonydenaud.arkrcon.network;
 
-import com.anthonydenaud.arkrcon.exception.PacketParseException;
-
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.UnsupportedEncodingException;
@@ -20,18 +18,15 @@ public class PacketUtils {
         return (res[0] << 24) & 0xff000000 | (res[1] << 16) & 0x00ff0000 | (res[2] << 8) & 0x0000ff00 | (res[3]) & 0x000000ff;
     }
 
-    public static String getStringFromBytes(byte[] data, int index, int length) throws PacketParseException {
+    public static String getStringFromBytes(byte[] data, int index, int length){
         String string = "";
         byte[] res;
         try {
-            if (length > Packet.PACKET_MAX_LENGTH) {
-                throw new PacketParseException("Error bad length ( > "+Packet.PACKET_MAX_LENGTH+" ) : " + length + " raw data : " + new String(data));
-            }
             res = Arrays.copyOfRange(data, index, index + length - 1);
             string = new String(res, "US-ASCII");
         } catch (IllegalArgumentException | UnsupportedEncodingException e) {
             res = "".getBytes();
-            Ln.e("getStringFromBytes -> IllegalArgumentException : " + res.toString());
+            Ln.e("getStringFromBytes -> IllegalArgumentException : " + new String(res));
         }
         return string;
     }
@@ -64,11 +59,14 @@ public class PacketUtils {
         boolean isText = false;
         int charByteNumber = 0;
         for (int i=0; i<data.length; i++){
-            if(data[i] > 20){
+            if(data[i] >= 20 || data[i] == 0x0a || data[i] == 0x0d){
                 charByteNumber++;
             }
         }
-        if(charByteNumber == 4){
+        if(charByteNumber >= 3){
+            isText = true;
+        }
+        if(getPacketSize(byteBuffer) > Packet.PACKET_MAX_LENGTH){
             isText = true;
         }
         return isText;

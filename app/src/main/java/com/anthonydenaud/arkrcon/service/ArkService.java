@@ -299,9 +299,6 @@ public class ArkService implements OnReceiveListener {
                     } else if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("getgamelog")) {
                         if (!packet.getBody().contains("Server received, But no response!!")) {
                             dispatcher.onGetLog(packet.getBody());
-                            if (packet.getBody().contains("left this ARK!") || packet.getBody().contains("joined this ARK!")) {
-                                listPlayers();
-                            }
                         } else {
                             dispatcher.onGetLog("");
                         }

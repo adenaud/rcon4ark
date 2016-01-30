@@ -3,7 +3,6 @@ package com.anthonydenaud.arkrcon.network;
 import android.content.Context;
 
 import com.anthonydenaud.arkrcon.event.OnServerStopRespondingListener;
-import com.anthonydenaud.arkrcon.exception.PacketParseException;
 import com.google.inject.Inject;
 
 import com.anthonydenaud.arkrcon.R;
@@ -12,7 +11,6 @@ import com.anthonydenaud.arkrcon.event.OnReceiveListener;
 import com.anthonydenaud.arkrcon.event.ReceiveEvent;
 
 import org.apache.commons.collections4.map.LinkedMap;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -21,10 +19,8 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Date;
-import java.util.LinkedHashMap;
 
 import roboguice.util.Ln;
-
 
 public class SRPConnection {
 
@@ -90,7 +86,6 @@ public class SRPConnection {
         return ++sequenceNumber;
     }
 
-
     public void send(final Packet packet) throws IOException {
 
         synchronized (outgoingPackets) {
@@ -98,10 +93,6 @@ public class SRPConnection {
         }
 
         if (client != null && client.isConnected()) {
-            if (StringUtils.isNotEmpty(packet.getBody())) {
-                Ln.i("Send : %s", packet.getBody());
-            }
-
             byte[] data = packet.encode();
             OutputStream outputStream = client.getOutputStream();
             outputStream.write(data);
@@ -137,33 +128,64 @@ public class SRPConnection {
                 if (sizeLength == 4 && !PacketUtils.isText(packetSize)) {
                     packetSizeInt = PacketUtils.getPacketSize(packetSize) + 10;
                 }
-                byte[] response = new byte[packetSizeInt];
-                int responseLength = inputStream.read(response, 0, response.length);
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                baos.write(packetSize);
-                baos.write(response);
-                byte[] packetBuffer = baos.toByteArray();
 
-                try {
+                final byte[] response;
+                if(!PacketUtils.isText(packetSize)){
+                    response = new byte[packetSizeInt];
+                }else{
+                    response = new byte[Packet.PACKET_MAX_LENGTH];
+                }
+
+                int responseLength = inputStream.read(response, 0, response.length);
+
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                byteArrayOutputStream.write(packetSize);
+                byteArrayOutputStream.write(response);
+                final byte[] packetBuffer = byteArrayOutputStream.toByteArray();
+
+
                     if (responseLength > 0) {
-                        Packet packet = new Packet(packetBuffer);
-                        if ((packet.getId() == -1 || packet.getId() > 0) && onReceiveListener != null) {
-                            lastPacketTime = new Date();
-                            onReceiveListener.onReceive(new ReceiveEvent(SRPConnection.this, packet));
-                            if (StringUtils.isNotEmpty(packet.getBody())) {
-                                Ln.d("Receive : %s", packet.getBody());
+
+                        if(PacketUtils.isStartPacket(packetBuffer)) {
+                            final Packet packet = new Packet(packetBuffer);
+                            if ((packet.getId() == -1 || packet.getId() > 0) && onReceiveListener != null) {
+                                lastPacketTime = new Date();
+
+                                Thread thread = new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        onReceiveListener.onReceive(new ReceiveEvent(SRPConnection.this, packet));
+                                    }
+                                }, "ResponseExecThread");
+                                thread.start();
                             }
+                        }else{
+                           final  Packet lastPacket = outgoingPackets.get(outgoingPackets.lastKey());
+
+                            Thread thread = new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if(lastPacket.getBody().equals("getgamelog")){
+                                        Packet packet = new Packet(lastPacket.getId(), PacketType.SERVERDATA_RESPONSE_VALUE.getValue(), new String(packetBuffer));
+                                        onReceiveListener.onReceive(new ReceiveEvent(SRPConnection.this, packet));
+                                    }
+                                    else if(lastPacket.getBody().equals("ListPlayers")){
+                                        Packet packet = new Packet(getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "ListPlayers");
+                                        try {
+                                            send(packet);
+                                        } catch (IOException e) {
+                                            Ln.e(e);
+                                        }
+                                    }
+                                }
+                            }, "ResponseExecThread");
+                            thread.start();
                         }
                     }
-                } catch (PacketParseException e) {
-                    e.printStackTrace();
-                    synchronized (outgoingPackets) {
-                        send(outgoingPackets.get(outgoingPackets.lastKey()));
-                    }
-                }
+
                 receive();
-            } catch (IOException e) {
-                Ln.e("Unable to receive packet : %s", e.getMessage());
+                } catch (IOException e) {
+                    Ln.e("Unable to receive packet : %s", e.getMessage());
             }
         }
     }
