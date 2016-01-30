@@ -23,7 +23,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.regex.Matcher;
@@ -88,7 +91,7 @@ public class ArkService implements OnReceiveListener {
         connection.setOnServerStopRespondingListener(new OnServerStopRespondingListener() {
             @Override
             public void onServerStopResponding() {
-                if(logTimer!=null){
+                if (logTimer != null) {
                     logTimer.cancel();
                 }
                 connection.open(server.getHostname(), server.getPort());
@@ -296,13 +299,28 @@ public class ArkService implements OnReceiveListener {
                         dispatcher.onListPlayers(getPlayers(packet.getBody()));
                     } else if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("getchat") && !packet.getBody().contains("Server received, But no response!!")) {
                         dispatcher.onGetChat(packet.getBody());
-                    } else if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("getgamelog")) {
-                        if (!packet.getBody().contains("Server received, But no response!!")) {
-                            dispatcher.onGetLog(packet.getBody());
-                        } else {
-                            dispatcher.onGetLog("");
+                    } else if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("getgamelog") && !packet.getBody().contains("Server received, But no response!!")) {
+                        String body = packet.getBody();
+                        dispatcher.onGetLog(body);
+                        if (body.trim().split("\\n").length < 20) {
+                            Pattern pattern = Pattern.compile("([0-9]{4})\\.([0-9]{2})\\.([0-9]{2})_([0-9]{2}).([0-9]{2}).([0-9]{2}):(.*)(joined|left) this ARK!!?\\r?\\n");
+                            Matcher matcher = pattern.matcher(body);
+                            Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+                            Date date = new Date();
+                            while (matcher.find()) {
+                                calendar.set(Calendar.YEAR,Integer.valueOf(matcher.group(1)));
+                                calendar.set(Calendar.MONTH,Integer.valueOf(matcher.group(2))-1);
+                                calendar.set(Calendar.DAY_OF_MONTH,Integer.valueOf(matcher.group(3)));
+                                calendar.set(Calendar.HOUR_OF_DAY,Integer.valueOf(matcher.group(4)));
+                                calendar.set(Calendar.MINUTE,Integer.valueOf(matcher.group(5)));
+                                calendar.set(Calendar.SECOND,Integer.valueOf(matcher.group(6)));
+                                date = calendar.getTime();
+                            }
+                            long dateDiff = Math.abs(new Date().getTime() / 1000 - (date.getTime() / 1000));
+                            if(dateDiff < 30){
+                                listPlayers();
+                            }
                         }
-
                     }
                 }
             }
