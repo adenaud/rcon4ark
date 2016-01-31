@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.anthonydenaud.arkrcon.R;
-import com.anthonydenaud.arkrcon.fargment.RconFragment;
+import com.anthonydenaud.arkrcon.fragment.RconFragment;
 
 import java.util.ArrayList;
 import java.util.List;

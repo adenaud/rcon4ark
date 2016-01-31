@@ -307,6 +307,7 @@ public class ArkService implements OnReceiveListener {
                             Matcher matcher = pattern.matcher(body);
                             Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
                             Date date = new Date();
+                            int count = 0;
                             while (matcher.find()) {
                                 calendar.set(Calendar.YEAR,Integer.valueOf(matcher.group(1)));
                                 calendar.set(Calendar.MONTH,Integer.valueOf(matcher.group(2))-1);
@@ -315,10 +316,12 @@ public class ArkService implements OnReceiveListener {
                                 calendar.set(Calendar.MINUTE,Integer.valueOf(matcher.group(5)));
                                 calendar.set(Calendar.SECOND,Integer.valueOf(matcher.group(6)));
                                 date = calendar.getTime();
+                                count++;
                             }
                             long dateDiff = Math.abs(new Date().getTime() / 1000 - (date.getTime() / 1000));
-                            if(dateDiff < 30){
-                                listPlayers();
+                            Ln.d(dateDiff);
+                            if(count > 0 && dateDiff < 600){
+                                dispatcher.onPlayerJoinLeft();
                             }
                         }
                     }

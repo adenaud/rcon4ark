@@ -2,7 +2,6 @@ package com.anthonydenaud.arkrcon.view;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v7.widget.Toolbar;
 
@@ -19,9 +18,9 @@ import com.anthonydenaud.arkrcon.Codes;
 import com.anthonydenaud.arkrcon.R;
 import com.anthonydenaud.arkrcon.adapter.RconFragmentPagerAdapter;
 import com.anthonydenaud.arkrcon.event.ConnectionListener;
-import com.anthonydenaud.arkrcon.fargment.ChatLogFragment;
-import com.anthonydenaud.arkrcon.fargment.CommandsFragment;
-import com.anthonydenaud.arkrcon.fargment.PlayersFragment;
+import com.anthonydenaud.arkrcon.fragment.ChatLogFragment;
+import com.anthonydenaud.arkrcon.fragment.CommandsFragment;
+import com.anthonydenaud.arkrcon.fragment.PlayersFragment;
 import com.anthonydenaud.arkrcon.model.Server;
 import com.anthonydenaud.arkrcon.service.ArkService;
 

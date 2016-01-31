@@ -2,7 +2,7 @@ package com.anthonydenaud.arkrcon.view;
 
 import android.os.Bundle;
 
-import com.anthonydenaud.arkrcon.fargment.SettingsFragment;
+import com.anthonydenaud.arkrcon.fragment.SettingsFragment;
 
 import roboguice.activity.RoboActionBarActivity;
 

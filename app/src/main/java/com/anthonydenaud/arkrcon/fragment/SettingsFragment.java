@@ -1,4 +1,4 @@
-package com.anthonydenaud.arkrcon.fargment;
+package com.anthonydenaud.arkrcon.fragment;
 
 import android.os.Bundle;
 

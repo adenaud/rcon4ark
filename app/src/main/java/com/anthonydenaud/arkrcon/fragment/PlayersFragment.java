@@ -1,4 +1,4 @@
-package com.anthonydenaud.arkrcon.fargment;
+package com.anthonydenaud.arkrcon.fragment;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -81,6 +81,10 @@ public class PlayersFragment extends RconFragment {
         }
     }
 
+    @Override
+    public void onPlayerJoinLeft() {
+        arkService.listPlayers();
+    }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
