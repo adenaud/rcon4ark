@@ -214,7 +214,9 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
     }
 
     public void scrollDown() {
-        webViewLog.loadUrl("javascript:scrollDown()");
+        if(webViewLog != null){
+            webViewLog.loadUrl("javascript:scrollDown()");
+        }
     }
 
 
