@@ -1,9 +1,9 @@
 apply plugin: 'com.android.application'
-apply plugin: "sonar-runner"
+apply plugin: "org.sonarqube"
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    buildToolsVersion "23.0.3"
 
     defaultConfig {
         applicationId "com.anthonydenaud.arkrcon"
@@ -29,24 +29,20 @@ android {
     lintOptions{
         abortOnError false
     }
-    sonarRunner {
-        sonarProperties {
-            property "sonar.host.url", "http://sonar.anthonydenaud.com/sonar/"
-            property "sonar.jdbc.url", "jdbc:postgresql://192.168.0.11/sonar"
-            property "sonar.jdbc.driverClassName", "org.postgresql.Driver"
-            property "sonar.jdbc.username", "sonar"
-            property "sonar.jdbc.password", "sonar"
-            property "sonar.sources", "src/main/java"
-            property "sonar.projectName", project.rootProject.name
-        }
+}
+
+sonarqube {
+    properties {
+        property "sonar.sources", "src/main/java"
+        property "sonar.projectName", project.rootProject.name
     }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.1.1'
-    compile 'com.android.support:design:23.1.1'
+    compile 'com.android.support:appcompat-v7:23.3.0'
+    compile 'com.android.support:design:23.3.0'
     compile 'org.roboguice:roboguice:3.0.1'
     compile 'org.apache.commons:commons-lang3:3.3.2'
     compile 'commons-io:commons-io:2.4'
