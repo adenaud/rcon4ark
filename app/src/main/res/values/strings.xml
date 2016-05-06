@@ -90,6 +90,7 @@
     <string name="error_log_write">Unable to write the log file</string>
     <string name="fragment_chat_log"><![CDATA[Chat & Log]]></string>
     <string name="fragment_commands">Commands</string>
+    <string name="action_refresh">Refresh</string>
 
 
     <!-- Settings -->
