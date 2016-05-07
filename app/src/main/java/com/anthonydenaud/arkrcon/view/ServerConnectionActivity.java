@@ -29,8 +29,11 @@ public class ServerConnectionActivity extends RoboActionBarActivity {
     @InjectView(R.id.hostname_edittext)
     private EditText hostnameEditText;
 
-    @InjectView(R.id.port_edittext)
-    private EditText portEditText;
+    @InjectView(R.id.rcon_port_edittext)
+    private EditText rconPortEditText;
+
+    @InjectView(R.id.query_port_edittext)
+    private EditText queryPortEditText;
 
     @InjectView(R.id.password_edittext)
     private EditText passwordEditText;
@@ -53,9 +56,12 @@ public class ServerConnectionActivity extends RoboActionBarActivity {
 
         nameEditText.setText(server.getName());
         hostnameEditText.setText(server.getHostname());
-        portEditText.setText(String.valueOf(server.getPort()));
+        rconPortEditText.setText(String.valueOf(server.getPort()));
         passwordEditText.setText(server.getPassword());
         adminNameEditText.setText(server.getAdminName());
+        if(server.getQueryPort() != 0){
+            queryPortEditText.setText(String.valueOf(server.getQueryPort()));
+        }
     }
 
     @Override
@@ -73,7 +79,8 @@ public class ServerConnectionActivity extends RoboActionBarActivity {
             try {
 
                 String host = hostnameEditText.getText().toString();
-                int port = Integer.parseInt(portEditText.getText().toString());
+                int rconPort = Integer.parseInt(rconPortEditText.getText().toString());
+                int queryPort = Integer.parseInt(queryPortEditText.getText().toString());
 
                 String adminName = adminNameEditText.getText().toString();
                 if(StringUtils.isEmpty(adminName)){
@@ -81,11 +88,12 @@ public class ServerConnectionActivity extends RoboActionBarActivity {
                 }
 
 
-                if(port > 0 && port < 65535){
+                if(rconPort > 0 && rconPort < 65535){
                     if(StringUtils.isNotEmpty(host)){
                         server.setName(nameEditText.getText().toString());
                         server.setHostname(host);
-                        server.setPort(port);
+                        server.setPort(rconPort);
+                        server.setQueryPort(queryPort);
                         server.setPassword(passwordEditText.getText().toString());
                         server.setAdminName(adminName);
 

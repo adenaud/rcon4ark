@@ -20,7 +20,7 @@ import java.sql.SQLException;
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     private static final String DATABASE_NAME = "nexusrcon-ark.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     @Inject
     public DatabaseHelper(Context context) {
@@ -39,8 +39,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase database, ConnectionSource connectionSource, int oldVersion, int newVersion) {
-        if (oldVersion == 1 && newVersion == 2) {
+        if (newVersion == 2) {
             getRuntimeExceptionDao(Server.class).executeRaw("ALTER TABLE `server` ADD COLUMN adminName VARCHAR(255);");
+        }
+        if (newVersion == 3) {
+            getRuntimeExceptionDao(Server.class).executeRaw("ALTER TABLE `server` ADD COLUMN queryPort INTEGER DEFAULT 0;");
         }
     }
 }

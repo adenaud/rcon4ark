@@ -25,11 +25,18 @@
         android:hint="@string/hostname"/>
 
     <EditText
-        android:id="@+id/port_edittext"
+        android:id="@+id/rcon_port_edittext"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:inputType="number"
-        android:hint="@string/port"/>
+        android:hint="@string/rcon_port"/>
+
+    <EditText
+        android:id="@+id/query_port_edittext"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:inputType="number"
+        android:hint="@string/query_port"/>
 
     <EditText
         android:id="@+id/password_edittext"
