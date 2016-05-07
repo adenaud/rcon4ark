@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.anthonydenaud.arkrcon.event.OnServerStopRespondingListener;
+import com.anthonydenaud.arkrcon.network.SteamQuery;
+import com.github.koraktor.steamcondenser.steam.SteamPlayer;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -25,6 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.Timer;
@@ -38,8 +41,12 @@ import roboguice.util.Ln;
 public class ArkService implements OnReceiveListener {
 
     private final Context context;
+
     @Inject
     private SRPConnection connection;
+
+    @Inject
+    private SteamQuery steamQuery;
 
     private List<ConnectionListener> connectionListeners;
 
@@ -196,20 +203,6 @@ public class ArkService implements OnReceiveListener {
     }
 
     /**
-     * Kills the specified player.
-     *
-     * @param player Player to kill
-     */
-    public void killPlayer(Player player) {
-        Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "KillPlayer " + String.valueOf(player.getUe4Id()));
-        try {
-            connection.send(packet);
-        } catch (IOException e) {
-            sendOnDisconnectEvent();
-        }
-    }
-
-    /**
      * Forcibly disconnect the specified player from the server.
      *
      * @param player Player to kick
@@ -342,6 +335,11 @@ public class ArkService implements OnReceiveListener {
                 }
 
                 startLogAndChatTimers();
+
+
+                int queryPort = server.getQueryPort();
+
+                this.steamQuery.connect(server.getHostname(), queryPort);
             }
         }
     }
@@ -390,8 +388,11 @@ public class ArkService implements OnReceiveListener {
     }
 
     private List<Player> getPlayers(String messageBody) {
+        HashMap<String, SteamPlayer> steamPlayers = steamQuery.getPlayers();
         List<Player> players = new ArrayList<>();
         String[] playersArray = messageBody.split("\n");
+
+        int i =0;
 
         if (!messageBody.startsWith("No Players Connected")) {
 
@@ -403,13 +404,16 @@ public class ArkService implements OnReceiveListener {
 
                     if (matcher.matches()) {
 
-                        int ue4Id = Integer.parseInt(matcher.group(1));
                         String name = matcher.group(2);
                         String steamId = matcher.group(3);
+                        Player player = new Player(name, steamId,0);
 
-                        Player player = new Player(ue4Id, name, steamId);
+                        SteamPlayer steamPlayer =  steamPlayers.get(name);
+                        if(steamPlayer != null){
+                            player.setConnectTime(steamPlayer.getConnectTime());
+                        }
+
                         players.add(player);
-
                     }
                 }
             }
