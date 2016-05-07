@@ -4,9 +4,7 @@ import com.github.koraktor.steamcondenser.exceptions.SteamCondenserException;
 import com.github.koraktor.steamcondenser.steam.SteamPlayer;
 import com.github.koraktor.steamcondenser.steam.servers.GoldSrcServer;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 import roboguice.util.Ln;
@@ -28,6 +26,7 @@ public class SteamQuery {
         HashMap<String, SteamPlayer> players = new HashMap<>();
 
         try {
+            server.updatePlayers();
             players = server.getPlayers();
         } catch (SteamCondenserException | TimeoutException e) {
             Ln.e(e);

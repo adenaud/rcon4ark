@@ -392,8 +392,6 @@ public class ArkService implements OnReceiveListener {
         List<Player> players = new ArrayList<>();
         String[] playersArray = messageBody.split("\n");
 
-        int i =0;
-
         if (!messageBody.startsWith("No Players Connected")) {
 
             for (String aPlayersArray : playersArray) {
