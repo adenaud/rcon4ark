@@ -13,6 +13,9 @@ public class Server implements Parcelable {
     @DatabaseField(generatedId = true)
     private int id;
 
+    @DatabaseField()
+    private String uuid;
+
     @DatabaseField
     private String name;
 
@@ -50,6 +53,7 @@ public class Server implements Parcelable {
 
     public Server(Parcel source) {
         this.id = source.readInt();
+        this.uuid = source.readString();
         this.name = source.readString();
         this.hostname = source.readString();
         this.port = source.readInt();
@@ -64,6 +68,14 @@ public class Server implements Parcelable {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public String getName() {
@@ -122,6 +134,7 @@ public class Server implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
+        dest.writeString(uuid);
         dest.writeString(name);
         dest.writeString(hostname);
         dest.writeInt(port);

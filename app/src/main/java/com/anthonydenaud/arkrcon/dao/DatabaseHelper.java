@@ -12,6 +12,8 @@ import com.j256.ormlite.table.TableUtils;
 import com.anthonydenaud.arkrcon.model.Server;
 
 import java.sql.SQLException;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by Anthony on 09/10/2015.
@@ -20,7 +22,7 @@ import java.sql.SQLException;
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     private static final String DATABASE_NAME = "nexusrcon-ark.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     @Inject
     public DatabaseHelper(Context context) {
@@ -42,8 +44,15 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         if (newVersion == 2) {
             getRuntimeExceptionDao(Server.class).executeRaw("ALTER TABLE `server` ADD COLUMN adminName VARCHAR(255);");
         }
-        if (newVersion == 3) {
+        if (newVersion == 4) {
             getRuntimeExceptionDao(Server.class).executeRaw("ALTER TABLE `server` ADD COLUMN queryPort INTEGER DEFAULT 0;");
+            getRuntimeExceptionDao(Server.class).executeRaw("ALTER TABLE `server` ADD COLUMN uuid AFTER `id` VARCHAR(36);");
+
+            List<Server> servers = getRuntimeExceptionDao(Server.class).queryForAll();
+            for (Server server :servers) {
+                server.setUuid(UUID.randomUUID().toString());
+                getRuntimeExceptionDao(Server.class).update(server);
+            }
         }
     }
 }

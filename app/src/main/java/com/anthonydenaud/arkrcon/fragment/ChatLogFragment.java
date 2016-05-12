@@ -88,7 +88,7 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
 
         if (preferences.getBoolean("save_log", false)) {
             Server server = getActivity().getIntent().getParcelableExtra("server");
-            output = logService.read(getActivity(), server);
+            output = logService.readLatest(getActivity(), server);
         }
 
 
