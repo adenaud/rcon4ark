@@ -15,6 +15,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.anthonydenaud.arkrcon.service.LogService;
 import com.anthonydenaud.arkrcon.view.SettingsActivity;
 import com.google.inject.Inject;
 
@@ -47,6 +48,9 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
     @Inject
     private ArkService arkService;
 
+    @Inject
+    private LogService logService;
+
     private Server currentServer;
     private ProgressDialog progressDialog;
     private boolean rconActivityStarted = false;
@@ -61,22 +65,20 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
         registerForContextMenu(listView);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Server server = new Server();
-                Intent intent = new Intent(MainActivity.this, ServerConnectionActivity.class);
-                intent.putExtra("server", server);
-                intent.putExtra("titleId", R.string.new_server);
-
-                startActivityForResult(intent, Codes.REQUEST_NEW_SERVER);
-            }
-        });
-
+        if (fab != null) {
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Server server = new Server();
+                    Intent intent = new Intent(MainActivity.this, ServerConnectionActivity.class);
+                    intent.putExtra("server", server);
+                    intent.putExtra("titleId", R.string.new_server);
+                    startActivityForResult(intent, Codes.REQUEST_NEW_SERVER);
+                }
+            });
+        }
         listView.setOnItemClickListener(this);
-
-
+        logService.migrate(this);
         refresh();
     }
 
@@ -99,9 +101,9 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.save){
+        if (item.getItemId() == R.id.save) {
             Intent intent = new Intent(this, SettingsActivity.class);
-            startActivityForResult(intent,Codes.REQUEST_SETTINGS);
+            startActivityForResult(intent, Codes.REQUEST_SETTINGS);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -118,7 +120,7 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
             rconActivityStarted = false;
         }
 
-        if(resultCode == Codes.RESULT_CONNECTION_DROP){
+        if (resultCode == Codes.RESULT_CONNECTION_DROP) {
             Toast.makeText(this, getString(R.string.conneciton_lost), Toast.LENGTH_LONG).show();
         }
 
@@ -167,7 +169,7 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
 
     @Override
     public void onConnect(boolean reconnecting) {
-        if(!rconActivityStarted){
+        if (!rconActivityStarted) {
             Intent intent = new Intent(this, RconActivity.class);
             intent.putExtra("server", currentServer);
             startActivityForResult(intent, Codes.REQUEST_RCON_CLOSE);
@@ -187,7 +189,6 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-
                 Ln.d("onDisconnect");
                 Toast.makeText(MainActivity.this, getString(R.string.conneciton_lost), Toast.LENGTH_LONG).show();
             }

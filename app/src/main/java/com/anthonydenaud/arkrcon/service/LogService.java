@@ -1,11 +1,20 @@
 package com.anthonydenaud.arkrcon.service;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Environment;
+import android.preference.PreferenceManager;
+import android.provider.MediaStore;
+import android.widget.Toast;
 
+import com.anthonydenaud.arkrcon.R;
+import com.anthonydenaud.arkrcon.dao.ServerDAO;
 import com.anthonydenaud.arkrcon.model.Server;
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import org.apache.commons.io.FileSystemUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -13,6 +22,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import roboguice.util.Ln;
@@ -20,22 +32,32 @@ import roboguice.util.Ln;
 @Singleton
 public class LogService {
 
+    private static final String MIGRATION_21_KEY = "LogMigration21";
+
+    @Inject
+    private ServerDAO serverDAO;
+
     public boolean write(Context context, Server server, String log) {
         boolean success = false;
         if (isExternalStorageWritable() && StringUtils.isNotEmpty(log)) {
-            File path = new File(context.getExternalFilesDir(null), "logs");
+            File path = new File(context.getExternalFilesDir(null), "logs/" + server.getUuid());
             if (!path.exists()) {
                 if (!path.mkdirs()) {
                     Ln.e("Unable to create log directory");
                 }
             }
-            String filename = String.format(Locale.ENGLISH, "server_%s_%d.log", server.getHostname().replaceAll("\\.", "-"), server.getPort());
+            String filename = "server.log";
             File logFile = new File(path, filename);
+
+            if (logFile.exists() && logFile.length() >= R.integer.log_max_size) {
+                archiveLog(path, logFile);
+            }
+
             try {
                 FileWriter writer = new FileWriter(logFile, true);
                 writer.write(log);
                 writer.close();
-                success= true;
+                success = true;
             } catch (IOException e) {
                 Ln.e("Unable to create log file : %s", e.getMessage());
             }
@@ -43,30 +65,66 @@ public class LogService {
         return success;
     }
 
+    private void archiveLog(File path, File logFile) {
+        String destination = String.format(Locale.ENGLISH, "server_%s.log", new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss", Locale.ENGLISH).format(new Date()));
+        try {
+            FileUtils.moveFile(logFile, new File(path, destination));
+        } catch (IOException e) {
+            Ln.e("Unable to archive log file : %s", e.getMessage());
+        }
+    }
+
     /**
      * Read the most recent log file.
+     *
      * @param context The Android context
-     * @param server The corresponding server
+     * @param server  The corresponding server
      * @return The log as plain text
      */
     public String readLatest(Context context, Server server) {
-        String filename = String.format(Locale.ENGLISH, "server_%s_%d.log", server.getHostname().replaceAll("\\.", "-"), server.getPort());
-        return read(context, filename);
+        String filename = "server.log";
+        return read(context, filename, server.getUuid());
     }
 
     /**
      * Read an archived log file.
-     * @param context The Android context
+     *
+     * @param context  The Android context
+     * @param server   The corresponding server
      * @param filename The name of the file to read
      * @return The log as plain text
      */
-    public String readArchive(Context context, String filename){
-        return read(context, filename);
+    public String readArchive(Context context, Server server, String filename) {
+        return read(context, filename, server.getUuid());
     }
 
+    public void migrate(Context context) {
 
-    private String read(Context context, String filename){
-        File path = new File(context.getExternalFilesDir(null), "logs");
+        List<Server> servers = serverDAO.findAll();
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        if (servers.size() > 0 && !preferences.contains(MIGRATION_21_KEY)) {
+            Toast.makeText(context, context.getString(R.string.migrate_log), Toast.LENGTH_LONG).show();
+            for (Server server : servers) {
+                File path = new File(context.getExternalFilesDir(null), "logs");
+                String filename = String.format(Locale.ENGLISH, "server_%s_%d.log", server.getHostname().replaceAll("\\.", "-"), server.getPort());
+                File file = new File(path, filename);
+                String log = "";
+                if (isExternalStorageReadable() && file.exists()) {
+                    try {
+                        log = IOUtils.toString(new FileInputStream(file));
+                        preferences.edit().putBoolean(MIGRATION_21_KEY, true).apply();
+                    } catch (IOException e) {
+                        Ln.e("Error reading log file : %s", e.getMessage());
+                    }
+                }
+                write(context, server, log);
+            }
+        }
+    }
+
+    private String read(Context context, String filename, String serverUuid) {
+        File path = new File(context.getExternalFilesDir(null), "logs/" + serverUuid);
         File file = new File(path, filename);
         String log = "";
         if (isExternalStorageReadable() && file.exists()) {
@@ -78,7 +136,6 @@ public class LogService {
         }
         return log;
     }
-
 
 
     private boolean isExternalStorageWritable() {

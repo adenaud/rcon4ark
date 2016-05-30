@@ -58,7 +58,6 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
 
 
     private Activity context;
-    private String output = "";
     private String message;
     private SharedPreferences preferences;
 
@@ -86,15 +85,8 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
         buttonChat.setOnClickListener(this);
         buttonBroadcast.setOnClickListener(this);
 
-        if (preferences.getBoolean("save_log", false)) {
-            Server server = getActivity().getIntent().getParcelableExtra("server");
-            output = logService.readLatest(getActivity(), server);
-        }
-
-
         editTextChatSend.setText(message);
         editTextChatSend.setOnEditorActionListener(this);
-
 
         String template = "";
         try {
@@ -107,7 +99,11 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
         webViewLog.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
-                addLogTextBefore(output);
+                if (preferences.getBoolean("save_log", false)) {
+                    Server server = getActivity().getIntent().getParcelableExtra("server");
+                    String logArchive = logService.readLatest(getActivity(), server);
+                    addLogTextBefore(logArchive);
+                }
             }
         });
     }
@@ -166,7 +162,6 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
         Thread htmlThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                output = text + output;
                 context.runOnUiThread(new Runnable() {
                                           @Override
                                           public void run() {
@@ -185,7 +180,6 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
             @Override
             public void run() {
                 final String htmlToAdd = formatHtml(text);
-                output = output + htmlToAdd;
                 context.runOnUiThread(new Runnable() {
                                           @Override
                                           public void run() {
@@ -214,7 +208,7 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
     }
 
     public void scrollDown() {
-        if(webViewLog != null) {
+        if (webViewLog != null) {
             webViewLog.loadUrl("javascript:scrollDown()");
         }
     }

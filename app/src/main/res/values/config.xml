@@ -2,4 +2,5 @@
 <resources>
     <string name="default_admin_name">Admin</string>
     <integer name="log_timer_delay">2000</integer>
+    <integer name="log_max_size">204800</integer>
 </resources>

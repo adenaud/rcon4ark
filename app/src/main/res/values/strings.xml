@@ -92,6 +92,7 @@
     <string name="fragment_chat_log"><![CDATA[Chat & Log]]></string>
     <string name="fragment_commands">Commands</string>
     <string name="action_refresh">Refresh</string>
+    <string name="migrate_log">Log migration in progress</string>
 
 
     <!-- Settings -->
