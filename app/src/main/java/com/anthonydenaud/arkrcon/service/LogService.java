@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -63,6 +64,15 @@ public class LogService {
             }
         }
         return success;
+    }
+
+    public List<String> listArchives(Context context, Server server){
+        List<String> filenames = new ArrayList<>();
+        File[] files = new File(context.getExternalFilesDir(null), "logs/" + server.getUuid()).listFiles();
+        for (File file : files) {
+            filenames.add(file.getName());
+        }
+        return filenames;
     }
 
     private void archiveLog(File path, File logFile) {
