@@ -69,9 +69,7 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Server server = new Server();
                     Intent intent = new Intent(MainActivity.this, ServerConnectionActivity.class);
-                    intent.putExtra("server", server);
                     intent.putExtra("titleId", R.string.new_server);
                     startActivityForResult(intent, Codes.REQUEST_NEW_SERVER);
                 }

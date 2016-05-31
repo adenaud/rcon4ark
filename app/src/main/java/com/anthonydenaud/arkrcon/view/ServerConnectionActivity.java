@@ -15,6 +15,8 @@ import com.anthonydenaud.arkrcon.model.Server;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.UUID;
+
 import roboguice.activity.RoboActionBarActivity;
 import roboguice.inject.InjectView;
 
@@ -53,7 +55,10 @@ public class ServerConnectionActivity extends RoboActionBarActivity {
 
         server = getIntent().getParcelableExtra("server");
         setTitle(getIntent().getIntExtra("titleId",R.string.edit_server));
-
+        if(server == null){
+            server = new Server();
+            server.setUuid(UUID.randomUUID().toString());
+        }
         nameEditText.setText(server.getName());
         hostnameEditText.setText(server.getHostname());
         rconPortEditText.setText(String.valueOf(server.getPort()));

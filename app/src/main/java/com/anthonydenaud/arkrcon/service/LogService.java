@@ -66,7 +66,7 @@ public class LogService {
         return success;
     }
 
-    public List<String> listArchives(Context context, Server server){
+    public List<String> listArchives(Context context, Server server) {
         List<String> filenames = new ArrayList<>();
         File[] files = new File(context.getExternalFilesDir(null), "logs/" + server.getUuid()).listFiles();
         for (File file : files) {
@@ -110,26 +110,29 @@ public class LogService {
 
     public void migrate(Context context) {
 
-        List<Server> servers = serverDAO.findAll();
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        if (servers.size() > 0 && !preferences.contains(MIGRATION_21_KEY)) {
-            Toast.makeText(context, context.getString(R.string.migrate_log), Toast.LENGTH_LONG).show();
-            for (Server server : servers) {
-                File path = new File(context.getExternalFilesDir(null), "logs");
-                String filename = String.format(Locale.ENGLISH, "server_%s_%d.log", server.getHostname().replaceAll("\\.", "-"), server.getPort());
-                File file = new File(path, filename);
-                String log = "";
-                if (isExternalStorageReadable() && file.exists()) {
-                    try {
-                        log = IOUtils.toString(new FileInputStream(file));
-                        preferences.edit().putBoolean(MIGRATION_21_KEY, true).apply();
-                    } catch (IOException e) {
-                        Ln.e("Error reading log file : %s", e.getMessage());
+
+        if (!preferences.contains(MIGRATION_21_KEY)) {
+            List<Server> servers = serverDAO.findAll();
+            if (servers.size() > 0) {
+                Toast.makeText(context, context.getString(R.string.migrate_log), Toast.LENGTH_LONG).show();
+                for (Server server : servers) {
+                    File path = new File(context.getExternalFilesDir(null), "logs");
+                    String filename = String.format(Locale.ENGLISH, "server_%s_%d.log", server.getHostname().replaceAll("\\.", "-"), server.getPort());
+                    File file = new File(path, filename);
+                    String log = "";
+                    if (isExternalStorageReadable() && file.exists()) {
+                        try {
+                            log = IOUtils.toString(new FileInputStream(file));
+                        } catch (IOException e) {
+                            Ln.e("Error reading log file : %s", e.getMessage());
+                        }
                     }
+                    write(context, server, log);
                 }
-                write(context, server, log);
             }
+            preferences.edit().putBoolean(MIGRATION_21_KEY, true).apply();
         }
     }
 

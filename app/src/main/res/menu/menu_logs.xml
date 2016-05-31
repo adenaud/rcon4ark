@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/menu_log_history"
-        android:icon="@drawable/ic_cached_white_48dp"
-        android:title="@string/action_refresh"
+        android:icon="@drawable/ic_history_white_48dp"
+        android:title="@string/action_change_file"
         app:showAsAction="always" />
 </menu>

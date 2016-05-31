@@ -139,10 +139,10 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
             final List<String> files = logService.listArchives(getContext(), server);
 
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle("Select file to view");
+            builder.setTitle(getString(R.string.select_file));
 
             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(),
-                    android.R.layout.select_dialog_singlechoice, files);
+                    android.R.layout.simple_list_item_1, files);
             builder.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
