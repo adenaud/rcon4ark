@@ -346,15 +346,22 @@ public class ArkService implements OnReceiveListener {
 
     private void startLogAndChatTimers() {
 
+        String command = "getgamelog";
+
+        if(preferences.getBoolean("chat_instead_of_log", false)){
+            command = "getchat";
+        }
+
         int defaultLogDelay = context.getResources().getInteger(R.integer.log_timer_delay);
         int logDelay = Integer.valueOf(preferences.getString("log_delay", String.valueOf(defaultLogDelay)));
 
         logTimer = new Timer("LogTimer");
+        final String finalCommand = command;
         logTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 if (connection.isConnected()) {
-                    Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "getgamelog");
+                    Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), finalCommand);
                     try {
                         connection.send(packet);
                     } catch (IOException e) {

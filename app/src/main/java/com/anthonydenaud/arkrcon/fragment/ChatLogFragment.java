@@ -182,6 +182,19 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
     }
 
     @Override
+    public void onGetChat(final String chatBuffer) {
+        if (StringUtils.isNotEmpty(chatBuffer)) {
+            writeLog(formatHtml(chatBuffer));
+            context.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    addLogTextAfter(chatBuffer);
+                }
+            });
+        }
+    }
+
+    @Override
     public void onGetLog(final String logBuffer) {
         if (StringUtils.isNotEmpty(logBuffer)) {
             writeLog(formatHtml(logBuffer));
