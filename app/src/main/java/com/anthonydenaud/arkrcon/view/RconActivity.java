@@ -1,6 +1,7 @@
 package com.anthonydenaud.arkrcon.view;
 
 import android.content.SharedPreferences;
+import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v7.widget.Toolbar;
@@ -12,6 +13,7 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 
 import com.anthonydenaud.arkrcon.service.LogService;
+import com.anthonydenaud.arkrcon.service.NotificationService;
 import com.google.inject.Inject;
 
 import com.anthonydenaud.arkrcon.Codes;
@@ -40,11 +42,15 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
     private ChatLogFragment chatLogFragment;
 
 
+
     @Inject
     private ArkService arkService;
 
     @Inject
     private LogService logService;
+
+    @Inject
+    private NotificationService notificationService;
 
 
     @InjectView(R.id.container)
@@ -64,6 +70,16 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
 
         }
 
+        if(savedInstanceState != null){
+            server = savedInstanceState.getParcelable("server");
+        }
+
+        if(getIntent().hasExtra("notificationId")){
+            int notificationId = getIntent().getIntExtra("notificationId",-1);
+            if(notificationId > -1){
+                //notificationService.hide(this,notificationId);
+            }
+        }
 
         server = getIntent().getParcelableExtra("server");
         setTitle(server.getName());
@@ -90,6 +106,17 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
 
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable("server",server);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        server = savedInstanceState.getParcelable("server");
+        super.onRestoreInstanceState(savedInstanceState);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -187,7 +187,8 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
     @Override
     public void onGetChat(final String chatBuffer) {
         if (StringUtils.isNotEmpty(chatBuffer)) {
-            notificationService.handleChatKeyword(chatBuffer);
+            Server server = getActivity().getIntent().getParcelableExtra("server");
+            notificationService.handleChatKeyword(getActivity(), chatBuffer);
             writeLog(formatHtml(chatBuffer));
             context.runOnUiThread(new Runnable() {
                 @Override
@@ -201,7 +202,8 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
     @Override
     public void onGetLog(final String logBuffer) {
         if (StringUtils.isNotEmpty(logBuffer)) {
-            notificationService.handleChatKeyword(logBuffer);
+            Server server = getActivity().getIntent().getParcelableExtra("server");
+            notificationService.handleChatKeyword(getActivity(), logBuffer);
             writeLog(formatHtml(logBuffer));
             context.runOnUiThread(new Runnable() {
                 @Override
