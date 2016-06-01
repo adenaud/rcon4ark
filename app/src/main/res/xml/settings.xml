@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+
+    <PreferenceCategory android:title="@string/general">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="keep_screen_on"
+            android:title="@string/keep_screen_on"
+            android:summary="@string/keep_screen_on_summary"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/chat_log">
+
+    </PreferenceCategory>
+
     <ListPreference
         android:defaultValue="2000"
         android:entries="@array/refresh_rates_title"
@@ -18,14 +31,25 @@
 
     <SwitchPreference
         android:defaultValue="false"
-        android:key="keep_screen_on"
-        android:title="@string/keep_screen_on"
-        android:summary="@string/keep_screen_on_summary"/>
-
-    <SwitchPreference
-        android:defaultValue="false"
         android:key="chat_instead_of_log"
         android:title="@string/chat_instead_of_log"
         android:summary="@string/chat_instead_of_log_summary"/>
+
+    <PreferenceCategory android:title="@string/notifications">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="notifications_enabled"
+            android:title="@string/notifications"/>
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="vibrate"
+            android:title="@string/vibrate"/>
+        <EditTextPreference
+            android:key="chat_notification_keyword"
+            android:title="@string/chat_notification_keyword"
+            android:summary="@string/chat_notification_keyword_summary"
+            android:dependency="notifications_enabled"/>
+    </PreferenceCategory>
+
 
 </PreferenceScreen>

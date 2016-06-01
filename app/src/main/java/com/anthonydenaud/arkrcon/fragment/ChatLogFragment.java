@@ -27,6 +27,7 @@ import android.widget.TextView;
 
 import com.anthonydenaud.arkrcon.model.Server;
 import com.anthonydenaud.arkrcon.service.LogService;
+import com.anthonydenaud.arkrcon.service.NotificationService;
 import com.google.inject.Inject;
 
 import com.anthonydenaud.arkrcon.R;
@@ -49,6 +50,8 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
     @Inject
     private LogService logService;
 
+    @Inject
+    private NotificationService notificationService;
 
     @InjectView(R.id.webview_log)
     private WebView webViewLog;
@@ -184,6 +187,7 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
     @Override
     public void onGetChat(final String chatBuffer) {
         if (StringUtils.isNotEmpty(chatBuffer)) {
+            notificationService.handleChatKeyword(chatBuffer);
             writeLog(formatHtml(chatBuffer));
             context.runOnUiThread(new Runnable() {
                 @Override
@@ -197,6 +201,7 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
     @Override
     public void onGetLog(final String logBuffer) {
         if (StringUtils.isNotEmpty(logBuffer)) {
+            notificationService.handleChatKeyword(logBuffer);
             writeLog(formatHtml(logBuffer));
             context.runOnUiThread(new Runnable() {
                 @Override
