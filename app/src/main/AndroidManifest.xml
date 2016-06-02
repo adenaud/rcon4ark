@@ -53,5 +53,4 @@
                 android:value="com.anthonydenaud.arkrcon.MainActivity" />
         </activity>
     </application>
-
 </manifest>

@@ -56,7 +56,6 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
     @InjectView(R.id.container)
     private ViewPager mViewPager;
     private SharedPreferences preferences;
-    private Server server;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,53 +68,31 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         }
+        Server server = getIntent().getParcelableExtra("server");
+        if(server == null){
+            finish();
+        }else{
+            setTitle(server.getName());
 
-        if(savedInstanceState != null){
-            server = savedInstanceState.getParcelable("server");
+            arkService.addConnectionListener(this);
+
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+            rconFragmentPagerAdapter = new RconFragmentPagerAdapter(this, getSupportFragmentManager());
+            rconFragmentPagerAdapter.addFragment(playersFragment);
+            rconFragmentPagerAdapter.addFragment(commandsFragment);
+            rconFragmentPagerAdapter.addFragment(chatLogFragment);
+
+            mViewPager.setOffscreenPageLimit(rconFragmentPagerAdapter.getCount());
+            mViewPager.addOnPageChangeListener(this);
+            mViewPager.setAdapter(rconFragmentPagerAdapter);
+
+            TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+            tabLayout.setupWithViewPager(mViewPager);
+
         }
-
-        if(getIntent().hasExtra("notificationId")){
-            int notificationId = getIntent().getIntExtra("notificationId",-1);
-            if(notificationId > -1){
-                //notificationService.hide(this,notificationId);
-            }
-        }
-
-        server = getIntent().getParcelableExtra("server");
-        setTitle(server.getName());
-
-
-        arkService.addConnectionListener(this);
-
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        rconFragmentPagerAdapter = new RconFragmentPagerAdapter(this, getSupportFragmentManager());
-        rconFragmentPagerAdapter.addFragment(playersFragment);
-        rconFragmentPagerAdapter.addFragment(commandsFragment);
-        rconFragmentPagerAdapter.addFragment(chatLogFragment);
-
-        mViewPager.setOffscreenPageLimit(rconFragmentPagerAdapter.getCount());
-        mViewPager.addOnPageChangeListener(this);
-        mViewPager.setAdapter(rconFragmentPagerAdapter);
-
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(mViewPager);
-
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putParcelable("server",server);
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        server = savedInstanceState.getParcelable("server");
-        super.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override
