@@ -150,7 +150,7 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     String filename = files.get(which);
-                    initWebView(logService.readArchive(getContext(),server,filename));
+                    initWebView(logService.readArchive(getContext(), server, filename));
                     dialog.dismiss();
                 }
             });
@@ -187,8 +187,9 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
     @Override
     public void onGetChat(final String chatBuffer) {
         if (StringUtils.isNotEmpty(chatBuffer)) {
-            Server server = getActivity().getIntent().getParcelableExtra("server");
-            notificationService.handleChatKeyword(getActivity(), chatBuffer);
+            if (!getActivity().getIntent().getBooleanExtra("isVisible", false)) {
+                notificationService.handleChatKeyword(getActivity(), chatBuffer);
+            }
             writeLog(formatHtml(chatBuffer));
             context.runOnUiThread(new Runnable() {
                 @Override
@@ -202,8 +203,9 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
     @Override
     public void onGetLog(final String logBuffer) {
         if (StringUtils.isNotEmpty(logBuffer)) {
-            Server server = getActivity().getIntent().getParcelableExtra("server");
-            notificationService.handleChatKeyword(getActivity(), logBuffer);
+            if (!getActivity().getIntent().getBooleanExtra("isVisible", false)) {
+                notificationService.handleChatKeyword(getActivity(), logBuffer);
+            }
             writeLog(formatHtml(logBuffer));
             context.runOnUiThread(new Runnable() {
                 @Override

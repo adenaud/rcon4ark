@@ -36,6 +36,10 @@ public class RconFragmentPagerAdapter extends FragmentPagerAdapter {
         return fragments.get(position);
     }
 
+    public int indexOf(Fragment fragment){
+        return fragments.indexOf(fragment);
+    }
+
     @Override
     public CharSequence getPageTitle(int position) {
 

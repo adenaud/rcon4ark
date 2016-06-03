@@ -68,6 +68,8 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         }
+        getIntent().putExtra("isVisible",false);
+
         Server server = getIntent().getParcelableExtra("server");
         if(server == null){
             finish();
@@ -89,10 +91,52 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
             mViewPager.addOnPageChangeListener(this);
             mViewPager.setAdapter(rconFragmentPagerAdapter);
 
+            mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+                }
+
+                @Override
+                public void onPageSelected(int position) {
+                    if(rconFragmentPagerAdapter.getItem(position).equals(chatLogFragment)){
+                        getIntent().putExtra("isVisible",true);
+                    }else{
+                        getIntent().putExtra("isVisible",false);
+                    }
+                }
+
+                @Override
+                public void onPageScrollStateChanged(int state) {
+
+                }
+            });
+
             TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
             tabLayout.setupWithViewPager(mViewPager);
 
         }
+    }
+
+    @Override
+    protected void onResume() {
+
+        if(getIntent().hasExtra("chat_notification")){
+            mViewPager.setCurrentItem(rconFragmentPagerAdapter.indexOf(chatLogFragment));
+        }
+
+        if(rconFragmentPagerAdapter.getItem(mViewPager.getCurrentItem()).equals(chatLogFragment)){
+            getIntent().putExtra("isVisible",true);
+        }else{
+            getIntent().putExtra("isVisible",false);
+        }
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        getIntent().putExtra("isVisible",false);
+        super.onPause();
     }
 
     @Override
