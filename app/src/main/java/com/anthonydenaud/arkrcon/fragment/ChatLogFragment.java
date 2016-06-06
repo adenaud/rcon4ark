@@ -285,7 +285,7 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
 
 
     private void writeLog(String log) {
-        if (preferences.getBoolean("save_log", false)) {
+        if (preferences.getBoolean("save_log", true)) {
             if (!logService.write(getActivity(), (Server) getActivity().getIntent().getParcelableExtra("server"), log)) {
                 Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_log_write, Snackbar.LENGTH_SHORT).show();
             }
