@@ -175,7 +175,10 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
 
     @Override
     public void onConnectionFail(String message) {
+    }
 
+    @Override
+    public void onConnectionDrop() {
     }
 
     @Override

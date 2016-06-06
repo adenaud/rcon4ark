@@ -204,4 +204,8 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
             }
         });
     }
+
+    @Override
+    public void onConnectionDrop() {
+    }
 }
