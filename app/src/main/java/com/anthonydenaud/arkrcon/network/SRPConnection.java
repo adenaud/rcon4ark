@@ -86,16 +86,31 @@ public class SRPConnection {
         return ++sequenceNumber;
     }
 
-    public void send(final Packet packet) throws IOException {
+    public void send(final Packet packet) {
 
         synchronized (outgoingPackets) {
             this.outgoingPackets.put(packet.getId(), packet);
         }
 
         if (client != null && client.isConnected()) {
-            byte[] data = packet.encode();
-            OutputStream outputStream = client.getOutputStream();
-            outputStream.write(data);
+
+            Thread sendThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    byte[] data = new byte[0];
+                    try {
+                        data = packet.encode();
+                        OutputStream outputStream = client.getOutputStream();
+                        outputStream.write(data);
+                    } catch (IOException e) {
+                        connectionListener.onConnectionDrop();
+                    }
+                }
+            });
+            sendThread.setName("SendThread");
+            sendThread.start();
+
+
         } else {
             isConnected = false;
             Ln.e("Unable to send packet : connection closed.");
@@ -130,9 +145,9 @@ public class SRPConnection {
                 }
 
                 final byte[] response;
-                if(!PacketUtils.isText(packetSize)){
+                if (!PacketUtils.isText(packetSize)) {
                     response = new byte[packetSizeInt];
-                }else{
+                } else {
                     response = new byte[Packet.PACKET_MAX_LENGTH];
                 }
 
@@ -144,48 +159,43 @@ public class SRPConnection {
                 final byte[] packetBuffer = byteArrayOutputStream.toByteArray();
 
 
-                    if (responseLength > 0) {
+                if (responseLength > 0) {
 
-                        if(PacketUtils.isStartPacket(packetBuffer)) {
-                            final Packet packet = new Packet(packetBuffer);
-                            if ((packet.getId() == -1 || packet.getId() > 0) && onReceiveListener != null) {
-                                lastPacketTime = new Date();
-
-                                Thread thread = new Thread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        onReceiveListener.onReceive(new ReceiveEvent(SRPConnection.this, packet));
-                                    }
-                                }, "ResponseExecThread");
-                                thread.start();
-                            }
-                        }else{
-                           final  Packet lastPacket = outgoingPackets.get(outgoingPackets.lastKey());
+                    if (PacketUtils.isStartPacket(packetBuffer)) {
+                        final Packet packet = new Packet(packetBuffer);
+                        if ((packet.getId() == -1 || packet.getId() > 0) && onReceiveListener != null) {
+                            lastPacketTime = new Date();
 
                             Thread thread = new Thread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    if(lastPacket.getBody().equals("getgamelog")){
-                                        Packet packet = new Packet(lastPacket.getId(), PacketType.SERVERDATA_RESPONSE_VALUE.getValue(), new String(packetBuffer));
-                                        onReceiveListener.onReceive(new ReceiveEvent(SRPConnection.this, packet));
-                                    }
-                                    else if(lastPacket.getBody().equals("ListPlayers")){
-                                        Packet packet = new Packet(getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "ListPlayers");
-                                        try {
-                                            send(packet);
-                                        } catch (IOException e) {
-                                            Ln.e(e);
-                                        }
-                                    }
+                                    onReceiveListener.onReceive(new ReceiveEvent(SRPConnection.this, packet));
                                 }
                             }, "ResponseExecThread");
                             thread.start();
                         }
+                    } else {
+                        final Packet lastPacket = outgoingPackets.get(outgoingPackets.lastKey());
+
+                        Thread thread = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (lastPacket.getBody().equals("getgamelog")) {
+                                    Packet packet = new Packet(lastPacket.getId(), PacketType.SERVERDATA_RESPONSE_VALUE.getValue(), new String(packetBuffer));
+                                    onReceiveListener.onReceive(new ReceiveEvent(SRPConnection.this, packet));
+                                } else if (lastPacket.getBody().equals("ListPlayers")) {
+                                    Packet packet = new Packet(getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "ListPlayers");
+                                    send(packet);
+                                }
+                            }
+                        }, "ResponseExecThread");
+                        thread.start();
                     }
+                }
 
                 receive();
-                } catch (IOException e) {
-                    Ln.e("Unable to receive packet : %s", e.getMessage());
+            } catch (IOException e) {
+                Ln.e("Unable to receive packet : %s", e.getMessage());
             }
         }
     }
