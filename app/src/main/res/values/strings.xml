@@ -19,7 +19,8 @@
 
     <string name="server_name">Server name</string>
     <string name="hostname">Hostname</string>
-    <string name="port">Port</string>
+    <string name="rcon_port">Rcon Port</string>
+    <string name="query_port">Query Port</string>
     <string name="password">Password</string>
     <string name="admin_name">Admin name (optional)</string>
 
@@ -90,6 +91,20 @@
     <string name="error_log_write">Unable to write the log file</string>
     <string name="fragment_chat_log"><![CDATA[Chat & Log]]></string>
     <string name="fragment_commands">Commands</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="migrate_log">Updating log files …</string>
+    <string name="action_change_file">Change file</string>
+    <string name="select_file">Select file</string>
+    <string name="chat_instead_of_log">Use the \'getchat\' command.</string>
+    <string name="chat_instead_of_log_summary">The \'getchat\' command will be used to get the chat instead of the \'getgamelog\' command.</string>
+    <string name="enable_notifications">Notifications</string>
+    <string name="notifications">Notifications</string>
+    <string name="chat_notification_keyword">Keyword</string>
+    <string name="chat_notification_keyword_summary">Display a notification when this keyword appear in the chat.</string>
+    <string name="vibrate">Vibrate</string>
+    <string name="general">General</string>
+    <string name="chat_log"><![CDATA[Chat & Log]]></string>
+    <string name="notification_title">Chat alert</string>
 
 
     <!-- Settings -->

@@ -13,6 +13,9 @@ public class Server implements Parcelable {
     @DatabaseField(generatedId = true)
     private int id;
 
+    @DatabaseField()
+    private String uuid;
+
     @DatabaseField
     private String name;
 
@@ -23,15 +26,19 @@ public class Server implements Parcelable {
     private int port;
 
     @DatabaseField
+    private int queryPort;
+
+    @DatabaseField
     private String password;
 
     @DatabaseField
     private String adminName;
 
-    public Server(){
+    public Server() {
         name = "";
         hostname = "";
         port = 32330;
+        queryPort = 0;
         password = "";
         adminName = "";
     }
@@ -44,11 +51,13 @@ public class Server implements Parcelable {
         this.adminName = "";
     }
 
-    public Server(Parcel source){
+    public Server(Parcel source) {
         this.id = source.readInt();
+        this.uuid = source.readString();
         this.name = source.readString();
         this.hostname = source.readString();
         this.port = source.readInt();
+        this.queryPort = source.readInt();
         this.password = source.readString();
         this.adminName = source.readString();
     }
@@ -59,6 +68,14 @@ public class Server implements Parcelable {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public String getName() {
@@ -79,6 +96,14 @@ public class Server implements Parcelable {
 
     public int getPort() {
         return port;
+    }
+
+    public int getQueryPort() {
+        return queryPort;
+    }
+
+    public void setQueryPort(int queryPort) {
+        this.queryPort = queryPort;
     }
 
     public void setPort(int port) {
@@ -109,9 +134,11 @@ public class Server implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
+        dest.writeString(uuid);
         dest.writeString(name);
         dest.writeString(hostname);
         dest.writeInt(port);
+        dest.writeInt(queryPort);
         dest.writeString(password);
         dest.writeString(adminName);
     }

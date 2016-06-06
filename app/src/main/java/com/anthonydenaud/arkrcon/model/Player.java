@@ -8,30 +8,20 @@ import android.os.Parcelable;
  */
 public class Player implements Parcelable {
 
-    private int ue4Id;
-
     private String name;
-
     private String steamId;
+    private float connectTime;
 
-    public Player(int ue4Id, String name, String steamId) {
-        this.ue4Id = ue4Id;
+    public Player(String name, String steamId, float connectTime) {
         this.name = name;
         this.steamId = steamId;
+        this.connectTime = connectTime;
     }
 
     public Player(Parcel source) {
-        ue4Id = source.readInt();
         name = source.readString();
         steamId = source.readString();
-    }
-
-    public int getUe4Id() {
-        return ue4Id;
-    }
-
-    public void setUe4Id(int ue4Id) {
-        this.ue4Id = ue4Id;
+        connectTime = source.readFloat();
     }
 
     public String getName() {
@@ -50,6 +40,14 @@ public class Player implements Parcelable {
         this.steamId = steamId;
     }
 
+    public float getConnectTime() {
+        return connectTime;
+    }
+
+    public void setConnectTime(float connectTime) {
+        this.connectTime = connectTime;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -57,9 +55,9 @@ public class Player implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(ue4Id);
         dest.writeString(name);
         dest.writeString(steamId);
+        dest.writeFloat(connectTime);
     }
 
     public static final Creator<Player> CREATOR = new Creator<Player>() {

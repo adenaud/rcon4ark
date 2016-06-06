@@ -1,6 +1,7 @@
 package com.anthonydenaud.arkrcon.view;
 
 import android.content.SharedPreferences;
+import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v7.widget.Toolbar;
@@ -12,6 +13,7 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 
 import com.anthonydenaud.arkrcon.service.LogService;
+import com.anthonydenaud.arkrcon.service.NotificationService;
 import com.google.inject.Inject;
 
 import com.anthonydenaud.arkrcon.Codes;
@@ -40,17 +42,20 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
     private ChatLogFragment chatLogFragment;
 
 
+
     @Inject
     private ArkService arkService;
 
     @Inject
     private LogService logService;
 
+    @Inject
+    private NotificationService notificationService;
+
 
     @InjectView(R.id.container)
     private ViewPager mViewPager;
     private SharedPreferences preferences;
-    private Server server;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,33 +68,76 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         }
+        getIntent().putExtra("isVisible",false);
 
+        Server server = getIntent().getParcelableExtra("server");
+        if(server == null){
+            finish();
+        }else{
+            setTitle(server.getName());
 
-        server = getIntent().getParcelableExtra("server");
-        setTitle(server.getName());
+            arkService.addConnectionListener(this);
 
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        arkService.addConnectionListener(this);
+            rconFragmentPagerAdapter = new RconFragmentPagerAdapter(this, getSupportFragmentManager());
+            rconFragmentPagerAdapter.addFragment(playersFragment);
+            rconFragmentPagerAdapter.addFragment(commandsFragment);
+            rconFragmentPagerAdapter.addFragment(chatLogFragment);
 
+            mViewPager.setOffscreenPageLimit(rconFragmentPagerAdapter.getCount());
+            mViewPager.addOnPageChangeListener(this);
+            mViewPager.setAdapter(rconFragmentPagerAdapter);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-        rconFragmentPagerAdapter = new RconFragmentPagerAdapter(this, getSupportFragmentManager());
-        rconFragmentPagerAdapter.addFragment(playersFragment);
-        rconFragmentPagerAdapter.addFragment(commandsFragment);
-        rconFragmentPagerAdapter.addFragment(chatLogFragment);
+                }
 
-        mViewPager.setOffscreenPageLimit(rconFragmentPagerAdapter.getCount());
-        mViewPager.addOnPageChangeListener(this);
-        mViewPager.setAdapter(rconFragmentPagerAdapter);
+                @Override
+                public void onPageSelected(int position) {
+                    if(rconFragmentPagerAdapter.getItem(position).equals(chatLogFragment)){
+                        getIntent().putExtra("isVisible",true);
+                    }else{
+                        getIntent().putExtra("isVisible",false);
+                    }
+                }
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(mViewPager);
+                @Override
+                public void onPageScrollStateChanged(int state) {
 
+                }
+            });
+
+            TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+            tabLayout.setupWithViewPager(mViewPager);
+
+        }
     }
 
+    @Override
+    protected void onResume() {
+
+        if(getIntent().hasExtra("chat_notification")){
+            mViewPager.setCurrentItem(rconFragmentPagerAdapter.indexOf(chatLogFragment));
+        }
+
+        if(rconFragmentPagerAdapter.getItem(mViewPager.getCurrentItem()).equals(chatLogFragment)){
+            getIntent().putExtra("isVisible",true);
+        }else{
+            getIntent().putExtra("isVisible",false);
+        }
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        getIntent().putExtra("isVisible",false);
+        super.onPause();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -127,7 +175,10 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
 
     @Override
     public void onConnectionFail(String message) {
+    }
 
+    @Override
+    public void onConnectionDrop() {
     }
 
     @Override

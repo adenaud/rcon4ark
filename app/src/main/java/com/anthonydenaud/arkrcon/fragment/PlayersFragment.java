@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,6 +25,7 @@ import com.anthonydenaud.arkrcon.adapter.PlayerArrayAdapter;
 import com.anthonydenaud.arkrcon.model.Player;
 import com.anthonydenaud.arkrcon.service.ArkService;
 import com.anthonydenaud.arkrcon.R;
+
 import java.util.List;
 
 import roboguice.inject.InjectView;
@@ -46,7 +48,7 @@ public class PlayersFragment extends RconFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
+        setHasOptionsMenu(true);
         return inflater.inflate(R.layout.fragment_rcon_players, container, false);
     }
 
@@ -61,6 +63,21 @@ public class PlayersFragment extends RconFragment {
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        getActivity().getMenuInflater().inflate(R.menu.menu_players, menu);
+        super.onCreateOptionsMenu(menu,inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.menu_action_refresh){
+            arkService.listPlayers();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onAttach(Context context) {
         this.context = (Activity) context;
         super.onAttach(context);
@@ -69,7 +86,7 @@ public class PlayersFragment extends RconFragment {
     @Override
     public void onListPlayers(List<Player> players) {
 
-        if(players.size() > 0){
+        if (players.size() > 0) {
             playerArrayAdapter.setPlayers(players);
             context.runOnUiThread(new Runnable() {
                 @Override
@@ -115,12 +132,12 @@ public class PlayersFragment extends RconFragment {
                 arkService.allowPlayerToJoinNoCheck(player);
                 return true;
 
-            case  R.id.menu_cpy_name:
-                clip = ClipData.newPlainText("player_name",player.getName());
+            case R.id.menu_cpy_name:
+                clip = ClipData.newPlainText("player_name", player.getName());
                 clipboard.setPrimaryClip(clip);
                 return true;
-            case  R.id.menu_cpy_steamid:
-                clip = ClipData.newPlainText("player_steamid",player.getSteamId());
+            case R.id.menu_cpy_steamid:
+                clip = ClipData.newPlainText("player_steamid", player.getSteamId());
                 clipboard.setPrimaryClip(clip);
                 return true;
             default:
@@ -128,7 +145,7 @@ public class PlayersFragment extends RconFragment {
         }
     }
 
-    private void openMessageDialog(final Player player){
+    private void openMessageDialog(final Player player) {
         final EditText editText = new EditText(context);
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(R.string.send_message);

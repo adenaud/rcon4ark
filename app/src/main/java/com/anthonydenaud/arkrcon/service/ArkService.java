@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.anthonydenaud.arkrcon.event.OnServerStopRespondingListener;
+import com.anthonydenaud.arkrcon.network.SteamQuery;
+import com.github.koraktor.steamcondenser.steam.SteamPlayer;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -25,6 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.Timer;
@@ -38,8 +41,12 @@ import roboguice.util.Ln;
 public class ArkService implements OnReceiveListener {
 
     private final Context context;
+
     @Inject
     private SRPConnection connection;
+
+    @Inject
+    private SteamQuery steamQuery;
 
     private List<ConnectionListener> connectionListeners;
 
@@ -51,7 +58,6 @@ public class ArkService implements OnReceiveListener {
     private Timer logTimer;
 
     private SharedPreferences preferences;
-
 
     @Inject
     public ArkService(Context context) {
@@ -73,6 +79,11 @@ public class ArkService implements OnReceiveListener {
             @Override
             public void onConnect(boolean reconnecting) {
                 login(server.getPassword());
+            }
+
+            @Override
+            public void onConnectionDrop() {
+                connection.reconnect();
             }
 
             @Override
@@ -104,20 +115,12 @@ public class ArkService implements OnReceiveListener {
     private void login(String password) {
         Ln.d("Login ...");
         Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_AUTH.getValue(), password);
-        try {
-            connection.send(packet);
-        } catch (IOException e) {
-            sendOnDisconnectEvent();
-        }
+        connection.send(packet);
     }
 
     public void listPlayers() {
         Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "ListPlayers");
-        try {
-            connection.send(packet);
-        } catch (IOException e) {
-            sendOnDisconnectEvent();
-        }
+        connection.send(packet);
     }
 
     /**
@@ -127,11 +130,7 @@ public class ArkService implements OnReceiveListener {
      */
     public void broadcast(String message) {
         Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "Broadcast " + message);
-        try {
-            connection.send(packet);
-        } catch (IOException e) {
-            sendOnDisconnectEvent();
-        }
+        connection.send(packet);
     }
 
     private String getAdminName() {
@@ -149,64 +148,30 @@ public class ArkService implements OnReceiveListener {
      */
     public void serverChat(String message) {
         Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "ServerChat " + getAdminName() + " : " + message);
-        try {
-            connection.send(packet);
-        } catch (IOException e) {
-            sendOnDisconnectEvent();
-        }
+        connection.send(packet);
     }
 
 
     public void serverChatTo(Player player, String message) {
         Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "ServerChatTo \"" + player.getSteamId() + "\" " + getAdminName() + " : " + message);
-        try {
-            connection.send(packet);
-        } catch (IOException e) {
-            sendOnDisconnectEvent();
-        }
+        connection.send(packet);
     }
 
 
     public void destroyWildDinos() {
         Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "DestroyWildDinos");
-        try {
-            connection.send(packet);
-        } catch (IOException e) {
-            sendOnDisconnectEvent();
-        }
+        connection.send(packet);
     }
 
     public void setTimeofDay(int hour, int minute) {
         String command = "SetTimeOfDay " + String.valueOf(hour) + ":" + String.valueOf(minute);
         Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), command);
-        try {
-            connection.send(packet);
-        } catch (IOException e) {
-            sendOnDisconnectEvent();
-        }
+        connection.send(packet);
     }
 
     public void saveWorld() {
         Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "SaveWorld");
-        try {
-            connection.send(packet);
-        } catch (IOException e) {
-            sendOnDisconnectEvent();
-        }
-    }
-
-    /**
-     * Kills the specified player.
-     *
-     * @param player Player to kill
-     */
-    public void killPlayer(Player player) {
-        Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "KillPlayer " + String.valueOf(player.getUe4Id()));
-        try {
-            connection.send(packet);
-        } catch (IOException e) {
-            sendOnDisconnectEvent();
-        }
+        connection.send(packet);
     }
 
     /**
@@ -216,11 +181,7 @@ public class ArkService implements OnReceiveListener {
      */
     public void kickPlayer(Player player) {
         Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "KickPlayer  " + player.getSteamId());
-        try {
-            connection.send(packet);
-        } catch (IOException e) {
-            sendOnDisconnectEvent();
-        }
+        connection.send(packet);
     }
 
     /**
@@ -230,11 +191,7 @@ public class ArkService implements OnReceiveListener {
      */
     public void banPlayer(Player player) {
         Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "BanPlayer  " + player.getName());
-        try {
-            connection.send(packet);
-        } catch (IOException e) {
-            sendOnDisconnectEvent();
-        }
+        connection.send(packet);
     }
 
     /**
@@ -244,11 +201,7 @@ public class ArkService implements OnReceiveListener {
      */
     public void unBan(String playerName) {
         Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "UnbanPlayer " + playerName);
-        try {
-            connection.send(packet);
-        } catch (IOException e) {
-            sendOnDisconnectEvent();
-        }
+        connection.send(packet);
     }
 
     /**
@@ -258,11 +211,7 @@ public class ArkService implements OnReceiveListener {
      */
     public void allowPlayerToJoinNoCheck(Player player) {
         Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "AllowPlayerToJoinNoCheck " + player.getSteamId());
-        try {
-            connection.send(packet);
-        } catch (IOException e) {
-            sendOnDisconnectEvent();
-        }
+        connection.send(packet);
     }
 
     /**
@@ -272,17 +221,13 @@ public class ArkService implements OnReceiveListener {
      */
     public void disallowPlayerToJoinNoCheck(String steamId) {
         Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "DisallowPlayerToJoinNoCheck  " + steamId);
-        try {
-            connection.send(packet);
-        } catch (IOException e) {
-            sendOnDisconnectEvent();
-        }
+        connection.send(packet);
     }
+
 
     @Override
     public void onReceive(ReceiveEvent event) {
         Packet packet = event.getPacket();
-
 
         if (packet.getType() == PacketType.SERVERDATA_RESPONSE_VALUE.getValue()) {
 
@@ -302,28 +247,7 @@ public class ArkService implements OnReceiveListener {
                     } else if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("getgamelog") && !packet.getBody().contains("Server received, But no response!!")) {
                         String body = packet.getBody();
                         dispatcher.onGetLog(body);
-                        if (body.trim().split("\\n").length < 20) {
-                            Pattern pattern = Pattern.compile("([0-9]{4})\\.([0-9]{2})\\.([0-9]{2})_([0-9]{2}).([0-9]{2}).([0-9]{2}):(.*)(joined|left) this ARK!!?\\r?\\n");
-                            Matcher matcher = pattern.matcher(body);
-                            Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-                            Date date = new Date();
-                            int count = 0;
-                            while (matcher.find()) {
-                                calendar.set(Calendar.YEAR,Integer.valueOf(matcher.group(1)));
-                                calendar.set(Calendar.MONTH,Integer.valueOf(matcher.group(2))-1);
-                                calendar.set(Calendar.DAY_OF_MONTH,Integer.valueOf(matcher.group(3)));
-                                calendar.set(Calendar.HOUR_OF_DAY,Integer.valueOf(matcher.group(4)));
-                                calendar.set(Calendar.MINUTE,Integer.valueOf(matcher.group(5)));
-                                calendar.set(Calendar.SECOND,Integer.valueOf(matcher.group(6)));
-                                date = calendar.getTime();
-                                count++;
-                            }
-                            long dateDiff = Math.abs(new Date().getTime() / 1000 - (date.getTime() / 1000));
-                            Ln.d(dateDiff);
-                            if(count > 0 && dateDiff < 600){
-                                dispatcher.onPlayerJoinLeft();
-                            }
-                        }
+                        autoUpdatePlayerList(dispatcher, body);
                     }
                 }
             }
@@ -342,28 +266,59 @@ public class ArkService implements OnReceiveListener {
                 }
 
                 startLogAndChatTimers();
+
+
+                int queryPort = server.getQueryPort();
+
+                this.steamQuery.connect(server.getHostname(), queryPort);
+            }
+        }
+    }
+
+    private void autoUpdatePlayerList(ServerResponseDispatcher dispatcher, String logBuffer) {
+        if (logBuffer.trim().split("\\n").length < 20) {
+            Pattern pattern = Pattern.compile("([0-9]{4})\\.([0-9]{2})\\.([0-9]{2})_([0-9]{2}).([0-9]{2}).([0-9]{2}):(.*)(joined|left) this ARK!!?\\r?\\n");
+            Matcher matcher = pattern.matcher(logBuffer);
+            Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            Date date = new Date();
+            int count = 0;
+            while (matcher.find()) {
+                calendar.set(Calendar.YEAR, Integer.valueOf(matcher.group(1)));
+                calendar.set(Calendar.MONTH, Integer.valueOf(matcher.group(2)) - 1);
+                calendar.set(Calendar.DAY_OF_MONTH, Integer.valueOf(matcher.group(3)));
+                calendar.set(Calendar.HOUR_OF_DAY, Integer.valueOf(matcher.group(4)));
+                calendar.set(Calendar.MINUTE, Integer.valueOf(matcher.group(5)));
+                calendar.set(Calendar.SECOND, Integer.valueOf(matcher.group(6)));
+                date = calendar.getTime();
+                count++;
+            }
+            long dateDiff = Math.abs(new Date().getTime() / 1000 - (date.getTime() / 1000));
+            Ln.d(dateDiff);
+            if (count > 0 && dateDiff < 600) {
+                dispatcher.onPlayerJoinLeft();
             }
         }
     }
 
     private void startLogAndChatTimers() {
 
+        String command = "getgamelog";
+
+        if (preferences.getBoolean("chat_instead_of_log", false)) {
+            command = "getchat";
+        }
+
         int defaultLogDelay = context.getResources().getInteger(R.integer.log_timer_delay);
         int logDelay = Integer.valueOf(preferences.getString("log_delay", String.valueOf(defaultLogDelay)));
 
         logTimer = new Timer("LogTimer");
+        final String finalCommand = command;
         logTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 if (connection.isConnected()) {
-                    Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), "getgamelog");
-                    try {
-                        connection.send(packet);
-                    } catch (IOException e) {
-                        disconnect();
-                        Ln.e("getgamelog exception : " + e.getMessage(), e);
-                        connection.reconnect();
-                    }
+                    Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_EXECCOMMAND.getValue(), finalCommand);
+                    connection.send(packet);
                 }
             }
         }, logDelay, logDelay);
@@ -390,6 +345,7 @@ public class ArkService implements OnReceiveListener {
     }
 
     private List<Player> getPlayers(String messageBody) {
+        HashMap<String, SteamPlayer> steamPlayers = steamQuery.getPlayers();
         List<Player> players = new ArrayList<>();
         String[] playersArray = messageBody.split("\n");
 
@@ -403,13 +359,16 @@ public class ArkService implements OnReceiveListener {
 
                     if (matcher.matches()) {
 
-                        int ue4Id = Integer.parseInt(matcher.group(1));
                         String name = matcher.group(2);
                         String steamId = matcher.group(3);
+                        Player player = new Player(name, steamId, 0);
 
-                        Player player = new Player(ue4Id, name, steamId);
+                        SteamPlayer steamPlayer = steamPlayers.get(name);
+                        if (steamPlayer != null) {
+                            player.setConnectTime(steamPlayer.getConnectTime());
+                        }
+
                         players.add(player);
-
                     }
                 }
             }
@@ -436,11 +395,7 @@ public class ArkService implements OnReceiveListener {
         int id = connection.getSequenceNumber();
         customCommands.add(id);
         Packet packet = new Packet(id, PacketType.SERVERDATA_EXECCOMMAND.getValue(), command);
-        try {
             connection.send(packet);
-        } catch (IOException e) {
-            sendOnDisconnectEvent();
-        }
     }
 
     public void removeServerResponseDispatcher(ServerResponseDispatcher serverResponseDispatcher) {
