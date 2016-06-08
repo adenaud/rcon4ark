@@ -105,11 +105,12 @@
     <string name="general">General</string>
     <string name="chat_log"><![CDATA[Chat & Log]]></string>
     <string name="notification_title">Chat alert</string>
+    <string name="update_available">A new version of the application is available.</string>
+    <string name="update_now">Update</string>
+    <string name="update_later">Later</string>
 
 
     <!-- Settings -->
-
-
 
 
 </resources>

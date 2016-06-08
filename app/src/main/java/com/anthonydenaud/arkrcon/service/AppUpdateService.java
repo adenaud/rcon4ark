@@ -1,8 +1,10 @@
 package com.anthonydenaud.arkrcon.service;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
 import com.anthonydenaud.arkrcon.BuildConfig;
+import com.anthonydenaud.arkrcon.R;
 import com.google.inject.Singleton;
 
 import org.json.JSONException;
@@ -49,9 +51,8 @@ public class AppUpdateService {
 
     private AppUpdateListener appUpdateListener;
 
-    public void checkAppUpdateAvailable() {
-        //TODO Fix url
-        new CheckUpdateAsyncTask().execute("");
+    public void checkAppUpdateAvailable(Context context) {
+        new CheckUpdateAsyncTask().execute(context.getString(R.string.update_url));
     }
 
     public void setAppUpdateListener(AppUpdateListener appUpdateListener) {
