@@ -17,7 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.webkit.WebSettings;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ArrayAdapter;
@@ -34,6 +34,7 @@ import com.anthonydenaud.arkrcon.R;
 import com.anthonydenaud.arkrcon.service.ArkService;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -85,13 +86,9 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
         return inflater.inflate(R.layout.fragment_chat, container, false);
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        WebSettings webSettings = webViewLog.getSettings();
-        webSettings.setJavaScriptEnabled(true);
 
         buttonChat.setOnClickListener(this);
         buttonBroadcast.setOnClickListener(this);
@@ -101,13 +98,14 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
 
         Server server = getActivity().getIntent().getParcelableExtra("server");
         String log = "";
-        if (preferences.getBoolean("save_log", false)) {
+        if (preferences.getBoolean("save_log", true)) {
             log = logService.readLatest(getActivity(), server);
         }
         initWebView(log);
 
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private void initWebView(final String content) {
         String template = "";
         try {
@@ -117,6 +115,8 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
         }
         final String finalTemplate = template;
         webViewLog.loadData(finalTemplate, "text/html", "UTF-8");
+        webViewLog.setWebChromeClient(new WebChromeClient());
+        webViewLog.getSettings().setJavaScriptEnabled(true);
         webViewLog.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
@@ -235,7 +235,8 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
                 context.runOnUiThread(new Runnable() {
                                           @Override
                                           public void run() {
-                                              webViewLog.loadUrl("javascript:addLogTextBefore(`" + text + "`)");
+                                              String log = text.replaceAll("\n","");
+                                              webViewLog.loadUrl("javascript:addLogTextBefore('" + log + "');");
 
                                           }
                                       }
@@ -253,7 +254,9 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
                 context.runOnUiThread(new Runnable() {
                                           @Override
                                           public void run() {
-                                              webViewLog.loadUrl("javascript:addLogTextAfter(`" + htmlToAdd + "`)");
+                                              String log = htmlToAdd.replaceAll("\n","");
+                                              webViewLog.loadUrl("javascript:addLogTextAfter('" + log + "');");
+
                                           }
                                       }
                 );
@@ -264,6 +267,7 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
 
     private String formatHtml(String content) {
         content = content.trim();
+        content = StringEscapeUtils.escapeEcmaScript(content);
         content += "\n";
         String html = content.replaceAll("(.*)left this ARK!", "<span class=\"joinleft\">$0</span>");
         html = html.replaceAll("(.*)joined this ARK!", "<span class=\"joinleft\">$0</span>");

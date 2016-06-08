@@ -16,6 +16,7 @@ import com.google.inject.Singleton;
 import org.apache.commons.io.FileSystemUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
@@ -125,6 +126,7 @@ public class LogService {
                     if (isExternalStorageReadable() && file.exists()) {
                         try {
                             log = IOUtils.toString(new FileInputStream(file));
+                            log = StringEscapeUtils.escapeEcmaScript(log);
                         } catch (IOException e) {
                             Ln.e("Error reading log file : %s", e.getMessage());
                         }

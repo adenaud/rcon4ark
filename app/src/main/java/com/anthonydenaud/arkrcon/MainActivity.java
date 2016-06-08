@@ -1,9 +1,12 @@
 package com.anthonydenaud.arkrcon;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
@@ -15,6 +18,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.anthonydenaud.arkrcon.service.AppUpdateService;
 import com.anthonydenaud.arkrcon.service.LogService;
 import com.anthonydenaud.arkrcon.view.SettingsActivity;
 import com.google.inject.Inject;
@@ -51,6 +55,9 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
     @Inject
     private LogService logService;
 
+    @Inject
+    private AppUpdateService updateService;
+
     private Server currentServer;
     private ProgressDialog progressDialog;
     private boolean rconActivityStarted = false;
@@ -64,6 +71,40 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
 
         registerForContextMenu(listView);
 
+
+        updateService.setAppUpdateListener(new AppUpdateService.AppUpdateListener() {
+            @Override
+            public void onUpdateAvailable(int versionCode) {
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                        builder.setMessage(R.string.update_available);
+                        builder.setPositiveButton(R.string.update_now, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                try {
+                                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.play_store_url))));
+                                } catch (android.content.ActivityNotFoundException anfe) {
+                                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.play_store_url))));
+                                }
+                                dialog.cancel();
+                            }
+                        });
+                        builder.setNegativeButton(R.string.update_later, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+                        builder.show();
+                    }
+                });
+            }
+        });
+        updateService.checkAppUpdateAvailable(this);
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         if (fab != null) {
             fab.setOnClickListener(new View.OnClickListener() {
@@ -75,6 +116,7 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
                 }
             });
         }
+
         listView.setOnItemClickListener(this);
         logService.migrate(this);
         refresh();
