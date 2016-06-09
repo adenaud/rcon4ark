@@ -70,8 +70,10 @@ public class LogService {
     public List<String> listArchives(Context context, Server server) {
         List<String> filenames = new ArrayList<>();
         File[] files = new File(context.getExternalFilesDir(null), "logs/" + server.getUuid()).listFiles();
-        for (File file : files) {
-            filenames.add(file.getName());
+        if(files != null) {
+            for (File file : files) {
+                filenames.add(file.getName());
+            }
         }
         return filenames;
     }

@@ -99,8 +99,8 @@
     <string name="chat_instead_of_log_summary">The \'getchat\' command will be used to get the chat instead of the \'getgamelog\' command.</string>
     <string name="enable_notifications">Notifications</string>
     <string name="notifications">Notifications</string>
-    <string name="chat_notification_keyword">Keyword</string>
-    <string name="chat_notification_keyword_summary">Display a notification when this keyword appear in the chat.</string>
+    <string name="chat_notification_keyword">Keywords (Separated by coma)</string>
+    <string name="chat_notification_keyword_summary">Display a notification when one of these keywords appear in the chat.</string>
     <string name="vibrate">Vibrate</string>
     <string name="general">General</string>
     <string name="chat_log"><![CDATA[Chat & Log]]></string>
