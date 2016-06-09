@@ -51,7 +51,7 @@ public class LogService {
             String filename = "server.log";
             File logFile = new File(path, filename);
 
-            if (logFile.exists() && logFile.length() >= R.integer.log_max_size) {
+            if (logFile.exists() && logFile.length() >= context.getResources().getInteger(R.integer.log_max_size)) {
                 archiveLog(path, logFile);
             }
 

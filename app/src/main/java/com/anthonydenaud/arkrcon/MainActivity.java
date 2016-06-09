@@ -217,7 +217,7 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    progressDialog.hide();
+                    progressDialog.dismiss();
                 }
             });
             rconActivityStarted = true;
@@ -241,7 +241,7 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                progressDialog.hide();
+                progressDialog.dismiss();
                 Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
             }
         });
