@@ -120,9 +120,7 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
         webViewLog.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
-                if (preferences.getBoolean("save_log", false)) {
-                    addLogTextBefore(content);
-                }
+                addLogTextBefore(content);
             }
         });
     }
@@ -235,7 +233,7 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
                 context.runOnUiThread(new Runnable() {
                                           @Override
                                           public void run() {
-                                              String log = text.replaceAll("\n","");
+                                              String log = text.replaceAll("\n", "");
                                               webViewLog.loadUrl("javascript:addLogTextBefore('" + log + "');");
 
                                           }
@@ -254,7 +252,7 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
                 context.runOnUiThread(new Runnable() {
                                           @Override
                                           public void run() {
-                                              String log = htmlToAdd.replaceAll("\n","");
+                                              String log = htmlToAdd.replaceAll("\n", "");
                                               webViewLog.loadUrl("javascript:addLogTextAfter('" + log + "');");
 
                                           }
@@ -282,7 +280,7 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
     }
 
     public void scrollDown() {
-        if(webViewLog != null){
+        if (webViewLog != null) {
             webViewLog.loadUrl("javascript:scrollDown()");
         }
     }
