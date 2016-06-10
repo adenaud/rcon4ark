@@ -131,6 +131,12 @@ public class CommandsFragment extends RconFragment implements View.OnClickListen
     }
 
     @Override
+    public void onDestroy() {
+        arkService.removeServerResponseDispatcher(this);
+        super.onDestroy();
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         output = textViewOutput.getText().toString();

@@ -30,8 +30,10 @@ public class SteamQuery {
             try {
                 server.updatePlayers();
                 players = server.getPlayers();
-            } catch (SteamCondenserException | TimeoutException e) {
+            } catch (SteamCondenserException e) {
                 Ln.e(e.getMessage());
+            } catch (TimeoutException e){
+                Ln.e("SteamQuery :  TimeoutException");
             }
         }
         return players;

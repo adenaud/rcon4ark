@@ -84,6 +84,12 @@ public class PlayersFragment extends RconFragment {
     }
 
     @Override
+    public void onDestroy() {
+        arkService.removeServerResponseDispatcher(this);
+        super.onDestroy();
+    }
+
+    @Override
     public void onListPlayers(List<Player> players) {
 
         if (players.size() > 0) {
