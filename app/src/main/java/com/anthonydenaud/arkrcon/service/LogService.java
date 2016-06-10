@@ -128,7 +128,7 @@ public class LogService {
                     if (isExternalStorageReadable() && file.exists()) {
                         try {
                             log = IOUtils.toString(new FileInputStream(file));
-                            log = StringEscapeUtils.escapeEcmaScript(log);
+                            log = log.replaceAll("'","\\\\'");
                         } catch (IOException e) {
                             Ln.e("Error reading log file : %s", e.getMessage());
                         }

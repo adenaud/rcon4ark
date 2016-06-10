@@ -265,7 +265,7 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
 
     private String formatHtml(String content) {
         content = content.trim();
-        content = StringEscapeUtils.escapeEcmaScript(content);
+        content = content.replaceAll("'","\\\\'");
         content += "\n";
         String html = content.replaceAll("(.*)left this ARK!", "<span class=\"joinleft\">$0</span>");
         html = html.replaceAll("(.*)joined this ARK!", "<span class=\"joinleft\">$0</span>");

@@ -13,25 +13,27 @@ public class SteamQuery {
 
     private GoldSrcServer server;
 
-    public void connect(String hostname, int port){
+    public void connect(String hostname, int port) {
         try {
-            server = new GoldSrcServer(hostname,port);
+            server = new GoldSrcServer(hostname, port);
         } catch (SteamCondenserException e) {
-            Ln.e(e);
+            Ln.e(e.getMessage());
         }
     }
 
-    public HashMap<String,SteamPlayer> getPlayers(){
+    public HashMap<String, SteamPlayer> getPlayers() {
 
         HashMap<String, SteamPlayer> players = new HashMap<>();
 
-        try {
-            server.updatePlayers();
-            players = server.getPlayers();
-        } catch (SteamCondenserException | TimeoutException e) {
-            Ln.e(e);
-        }
+        if (server != null) {
 
+            try {
+                server.updatePlayers();
+                players = server.getPlayers();
+            } catch (SteamCondenserException | TimeoutException e) {
+                Ln.e(e.getMessage());
+            }
+        }
         return players;
     }
 }

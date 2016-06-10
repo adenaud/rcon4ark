@@ -261,16 +261,14 @@ public class ArkService implements OnReceiveListener {
                 }
                 disconnect();
             } else {
+                int queryPort = server.getQueryPort();
+                this.steamQuery.connect(server.getHostname(), queryPort);
+
                 for (ConnectionListener listener : connectionListeners) {
                     listener.onConnect(connection.isReconnecting());
                 }
 
                 startLogAndChatTimers();
-
-
-                int queryPort = server.getQueryPort();
-
-                this.steamQuery.connect(server.getHostname(), queryPort);
             }
         }
     }
