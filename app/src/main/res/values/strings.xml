@@ -108,6 +108,8 @@
     <string name="update_available">A new version of the application is available.</string>
     <string name="update_now">Update</string>
     <string name="update_later">Later</string>
+    <string name="chat_auto_scroll_summary">Automatically scrolls down when a message is received</string>
+    <string name="chat_auto_scroll">Auto scroll</string>
 
 
     <!-- Settings -->

@@ -6,49 +6,53 @@
         <SwitchPreference
             android:defaultValue="false"
             android:key="keep_screen_on"
-            android:title="@string/keep_screen_on"
-            android:summary="@string/keep_screen_on_summary"/>
+            android:summary="@string/keep_screen_on_summary"
+            android:title="@string/keep_screen_on" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/chat_log">
+        <ListPreference
+            android:defaultValue="2000"
+            android:entries="@array/refresh_rates_title"
+            android:entryValues="@array/refresh_rates_values"
+            android:key="log_delay"
+            android:summary="@string/log_refresh_rate_summary"
+            android:title="@string/log_refresh_rate" />
 
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="save_log"
+            android:summary="@string/save_log_summary"
+            android:title="@string/save_log" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="chat_instead_of_log"
+            android:summary="@string/chat_instead_of_log_summary"
+            android:title="@string/chat_instead_of_log" />
+
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="chat_auto_scroll"
+            android:summary="@string/chat_auto_scroll_summary"
+            android:title="@string/chat_auto_scroll" />
     </PreferenceCategory>
-
-    <ListPreference
-        android:defaultValue="2000"
-        android:entries="@array/refresh_rates_title"
-        android:entryValues="@array/refresh_rates_values"
-        android:key="log_delay"
-        android:summary="@string/log_refresh_rate_summary"
-        android:title="@string/log_refresh_rate" />
-
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="save_log"
-        android:title="@string/save_log"
-        android:summary="@string/save_log_summary"/>
-
-
-    <SwitchPreference
-        android:defaultValue="false"
-        android:key="chat_instead_of_log"
-        android:title="@string/chat_instead_of_log"
-        android:summary="@string/chat_instead_of_log_summary"/>
 
     <PreferenceCategory android:title="@string/notifications">
         <SwitchPreference
             android:defaultValue="false"
             android:key="notifications_enabled"
-            android:title="@string/notifications"/>
+            android:title="@string/notifications" />
         <SwitchPreference
             android:defaultValue="true"
             android:key="vibrate"
-            android:title="@string/vibrate"/>
+            android:title="@string/vibrate" />
         <EditTextPreference
+            android:dependency="notifications_enabled"
             android:key="chat_notification_keyword"
-            android:title="@string/chat_notification_keyword"
             android:summary="@string/chat_notification_keyword_summary"
-            android:dependency="notifications_enabled"/>
+            android:title="@string/chat_notification_keyword" />
     </PreferenceCategory>
 
 

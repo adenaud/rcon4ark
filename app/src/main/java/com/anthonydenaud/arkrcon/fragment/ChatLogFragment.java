@@ -280,7 +280,7 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
     }
 
     public void scrollDown() {
-        if (webViewLog != null) {
+        if(preferences.getBoolean("chat_auto_scroll", true) && webViewLog != null){
             webViewLog.loadUrl("javascript:scrollDown()");
         }
     }
