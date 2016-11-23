@@ -30,12 +30,10 @@
     function addLogTextAfter(text){
         var body = document.getElementsByTagName("body")[0];
         body.innerHTML = body.innerHTML + text;
-        window.scrollTo(0,document.body.scrollHeight);
     }
     function addLogTextBefore(text){
         var body = document.getElementsByTagName("body")[0];
         body.innerHTML = text + body.innerHTML;
-        window.scrollTo(0,document.body.scrollHeight);
     }
 
     function scrollDown(){

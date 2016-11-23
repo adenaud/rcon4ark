@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 
 import com.anthonydenaud.arkrcon.event.OnServerStopRespondingListener;
 import com.anthonydenaud.arkrcon.network.SteamQuery;
+import com.anthonydenaud.arkrcon.network.SteamQueryException;
 import com.github.koraktor.steamcondenser.steam.SteamPlayer;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -262,7 +263,12 @@ public class ArkService implements OnReceiveListener {
                 disconnect();
             } else {
                 int queryPort = server.getQueryPort();
-                this.steamQuery.connect(server.getHostname(), queryPort);
+                try{
+                    this.steamQuery.connect(server.getHostname(), queryPort);
+                }catch (SteamQueryException e){
+                    Ln.e("Unable to connect via Steam condenser",e );
+                }
+
 
                 for (ConnectionListener listener : connectionListeners) {
                     listener.onConnect(connection.isReconnecting());

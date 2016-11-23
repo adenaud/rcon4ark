@@ -4,9 +4,14 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.anthonydenaud.arkrcon.network.SteamQuery;
+import com.anthonydenaud.arkrcon.network.SteamQueryException;
+import com.github.koraktor.steamcondenser.exceptions.SteamCondenserException;
 import com.google.inject.Inject;
 
 import com.anthonydenaud.arkrcon.R;
@@ -20,10 +25,13 @@ import java.util.UUID;
 import roboguice.activity.RoboActionBarActivity;
 import roboguice.inject.InjectView;
 
-public class ServerConnectionActivity extends RoboActionBarActivity {
+public class ServerConnectionActivity extends RoboActionBarActivity implements View.OnClickListener {
 
     @Inject
     private ServerDAO dao;
+
+    @Inject
+    private SteamQuery steamQuery;
 
     @InjectView(R.id.name_edittext)
     private EditText nameEditText;
@@ -43,6 +51,9 @@ public class ServerConnectionActivity extends RoboActionBarActivity {
     @InjectView(R.id.admin_name_edittext)
     private EditText adminNameEditText;
 
+    @InjectView(R.id.fetch_name_button)
+    private ImageButton fetchNameButton;
+
     private Server server;
 
     @Override
@@ -54,8 +65,9 @@ public class ServerConnectionActivity extends RoboActionBarActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         server = getIntent().getParcelableExtra("server");
-        setTitle(getIntent().getIntExtra("titleId",R.string.edit_server));
-        if(server == null){
+        setTitle(getIntent().getIntExtra("titleId", R.string.edit_server));
+
+        if (server == null) {
             server = new Server();
             server.setUuid(UUID.randomUUID().toString());
         }
@@ -64,9 +76,11 @@ public class ServerConnectionActivity extends RoboActionBarActivity {
         rconPortEditText.setText(String.valueOf(server.getPort()));
         passwordEditText.setText(server.getPassword());
         adminNameEditText.setText(server.getAdminName());
-        if(server.getQueryPort() != 0){
+        if (server.getQueryPort() != 0) {
             queryPortEditText.setText(String.valueOf(server.getQueryPort()));
         }
+
+        fetchNameButton.setOnClickListener(this);
     }
 
     @Override
@@ -79,7 +93,7 @@ public class ServerConnectionActivity extends RoboActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if(id == R.id.save) {
+        if (id == R.id.save) {
 
             try {
 
@@ -88,13 +102,13 @@ public class ServerConnectionActivity extends RoboActionBarActivity {
                 int queryPort = Integer.parseInt(queryPortEditText.getText().toString());
 
                 String adminName = adminNameEditText.getText().toString();
-                if(StringUtils.isEmpty(adminName)){
+                if (StringUtils.isEmpty(adminName)) {
                     adminName = getString(R.string.default_admin_name);
                 }
 
 
-                if(rconPort > 0 && rconPort < 65535){
-                    if(StringUtils.isNotEmpty(host)){
+                if (rconPort > 0 && rconPort < 65535) {
+                    if (StringUtils.isNotEmpty(host)) {
                         server.setName(nameEditText.getText().toString());
                         server.setHostname(host);
                         server.setPort(rconPort);
@@ -107,19 +121,51 @@ public class ServerConnectionActivity extends RoboActionBarActivity {
                         getIntent().putExtra("server", server);
                         setResult(RESULT_OK, getIntent());
                         finish();
-                    }else{
-                        Toast.makeText(this,R.string.hostname_not_valid,Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(this, R.string.hostname_not_valid, Toast.LENGTH_SHORT).show();
                     }
-                }else {
-                    Toast.makeText(this,R.string.port_not_valid,Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, R.string.port_not_valid, Toast.LENGTH_SHORT).show();
                 }
-            }
-            catch (NumberFormatException e){
-                Toast.makeText(this,R.string.port_not_valid,Toast.LENGTH_SHORT).show();
+            } catch (NumberFormatException e) {
+                Toast.makeText(this, R.string.port_not_valid, Toast.LENGTH_SHORT).show();
             }
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (view == fetchNameButton) {
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+
+                        String host = hostnameEditText.getText().toString();
+                        int queryPort = Integer.parseInt(queryPortEditText.getText().toString());
+                        steamQuery.connect(host, queryPort);
+                        final String serverName = steamQuery.getServerName();
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                nameEditText.setText(serverName);
+                            }
+                        });
+                    } catch (SteamQueryException e) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(ServerConnectionActivity.this, "Unable to fetch server name", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                }
+            });
+            thread.start();
+        }
     }
 }

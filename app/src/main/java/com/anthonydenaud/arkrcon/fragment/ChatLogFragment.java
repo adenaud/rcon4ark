@@ -235,7 +235,7 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
                                           public void run() {
                                               String log = text.replaceAll("\n", "");
                                               webViewLog.loadUrl("javascript:addLogTextBefore('" + log + "');");
-
+                                              forceScroll();
                                           }
                                       }
                 );
@@ -254,7 +254,7 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
                                           public void run() {
                                               String log = htmlToAdd.replaceAll("\n", "");
                                               webViewLog.loadUrl("javascript:addLogTextAfter('" + log + "');");
-
+                                              scrollDown();
                                           }
                                       }
                 );
@@ -265,7 +265,7 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
 
     private String formatHtml(String content) {
         content = content.trim();
-        content = content.replaceAll("'","\\\\'");
+        content = content.replaceAll("'", "\\\\'");
         content += "\n";
         String html = content.replaceAll("(.*)left this ARK!", "<span class=\"joinleft\">$0</span>");
         html = html.replaceAll("(.*)joined this ARK!", "<span class=\"joinleft\">$0</span>");
@@ -280,11 +280,16 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
     }
 
     public void scrollDown() {
-        if(preferences.getBoolean("chat_auto_scroll", true) && webViewLog != null){
+        if (preferences.getBoolean("chat_auto_scroll", true) && webViewLog != null) {
             webViewLog.loadUrl("javascript:scrollDown()");
         }
     }
 
+    private void forceScroll() {
+        if (webViewLog != null) {
+            webViewLog.loadUrl("javascript:scrollDown()");
+        }
+    }
 
     private void writeLog(String log) {
         if (preferences.getBoolean("save_log", true)) {
