@@ -234,6 +234,11 @@ public class ArkService implements OnReceiveListener {
 
             Packet requestPacket = connection.getRequestPacket(packet.getId());
 
+            List<Player> players = new ArrayList<>();
+            if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("ListPlayers")){
+                players = getPlayers(packet.getBody());
+            }
+
             synchronized (serverResponseDispatchers) {
                 for (ServerResponseDispatcher dispatcher : serverResponseDispatchers) {
 
@@ -242,13 +247,12 @@ public class ArkService implements OnReceiveListener {
                     } else if (customCommands.contains(packet.getId())) {
                         dispatcher.onCustomCommandResult(packet.getBody());
                     } else if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("ListPlayers")) {
-                        dispatcher.onListPlayers(getPlayers(packet.getBody()));
+                        dispatcher.onListPlayers(players);
                     } else if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("getchat") && !packet.getBody().contains("Server received, But no response!!")) {
                         dispatcher.onGetChat(packet.getBody());
                     } else if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("getgamelog") && !packet.getBody().contains("Server received, But no response!!")) {
-                        String body = packet.getBody();
-                        dispatcher.onGetLog(body);
-                        autoUpdatePlayerList(dispatcher, body);
+                        dispatcher.onGetLog(packet.getBody());
+                        requestPLayerListUpdate(dispatcher, packet.getBody());
                     }
                 }
             }
@@ -279,7 +283,12 @@ public class ArkService implements OnReceiveListener {
         }
     }
 
-    private void autoUpdatePlayerList(ServerResponseDispatcher dispatcher, String logBuffer) {
+    /**
+     * Update the player list if a Join or Left message aged of 10min or less is read in the log.
+     * @param dispatcher
+     * @param logBuffer
+     */
+    public void requestPLayerListUpdate(ServerResponseDispatcher dispatcher, String logBuffer) {
         if (logBuffer.trim().split("\\n").length < 20) {
             Pattern pattern = Pattern.compile("([0-9]{4})\\.([0-9]{2})\\.([0-9]{2})_([0-9]{2}).([0-9]{2}).([0-9]{2}):(.*)(joined|left) this ARK!!?\\r?\\n");
             Matcher matcher = pattern.matcher(logBuffer);
@@ -296,8 +305,8 @@ public class ArkService implements OnReceiveListener {
                 date = calendar.getTime();
                 count++;
             }
+
             long dateDiff = Math.abs(new Date().getTime() / 1000 - (date.getTime() / 1000));
-            Ln.d(dateDiff);
             if (count > 0 && dateDiff < 600) {
                 dispatcher.onPlayerJoinLeft();
             }

@@ -5,5 +5,10 @@
         android:id="@+id/menu_log_history"
         android:icon="@drawable/ic_history_white_48dp"
         android:title="@string/action_change_file"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/settings"
+        android:icon="@drawable/ic_settings_white_48dp"
+        android:title="@string/action_settings"
+        app:showAsAction="never" />
 </menu>

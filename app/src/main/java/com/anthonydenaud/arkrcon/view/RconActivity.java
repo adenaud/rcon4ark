@@ -1,5 +1,6 @@
 package com.anthonydenaud.arkrcon.view;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
@@ -68,7 +69,6 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         }
-        getIntent().putExtra("isVisible",false);
 
         Server server = getIntent().getParcelableExtra("server");
         if(server == null){
@@ -91,26 +91,6 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
             mViewPager.addOnPageChangeListener(this);
             mViewPager.setAdapter(rconFragmentPagerAdapter);
 
-            mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-                @Override
-                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-                }
-
-                @Override
-                public void onPageSelected(int position) {
-                    if(rconFragmentPagerAdapter.getItem(position).equals(chatLogFragment)){
-                        getIntent().putExtra("isVisible",true);
-                    }else{
-                        getIntent().putExtra("isVisible",false);
-                    }
-                }
-
-                @Override
-                public void onPageScrollStateChanged(int state) {
-
-                }
-            });
 
             TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
             tabLayout.setupWithViewPager(mViewPager);
@@ -125,19 +105,9 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
             mViewPager.setCurrentItem(rconFragmentPagerAdapter.indexOf(chatLogFragment));
         }
 
-        if(rconFragmentPagerAdapter.getItem(mViewPager.getCurrentItem()).equals(chatLogFragment)){
-            getIntent().putExtra("isVisible",true);
-        }else{
-            getIntent().putExtra("isVisible",false);
-        }
         super.onResume();
     }
 
-    @Override
-    protected void onPause() {
-        getIntent().putExtra("isVisible",false);
-        super.onPause();
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -154,13 +124,16 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
             finish();
             return true;
         }
+
+        if (id == R.id.settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivityForResult(intent, Codes.REQUEST_SETTINGS);
+        }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public void onConnect(boolean reconnecting) {
-
-    }
+    public void onConnect(boolean reconnecting) {}
 
     @Override
     public void onDisconnect() {

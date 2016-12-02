@@ -141,7 +141,7 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.save) {
+        if (item.getItemId() == R.id.settings) {
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivityForResult(intent, Codes.REQUEST_SETTINGS);
         }

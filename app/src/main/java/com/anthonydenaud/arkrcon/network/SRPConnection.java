@@ -113,7 +113,7 @@ public class SRPConnection {
 
         } else {
             isConnected = false;
-            Ln.e("Unable to send packet : connection closed.");
+            Ln.w("Unable to send packet : connection closed.");
         }
     }
 
@@ -129,7 +129,7 @@ public class SRPConnection {
     }
 
     private void receive() {
-        if (runReceiveThread) {
+        while (runReceiveThread) {
             InputStream inputStream;
             try {
 
@@ -192,10 +192,9 @@ public class SRPConnection {
                         thread.start();
                     }
                 }
-
-                receive();
             } catch (IOException e) {
-                Ln.e("Unable to receive packet : %s", e.getMessage());
+                Ln.w("Unable to receive packet : %s", e.getMessage());
+                runReceiveThread = false;
             }
         }
     }
@@ -208,8 +207,7 @@ public class SRPConnection {
             } catch (IOException e) {
                 Ln.e("Unable to close client : %s", e.getLocalizedMessage());
             }
-            Ln.e("The server has stopped to responding to RCON requests.");
-            Ln.e("Reconnecting ...");
+            Ln.w("The server has stopped to responding to RCON requests, Reconnecting ...");
             if (onServerStopRespondingListener != null) {
                 onServerStopRespondingListener.onServerStopResponding();
             }

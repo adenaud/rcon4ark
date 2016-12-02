@@ -34,7 +34,6 @@ import com.anthonydenaud.arkrcon.R;
 import com.anthonydenaud.arkrcon.service.ArkService;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -185,9 +184,7 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
     @Override
     public void onGetChat(final String chatBuffer) {
         if (StringUtils.isNotEmpty(chatBuffer)) {
-            if (!getActivity().getIntent().getBooleanExtra("isVisible", false)) {
-                notificationService.handleChatKeyword(getActivity(), chatBuffer);
-            }
+            notificationService.handleChatKeyword(getActivity(), chatBuffer);
             writeLog(formatHtml(chatBuffer));
             context.runOnUiThread(new Runnable() {
                 @Override
@@ -201,9 +198,7 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
     @Override
     public void onGetLog(final String logBuffer) {
         if (StringUtils.isNotEmpty(logBuffer)) {
-            if (!getActivity().getIntent().getBooleanExtra("isVisible", false)) {
-                notificationService.handleChatKeyword(getActivity(), logBuffer);
-            }
+            notificationService.handleChatKeyword(getActivity(), logBuffer);
             writeLog(formatHtml(logBuffer));
             context.runOnUiThread(new Runnable() {
                 @Override
