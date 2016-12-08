@@ -50,9 +50,6 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
     @Inject
     private LogService logService;
 
-    @Inject
-    private NotificationService notificationService;
-
 
     @InjectView(R.id.container)
     private ViewPager mViewPager;
@@ -100,11 +97,11 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
 
     @Override
     protected void onResume() {
-
         if(getIntent().hasExtra("chat_notification")){
             mViewPager.setCurrentItem(rconFragmentPagerAdapter.indexOf(chatLogFragment));
+            chatLogFragment.onResume();
+            getIntent().removeExtra("chat_notification");
         }
-
         super.onResume();
     }
 
