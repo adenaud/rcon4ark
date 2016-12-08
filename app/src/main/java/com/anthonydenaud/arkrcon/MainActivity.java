@@ -18,7 +18,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.anthonydenaud.arkrcon.service.AppUpdateService;
+import com.anthonydenaud.arkrcon.api.ApiCallback;
+import com.anthonydenaud.arkrcon.service.Rcon4GamesApiService;
 import com.anthonydenaud.arkrcon.service.LogService;
 import com.anthonydenaud.arkrcon.view.SettingsActivity;
 import com.google.inject.Inject;
@@ -56,7 +57,7 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
     private LogService logService;
 
     @Inject
-    private AppUpdateService updateService;
+    private Rcon4GamesApiService apiService;
 
     private Server currentServer;
     private ProgressDialog progressDialog;
@@ -71,10 +72,9 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
 
         registerForContextMenu(listView);
 
-
-        updateService.setAppUpdateListener(new AppUpdateService.AppUpdateListener() {
+        apiService.checkAppUpdateAvailable(new ApiCallback() {
             @Override
-            public void onUpdateAvailable(int versionCode) {
+            public void response(Object response) {
 
                 runOnUiThread(new Runnable() {
                     @Override
@@ -103,7 +103,7 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
                 });
             }
         });
-        updateService.checkAppUpdateAvailable(this);
+        apiService.saveUser();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         if (fab != null) {
@@ -221,6 +221,7 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
                 }
             });
             rconActivityStarted = true;
+            apiService.saveServer(currentServer);
         }
     }
 
