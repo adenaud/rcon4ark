@@ -32,14 +32,25 @@ public class SteamQuery {
 
         HashMap<String, SteamPlayer> players = new HashMap<>();
 
+        boolean error =  true;
+        int retry = 0;
+        Throwable cause = null;
+
         if (server != null) {
 
-            try {
-                server.updatePlayers();
-                players = server.getPlayers();
-            } catch (SteamCondenserException | TimeoutException | BufferUnderflowException e) {
-                Ln.e(e.getMessage());
-                RavenLogger.getInstance().error(SteamQuery.class, "getPlayers error", e);
+            while (error && retry < 3) {
+                try {
+                    server.updatePlayers();
+                    players = server.getPlayers();
+                    error = false;
+                } catch (SteamCondenserException | TimeoutException | BufferUnderflowException e) {
+                    cause = e;
+                    retry++;
+                }
+            }
+            if(error){
+                Ln.w(cause.getMessage());
+                RavenLogger.getInstance().warn(SteamQuery.class, "getPlayers error", cause);
             }
         }
         return players;
@@ -52,15 +63,24 @@ public class SteamQuery {
      */
     public int getPlayerCount() {
         int playerCount = 0;
+        boolean error =  true;
+        int retry = 0;
+        Throwable cause = null;
         if(connected)
         {
-            try {
-                server.updatePlayers();
-                playerCount = getPlayers().size();
-
-            } catch (SteamCondenserException | TimeoutException | BufferUnderflowException e) {
-                Ln.w(e.getMessage());
-                RavenLogger.getInstance().warn(SteamQuery.class, "getPlayerCount error", e);
+            while (error && retry < 3){
+                try {
+                    server.updatePlayers();
+                    playerCount = getPlayers().size();
+                    error=false;
+                } catch (SteamCondenserException | TimeoutException | BufferUnderflowException e) {
+                    retry++;
+                    cause = e;
+                }
+            }
+            if(error){
+                Ln.w(cause.getMessage());
+                RavenLogger.getInstance().warn(SteamQuery.class, "getPlayerCount error", cause);
             }
         }
         return playerCount;
@@ -68,15 +88,26 @@ public class SteamQuery {
 
     public int getMaxPlayers() {
         int maxPlayers = 0;
+        boolean error =  true;
+        int retry = 0;
+        Throwable cause = null;
+
         if(connected)
         {
-            try {
-                server.updateServerInfo();
-                HashMap<String, Object> serverInfo = server.getServerInfo();
-                maxPlayers = ((Byte) serverInfo.get("maxPlayers"));
-            } catch (SteamCondenserException | TimeoutException | BufferUnderflowException e) {
-                Ln.w(e.getMessage());
-                RavenLogger.getInstance().warn(SteamQuery.class, "getMaxPlayers error", e);
+            while (error && retry < 3) {
+                try {
+                    server.updateServerInfo();
+                    HashMap<String, Object> serverInfo = server.getServerInfo();
+                    maxPlayers = ((Byte) serverInfo.get("maxPlayers"));
+                    error = false;
+                } catch (SteamCondenserException | TimeoutException | BufferUnderflowException e) {
+                    cause = e;
+                    retry++;
+                }
+            }
+            if(error){
+                Ln.w(cause.getMessage());
+                RavenLogger.getInstance().warn(SteamQuery.class, "getMaxPlayers error", cause);
             }
         }
         return maxPlayers;
@@ -84,14 +115,24 @@ public class SteamQuery {
 
     public String getServerName() throws SteamQueryException {
         String serverName = "";
+        boolean error =  true;
+        int retry = 0;
+        Throwable cause = null;
         if(connected){
-            try {
-                server.updateServerInfo();
-                HashMap<String, Object> serverInfo = server.getServerInfo();
-                serverName = (String) serverInfo.get("serverName");
-            } catch (SteamCondenserException | TimeoutException | BufferUnderflowException e) {
-                Ln.w(e.getMessage());
-                RavenLogger.getInstance().warn(SteamQuery.class, "getServerName error", e);
+            while (error && retry < 3) {
+                try {
+                    server.updateServerInfo();
+                    HashMap<String, Object> serverInfo = server.getServerInfo();
+                    serverName = (String) serverInfo.get("serverName");
+                    error = false;
+                } catch (SteamCondenserException | TimeoutException | BufferUnderflowException e) {
+                    cause = e;
+                    retry++;
+                }
+            }
+            if(error){
+                Ln.w(cause.getMessage());
+                RavenLogger.getInstance().warn(SteamQuery.class, "getServerName error", cause);
                 throw new SteamQueryException();
             }
         }
