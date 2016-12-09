@@ -1,9 +1,11 @@
 package com.anthonydenaud.arkrcon.network;
 
+import com.anthonydenaud.arkrcon.RavenLogger;
 import com.github.koraktor.steamcondenser.exceptions.SteamCondenserException;
 import com.github.koraktor.steamcondenser.steam.SteamPlayer;
 import com.github.koraktor.steamcondenser.steam.servers.GoldSrcServer;
 
+import java.nio.BufferOverflowException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -22,7 +24,6 @@ public class SteamQuery {
         } catch (SteamCondenserException e) {
             Ln.e(e.getMessage());
             throw new SteamQueryException();
-
         }
     }
 
@@ -35,10 +36,9 @@ public class SteamQuery {
             try {
                 server.updatePlayers();
                 players = server.getPlayers();
-            } catch (SteamCondenserException e) {
+            } catch (SteamCondenserException | TimeoutException | BufferOverflowException e) {
                 Ln.e(e.getMessage());
-            } catch (TimeoutException e) {
-                Ln.e("SteamQuery :  TimeoutException");
+                RavenLogger.getInstance().error(SteamQuery.class, "getPlayers error", e);
             }
         }
         return players;
@@ -52,8 +52,9 @@ public class SteamQuery {
                 HashMap<String, Object> serverInfo = server.getServerInfo();
                 playerCount = ((Byte) serverInfo.get("numberOfPlayers")).intValue();
 
-            } catch (SteamCondenserException | TimeoutException e) {
-                e.printStackTrace();
+            } catch (SteamCondenserException | TimeoutException | BufferOverflowException e) {
+                Ln.e(e.getMessage());
+                RavenLogger.getInstance().error(SteamQuery.class, "getPlayerCount error", e);
             }
         }
         return playerCount;
@@ -66,8 +67,9 @@ public class SteamQuery {
             try {
                 HashMap<String, Object> serverInfo = server.getServerInfo();
                 maxPlayers = ((Byte) serverInfo.get("maxPlayers"));
-            } catch (SteamCondenserException | TimeoutException e) {
-                e.printStackTrace();
+            } catch (SteamCondenserException | TimeoutException | BufferOverflowException e) {
+                Ln.e(e.getMessage());
+                RavenLogger.getInstance().error(SteamQuery.class, "getMaxPlayers error", e);
             }
         }
         return maxPlayers;

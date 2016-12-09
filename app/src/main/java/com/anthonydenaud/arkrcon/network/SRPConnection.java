@@ -3,6 +3,7 @@ package com.anthonydenaud.arkrcon.network;
 import android.content.Context;
 
 import com.anthonydenaud.arkrcon.event.OnServerStopRespondingListener;
+import com.anthonydenaud.arkrcon.RavenLogger;
 import com.google.inject.Inject;
 
 import com.anthonydenaud.arkrcon.R;
@@ -42,7 +43,6 @@ public class SRPConnection {
     private boolean reconnecting = false;
 
     private Date lastPacketTime;
-
 
     @Inject
     public SRPConnection(Context context) {
@@ -194,6 +194,7 @@ public class SRPConnection {
                 }
             } catch (IOException e) {
                 Ln.w("Unable to receive packet : %s", e.getMessage());
+                RavenLogger.getInstance().warn(SRPConnection.class, "Unable to receive packet : " + e.getMessage(), e);
                 runReceiveThread = false;
             }
         }
@@ -206,6 +207,7 @@ public class SRPConnection {
                 close();
             } catch (IOException e) {
                 Ln.e("Unable to close client : %s", e.getLocalizedMessage());
+                RavenLogger.getInstance().error(SRPConnection.class,"Unable to close client :  "+ e.getLocalizedMessage(), e);
             }
             Ln.w("The server has stopped to responding to RCON requests, Reconnecting ...");
             if (onServerStopRespondingListener != null) {
