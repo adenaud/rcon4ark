@@ -6,6 +6,7 @@ import com.github.koraktor.steamcondenser.steam.SteamPlayer;
 import com.github.koraktor.steamcondenser.steam.servers.GoldSrcServer;
 
 import java.nio.BufferOverflowException;
+import java.nio.BufferUnderflowException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -36,7 +37,7 @@ public class SteamQuery {
             try {
                 server.updatePlayers();
                 players = server.getPlayers();
-            } catch (SteamCondenserException | TimeoutException | BufferOverflowException e) {
+            } catch (SteamCondenserException | TimeoutException | BufferUnderflowException e) {
                 Ln.e(e.getMessage());
                 RavenLogger.getInstance().error(SteamQuery.class, "getPlayers error", e);
             }
@@ -44,17 +45,22 @@ public class SteamQuery {
         return players;
     }
 
+    /**
+     * Retrieve the count of player currently connected.
+     * The player count is not retrieved from the server info as this count could be wrong.
+     * @return Total
+     */
     public int getPlayerCount() {
         int playerCount = 0;
         if(connected)
         {
             try {
-                HashMap<String, Object> serverInfo = server.getServerInfo();
-                playerCount = ((Byte) serverInfo.get("numberOfPlayers")).intValue();
+                server.updatePlayers();
+                playerCount = getPlayers().size();
 
-            } catch (SteamCondenserException | TimeoutException | BufferOverflowException e) {
-                Ln.e(e.getMessage());
-                RavenLogger.getInstance().error(SteamQuery.class, "getPlayerCount error", e);
+            } catch (SteamCondenserException | TimeoutException | BufferUnderflowException e) {
+                Ln.w(e.getMessage());
+                RavenLogger.getInstance().warn(SteamQuery.class, "getPlayerCount error", e);
             }
         }
         return playerCount;
@@ -65,11 +71,12 @@ public class SteamQuery {
         if(connected)
         {
             try {
+                server.updateServerInfo();
                 HashMap<String, Object> serverInfo = server.getServerInfo();
                 maxPlayers = ((Byte) serverInfo.get("maxPlayers"));
-            } catch (SteamCondenserException | TimeoutException | BufferOverflowException e) {
-                Ln.e(e.getMessage());
-                RavenLogger.getInstance().error(SteamQuery.class, "getMaxPlayers error", e);
+            } catch (SteamCondenserException | TimeoutException | BufferUnderflowException e) {
+                Ln.w(e.getMessage());
+                RavenLogger.getInstance().warn(SteamQuery.class, "getMaxPlayers error", e);
             }
         }
         return maxPlayers;
@@ -79,10 +86,12 @@ public class SteamQuery {
         String serverName = "";
         if(connected){
             try {
+                server.updateServerInfo();
                 HashMap<String, Object> serverInfo = server.getServerInfo();
                 serverName = (String) serverInfo.get("serverName");
-            } catch (SteamCondenserException | TimeoutException e) {
-                e.printStackTrace();
+            } catch (SteamCondenserException | TimeoutException | BufferUnderflowException e) {
+                Ln.w(e.getMessage());
+                RavenLogger.getInstance().warn(SteamQuery.class, "getServerName error", e);
                 throw new SteamQueryException();
             }
         }

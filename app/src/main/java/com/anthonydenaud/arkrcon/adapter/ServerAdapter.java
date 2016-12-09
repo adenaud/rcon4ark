@@ -32,8 +32,6 @@ public class ServerAdapter extends ArrayAdapter<Server> {
     private Context context;
     private ServerDAO serverDAO;
 
-    @Inject
-    private SteamQuery steamQuery;
 
     @Inject
     public ServerAdapter(Context context, ServerDAO serverDAO) {
@@ -75,6 +73,7 @@ public class ServerAdapter extends ArrayAdapter<Server> {
             public void run() {
 
                 try {
+                    SteamQuery steamQuery = new SteamQuery();
                     steamQuery.connect(server.getHostname(), server.getQueryPort());
                     final int playerCount = steamQuery.getPlayerCount();
                     final int maxPlayers = steamQuery.getMaxPlayers();

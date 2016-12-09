@@ -130,6 +130,12 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
         refresh();
     }
 
+    @Override
+    protected void onResume() {
+        refresh();
+        super.onResume();
+    }
+
     private void refresh() {
         serverAdapter.refresh();
         listView.setAdapter(serverAdapter);
