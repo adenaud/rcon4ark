@@ -106,14 +106,6 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
 
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == Codes.REQUEST_SETTINGS){
-            notificationService.reloadKeywords();
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
     @SuppressLint("SetJavaScriptEnabled")
     private void initWebView(final String content) {
         String template = "";

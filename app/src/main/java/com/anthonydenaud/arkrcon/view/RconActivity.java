@@ -49,9 +49,12 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
     @Inject
     private LogService logService;
 
+    @Inject
+    private NotificationService notificationService;
 
     @InjectView(R.id.container)
     private ViewPager mViewPager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +94,14 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
             tabLayout.setupWithViewPager(mViewPager);
 
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == Codes.REQUEST_SETTINGS){
+            notificationService.reloadKeywords();
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

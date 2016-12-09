@@ -16,6 +16,7 @@ import com.anthonydenaud.arkrcon.Codes;
 import com.anthonydenaud.arkrcon.R;
 import com.anthonydenaud.arkrcon.view.RconActivity;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -23,6 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
+@Singleton
 public class NotificationService {
 
     private static final String NOTIFICATION_DELETED = "NOTIFICATION_DELETED";
