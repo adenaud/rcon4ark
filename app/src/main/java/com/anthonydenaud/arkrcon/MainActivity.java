@@ -74,12 +74,6 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
 
         RavenLogger.getInstance().init(this);
 
-        try {
-            Integer.parseInt("ab");
-        }catch (NumberFormatException e){
-            RavenLogger.getInstance().error(MainActivity.class, "test error", e);
-        }
-
         apiService.checkAppUpdateAvailable(new ApiCallback() {
             @Override
             public void response(Object response) {
