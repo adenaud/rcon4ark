@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -25,6 +26,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.anthonydenaud.arkrcon.Codes;
 import com.anthonydenaud.arkrcon.model.Server;
 import com.anthonydenaud.arkrcon.service.LogService;
 import com.anthonydenaud.arkrcon.service.NotificationService;
@@ -102,6 +104,14 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
         }
         initWebView(log);
 
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == Codes.REQUEST_SETTINGS){
+            notificationService.reloadKeywords();
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @SuppressLint("SetJavaScriptEnabled")

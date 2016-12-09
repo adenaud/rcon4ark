@@ -317,7 +317,7 @@ public class ArkService implements OnReceiveListener {
 
         String command = "getgamelog";
 
-        if (preferences.getBoolean("chat_instead_of_log", false)) {
+        if (preferences.getBoolean("chat_instead_of_log", true)) {
             command = "getchat";
         }
 

@@ -2,7 +2,6 @@ package com.anthonydenaud.arkrcon.view;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v7.widget.Toolbar;
@@ -53,14 +52,13 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
 
     @InjectView(R.id.container)
     private ViewPager mViewPager;
-    private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rcon);
 
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         if (preferences.getBoolean("keep_screen_on", false)) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -153,12 +151,6 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
 
     @Override
     public void finish() {
-        /*
-        if(preferences.getBoolean("save_log",false)){
-            if(!logService.write(this, server, chatLogFragment.getLog())){
-                Snackbar.make(findViewById(android.R.id.content),R.string.error_log_write,Snackbar.LENGTH_SHORT).show();
-            }
-        }*/
         super.finish();
     }
 

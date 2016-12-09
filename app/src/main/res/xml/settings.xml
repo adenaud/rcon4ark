@@ -26,7 +26,7 @@
             android:title="@string/save_log" />
 
         <SwitchPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="chat_instead_of_log"
             android:summary="@string/chat_instead_of_log_summary"
             android:title="@string/chat_instead_of_log" />

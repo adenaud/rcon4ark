@@ -46,6 +46,14 @@ public class NotificationService {
         }
     }
 
+    public void reloadKeywords(){
+        if (preferences.contains("chat_notification_keyword")) {
+            String keyword = preferences.getString("chat_notification_keyword", "");
+            keyword = keyword.replaceAll(", ", ",");
+            keywords = keyword.split(",");
+        }
+    }
+
 
     public void handleChatKeyword(Activity activity, String chatbuffer) {
 
