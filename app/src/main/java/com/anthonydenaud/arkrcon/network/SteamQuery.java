@@ -44,13 +44,18 @@ public class SteamQuery {
                     players = server.getPlayers();
                     error = false;
                 } catch (SteamCondenserException | TimeoutException | BufferUnderflowException e) {
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e1) {
+                        Ln.e(e1.getMessage(), e1);
+                        RavenLogger.getInstance().error(SteamQuery.class, "getPlayers InterruptedException", e1);
+                    }
                     cause = e;
                     retry++;
                 }
             }
             if(error){
                 Ln.w(cause.getMessage());
-                RavenLogger.getInstance().warn(SteamQuery.class, "getPlayers error", cause);
             }
         }
         return players;
@@ -74,13 +79,18 @@ public class SteamQuery {
                     playerCount = getPlayers().size();
                     error=false;
                 } catch (SteamCondenserException | TimeoutException | BufferUnderflowException e) {
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e1) {
+                        Ln.e(e1.getMessage(), e1);
+                        RavenLogger.getInstance().error(SteamQuery.class, "getPlayerCount InterruptedException", e1);
+                    }
                     retry++;
                     cause = e;
                 }
             }
             if(error){
                 Ln.w(cause.getMessage());
-                RavenLogger.getInstance().warn(SteamQuery.class, "getPlayerCount error", cause);
             }
         }
         return playerCount;
@@ -101,13 +111,18 @@ public class SteamQuery {
                     maxPlayers = ((Byte) serverInfo.get("maxPlayers"));
                     error = false;
                 } catch (SteamCondenserException | TimeoutException | BufferUnderflowException e) {
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e1) {
+                        Ln.e(e1.getMessage(), e1);
+                        RavenLogger.getInstance().error(SteamQuery.class, "getMaxPlayers InterruptedException", e1);
+                    }
                     cause = e;
                     retry++;
                 }
             }
             if(error){
                 Ln.w(cause.getMessage());
-                RavenLogger.getInstance().warn(SteamQuery.class, "getMaxPlayers error", cause);
             }
         }
         return maxPlayers;
@@ -126,13 +141,18 @@ public class SteamQuery {
                     serverName = (String) serverInfo.get("serverName");
                     error = false;
                 } catch (SteamCondenserException | TimeoutException | BufferUnderflowException e) {
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e1) {
+                        Ln.e(e1.getMessage(), e1);
+                        RavenLogger.getInstance().error(SteamQuery.class, "getServerName InterruptedException", e1);
+                    }
                     cause = e;
                     retry++;
                 }
             }
             if(error){
                 Ln.w(cause.getMessage());
-                RavenLogger.getInstance().warn(SteamQuery.class, "getServerName error", cause);
                 throw new SteamQueryException();
             }
         }

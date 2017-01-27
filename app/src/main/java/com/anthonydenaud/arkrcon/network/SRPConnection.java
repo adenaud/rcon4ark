@@ -194,7 +194,6 @@ public class SRPConnection {
                 }
             } catch (IOException e) {
                 Ln.w("Unable to receive packet : %s", e.getMessage());
-                RavenLogger.getInstance().warn(SRPConnection.class, "Unable to receive packet : " + e.getMessage(), e);
                 runReceiveThread = false;
             }
         }
