@@ -42,7 +42,6 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
     private ChatLogFragment chatLogFragment;
 
 
-
     @Inject
     private ArkService arkService;
 
@@ -69,9 +68,9 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
         }
 
         Server server = getIntent().getParcelableExtra("server");
-        if(server == null){
+        if (server == null) {
             finish();
-        }else{
+        } else {
             setTitle(server.getName());
 
             arkService.addConnectionListener(this);
@@ -98,7 +97,7 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == Codes.REQUEST_SETTINGS){
+        if (requestCode == Codes.REQUEST_SETTINGS) {
             notificationService.reloadKeywords();
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -106,7 +105,7 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
 
     @Override
     protected void onResume() {
-        if(getIntent().hasExtra("chat_notification")){
+        if (getIntent().hasExtra("chat_notification")) {
             mViewPager.setCurrentItem(rconFragmentPagerAdapter.indexOf(chatLogFragment));
             chatLogFragment.onResume();
             getIntent().removeExtra("chat_notification");
@@ -139,7 +138,8 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
     }
 
     @Override
-    public void onConnect(boolean reconnecting) {}
+    public void onConnect(boolean reconnecting) {
+    }
 
     @Override
     public void onDisconnect() {
@@ -172,9 +172,10 @@ public class RconActivity extends RoboActionBarActivity implements ConnectionLis
 
     @Override
     public void onPageSelected(int position) {
-        if(rconFragmentPagerAdapter.getItem(position) instanceof ChatLogFragment){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if (rconFragmentPagerAdapter.getItem(position) instanceof ChatLogFragment && preferences.getBoolean("chat_auto_scroll", true)) {
             ChatLogFragment fragment = (ChatLogFragment) rconFragmentPagerAdapter.getItem(position);
-            fragment.scrollDown();
+            fragment.scrollDown(true);
         }
     }
 

@@ -83,13 +83,15 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
         arkService.addServerResponseDispatcher(this);
-        preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
         return inflater.inflate(R.layout.fragment_chat, container, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
         buttonChat.setOnClickListener(this);
         buttonBroadcast.setOnClickListener(this);
@@ -286,6 +288,12 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
 
     public void scrollDown() {
         if (preferences.getBoolean("chat_auto_scroll", true) && webViewLog != null) {
+            webViewLog.loadUrl("javascript:scrollDown()");
+        }
+    }
+
+    public void scrollDown(boolean scroll) {
+        if (scroll && webViewLog != null) {
             webViewLog.loadUrl("javascript:scrollDown()");
         }
     }
