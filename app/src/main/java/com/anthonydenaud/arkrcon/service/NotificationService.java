@@ -61,7 +61,7 @@ public class NotificationService {
 
         chatbuffer = parseLogContent(chatbuffer);
 
-        if (StringUtils.indexOfAny(chatbuffer, keywords) > -1) {
+        if (StringUtils.indexOfAny(chatbuffer, keywords) > -1 && preferences.getBoolean("notifications_enabled", false)) {
             showNotification(activity, chatbuffer);
         }
     }

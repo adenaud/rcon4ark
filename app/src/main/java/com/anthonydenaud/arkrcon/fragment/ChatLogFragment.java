@@ -162,7 +162,7 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
 
     @Override
     public void onResume() {
-        if(getActivity().getIntent().hasExtra("chat_notification")){
+        if(getActivity() != null && getActivity().getIntent().hasExtra("chat_notification")){
             notificationService.notificationClicked();
         }
         super.onResume();
