@@ -125,7 +125,7 @@ public class ServerConnectionActivity extends RoboActionBarActivity implements V
                         Toast.makeText(this, R.string.hostname_not_valid, Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(this, R.string.port_not_valid, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.invalid_rcon_port, Toast.LENGTH_SHORT).show();
                 }
             } catch (NumberFormatException e) {
                 Toast.makeText(this, R.string.port_not_valid, Toast.LENGTH_SHORT).show();
@@ -155,11 +155,19 @@ public class ServerConnectionActivity extends RoboActionBarActivity implements V
                                 nameEditText.setText(serverName);
                             }
                         });
-                    } catch (SteamQueryException e) {
+                    }catch (SteamQueryException e) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 Toast.makeText(ServerConnectionActivity.this, "Unable to fetch server name", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }catch (NumberFormatException e){
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                String message = getResources().getString(R.string.invalid_query_port);
+                                Toast.makeText(ServerConnectionActivity.this, message, Toast.LENGTH_SHORT).show();
                             }
                         });
                     }

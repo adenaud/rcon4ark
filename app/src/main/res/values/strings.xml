@@ -28,6 +28,9 @@
     <string name="delete">Delete</string>
     <string name="title_activity_rcon">ARK RCON</string>
 
+    <string name="invalid_query_port">The query port is invalid</string>
+    <string name="invalid_rcon_port">The RCON port is invalid</string>
+
     <!--  Players fragment-->
 
     <string name="fragment_players">Players</string>

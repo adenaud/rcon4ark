@@ -235,7 +235,7 @@ public class ArkService implements OnReceiveListener {
             Packet requestPacket = connection.getRequestPacket(packet.getId());
 
             List<Player> players = new ArrayList<>();
-            if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("ListPlayers")){
+            if (requestPacket != null && StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("ListPlayers")){
                 players = getPlayers(packet.getBody());
             }
 
