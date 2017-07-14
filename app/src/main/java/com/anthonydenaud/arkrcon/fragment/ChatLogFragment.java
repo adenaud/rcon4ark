@@ -278,7 +278,7 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
         html = html.replaceAll("(.*)joined this ARK!", "<span class=\"joinleft\">$0</span>");
         html = html.replaceAll("(.*)was killed by(.*)", "<span class=\"kill\">$0</span>");
         html = html.replaceAll("(.*)was killed!", "<span class=\"kill\">$0</span>");
-        html = html.replaceAll("(.*)Tamed an? ([A-z ]*) \\- (.*)", "<span class=\"tame\">$0</span>");
+        html = html.replaceAll("(.*)Tamed an? ([A-z ]*) - (.*)", "<span class=\"tame\">$0</span>");
         html = html.replaceAll("(.*)SERVER:(.*)", "<span class=\"server\">$0</span>");
         html = html.replaceAll("(.*)AdminCmd:(.*)", "<span class=\"server\">$0</span>");
         html = html.replaceAll("\\n", "<br>\n");
