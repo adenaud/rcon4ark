@@ -278,8 +278,9 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
         html = html.replaceAll("(.*)joined this ARK!", "<span class=\"joinleft\">$0</span>");
         html = html.replaceAll("(.*)was killed by(.*)", "<span class=\"kill\">$0</span>");
         html = html.replaceAll("(.*)was killed!", "<span class=\"kill\">$0</span>");
-        html = html.replaceAll("(.*)Tamed a ([A-z ]*) \\- (.*)", "<span class=\"tame\">$0</span>");
+        html = html.replaceAll("(.*)Tamed an? ([A-z ]*) - (.*)", "<span class=\"tame\">$0</span>");
         html = html.replaceAll("(.*)SERVER:(.*)", "<span class=\"server\">$0</span>");
+        html = html.replaceAll("(.*)AdminCmd:(.*)", "<span class=\"server\">$0</span>");
         html = html.replaceAll("\\n", "<br>\n");
         html = html.replaceAll("<br>\\n <br>\\n ", "<br>\n");
 
@@ -305,6 +306,7 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
     }
 
     private void writeLog(String log) {
+        preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         if (preferences.getBoolean("save_log", true)) {
             if (!logService.write(getActivity(), (Server) getActivity().getIntent().getParcelableExtra("server"), log)) {
                 Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_log_write, Snackbar.LENGTH_SHORT).show();

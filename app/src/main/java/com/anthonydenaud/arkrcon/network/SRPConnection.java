@@ -92,29 +92,27 @@ public class SRPConnection {
             this.outgoingPackets.put(packet.getId(), packet);
         }
 
-        if (client != null && client.isConnected()) {
 
-            Thread sendThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    byte[] data = new byte[0];
-                    try {
+        Thread sendThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                byte[] data;
+                try {
+                    if (client != null && client.isConnected()) {
                         data = packet.encode();
                         OutputStream outputStream = client.getOutputStream();
                         outputStream.write(data);
-                    } catch (IOException e) {
-                        connectionListener.onConnectionDrop();
+                    } else {
+                        isConnected = false;
+                        Ln.w("Unable to send packet : connection closed.");
                     }
+                } catch (IOException e) {
+                    connectionListener.onConnectionDrop();
                 }
-            });
-            sendThread.setName("SendThread");
-            sendThread.start();
-
-
-        } else {
-            isConnected = false;
-            Ln.w("Unable to send packet : connection closed.");
-        }
+            }
+        });
+        sendThread.setName("SendThread");
+        sendThread.start();
     }
 
     private void beginReceive() {

@@ -108,6 +108,9 @@ public class SteamQuery {
                 try {
                     server.updateServerInfo();
                     HashMap<String, Object> serverInfo = server.getServerInfo();
+                    if(serverInfo == null){
+                        throw  new SteamCondenserException();
+                    }
                     maxPlayers = ((Byte) serverInfo.get("maxPlayers"));
                     error = false;
                 } catch (SteamCondenserException | TimeoutException | BufferUnderflowException e) {
