@@ -70,4 +70,15 @@
         <item>1800000</item>
     </string-array>
 
+    <string-array name="themes_caption">
+        <item>Light</item>
+        <item>Dark</item>
+        <item>ARK</item>
+    </string-array>
+    <string-array name="themes_values">
+        <item>light</item>
+        <item>dark</item>
+        <item>ark</item>
+    </string-array>
+
 </resources>

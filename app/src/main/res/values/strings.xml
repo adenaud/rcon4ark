@@ -82,15 +82,7 @@
     <string name="conneciton_lost">Connection lost</string>
     <string name="port_not_valid">Port is not correct</string>
     <string name="hostname_not_valid">Hostname is not correct</string>
-    <string name="title_activity_settings">Settings</string>
-    <string name="chat_refresh_rate_summary">Every %s</string>
-    <string name="chat_refresh_rate">Chat refresh delay</string>
-    <string name="log_refresh_rate_summary">Every %s</string>
-    <string name="log_refresh_rate">Game log refresh delay</string>
-    <string name="save_log">Save game log</string>
-    <string name="save_log_summary">The log will be kept between each connection</string>
-    <string name="keep_screen_on">Keep screen ON</string>
-    <string name="keep_screen_on_summary">The screen will not turn off while the app is running</string>
+
     <string name="error_log_write">Unable to write the log file</string>
     <string name="fragment_chat_log"><![CDATA[Chat & Log]]></string>
     <string name="fragment_commands">Commands</string>
@@ -100,10 +92,6 @@
     <string name="select_file">Select file</string>
     <string name="chat_instead_of_log">Use the \'getchat\' command.</string>
     <string name="chat_instead_of_log_summary">The \'getchat\' command will be used to get the chat instead of the \'getgamelog\' command.</string>
-    <string name="enable_notifications">Notifications</string>
-    <string name="notifications">Notifications</string>
-    <string name="chat_notification_keyword">Keywords (Separated by coma)</string>
-    <string name="chat_notification_keyword_summary">Display a notification when one of these keywords appear in the chat.</string>
     <string name="vibrate">Vibrate</string>
     <string name="general">General</string>
     <string name="chat_log"><![CDATA[Chat & Log]]></string>
@@ -111,11 +99,34 @@
     <string name="update_available">A new version of the application is available.</string>
     <string name="update_now">Update</string>
     <string name="update_later">Later</string>
-    <string name="chat_auto_scroll_summary">Automatically scrolls down when a message is received</string>
-    <string name="chat_auto_scroll">Auto scroll</string>
+
 
 
     <!-- Settings -->
+
+    <string name="title_activity_settings">Settings</string>
+    <string name="chat_refresh_rate_summary">Every %s</string>
+    <string name="chat_refresh_rate">Chat refresh delay</string>
+    <string name="log_refresh_rate_summary">Every %s</string>
+    <string name="log_refresh_rate">Game log refresh delay</string>
+
+    <string name="theme">Theme</string>
+    <string name="theme_summary">%s</string>
+    <string name="theme_default">light</string>
+
+    <string name="save_log">Save game log</string>
+    <string name="save_log_summary">The log will be kept between each connection</string>
+    <string name="keep_screen_on">Keep screen ON</string>
+    <string name="keep_screen_on_summary">The screen will not turn off while the app is running</string>
+
+    <string name="chat_auto_scroll_summary">Automatically scrolls down when a message is received</string>
+    <string name="chat_auto_scroll">Auto scroll</string>
+
+    <string name="enable_notifications">Notifications</string>
+    <string name="notifications">Notifications</string>
+    <string name="chat_notification_keyword">Keywords (Separated by coma)</string>
+    <string name="chat_notification_keyword_summary">Display a notification when one of these keywords appear in the chat.</string>
+
 
 
 </resources>

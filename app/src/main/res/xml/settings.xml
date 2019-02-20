@@ -8,6 +8,15 @@
             android:key="keep_screen_on"
             android:summary="@string/keep_screen_on_summary"
             android:title="@string/keep_screen_on" />
+
+        <ListPreference
+            android:defaultValue="@string/theme_default"
+            android:entries="@array/themes_caption"
+            android:entryValues="@array/themes_values"
+            android:key="theme"
+            android:summary="@string/theme_summary"
+            android:title="@string/theme" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/chat_log">

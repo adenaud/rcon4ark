@@ -3,15 +3,15 @@
     <item android:state_focused="true">
         <inset android:insetBottom="6dp" android:insetLeft="4dp" android:insetRight="4dp" android:insetTop="6dp">
             <shape android:shape="rectangle">
-                <solid android:color="@color/btnRedPressed" />
+                <solid android:color="@color/arkBtnPressed" />
                 <corners android:radius="3dp" />
             </shape>
         </inset>
     </item>
-    <item android:bottom="6dp" android:left="4dp" android:right="4dp" android:top="6dp">
+    <item>
         <inset android:insetBottom="6dp" android:insetLeft="4dp" android:insetRight="4dp" android:insetTop="6dp">
             <shape android:shape="rectangle">
-                <solid android:color="@color/btnRed" />
+                <solid android:color="@color/arkBtn" />
                 <corners android:radius="3dp" />
             </shape>
         </inset>

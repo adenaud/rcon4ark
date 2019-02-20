@@ -1,32 +1,68 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <!-- Light Theme theme. -->
+    <style name="AppLightTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColor">@color/textColor</item>
     </style>
-    <style name="AppTheme.NoActionBar">
+    <style name="AppLightTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <!-- Dark Theme -->
+    <style name="AppDarkTheme" parent="Theme.AppCompat">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColor">@color/textColorLight</item>
+    </style>
+    <style name="AppDarkTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <!-- Dark Theme -->
+    <style name="AppArkTheme" parent="Theme.AppCompat">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">#00a2c1</item>
+        <item name="android:textColor">#81e6ff</item>
+        <item name="android:windowBackground">@color/arkBackGround</item> <!-- 041f25-->
+        <item name="buttonStyle">@style/button_ark</item>
+        <item name="logTextView">@style/textview_ark</item>
+    </style>
+
+    <style name="AppArkTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="button_ark" parent="Base.Widget.AppCompat.Button">
+        <item name="android:background">@drawable/ark_btn</item>
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+
+    <style name="textview_ark" parent="android:Widget.EditText">
+        <item name="android:background">@drawable/ark_textview</item>
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+
+
+    <!-- Custom styles -->
+
     <style name="button_danger" parent="Base.Widget.AppCompat.Button">
         <item name="android:background">@drawable/red_btn</item>
         <item name="android:textColor">#FFFFFF</item>
-        <item name="android:layout_marginTop">6dp</item>
-        <item name="android:layout_marginLeft">4dp</item>
-        <item name="android:layout_marginRight">4dp</item>
-        <item name="android:layout_marginBottom">6dp</item>
     </style>
 
     <style name="sectionTitleVeritcal">
         <item name="android:padding">4dp</item>
-        <item name="android:textColor">#FF0000</item>
         <item name="android:background">@drawable/section_title_background_vertical</item>
     </style>
 

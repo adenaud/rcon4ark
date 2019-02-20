@@ -65,8 +65,8 @@
         <Button
             android:id="@+id/button_killDinos"
             style="@style/button_danger"
-            android:layout_width="244dp"
-            android:layout_height="38dp"
+            android:layout_width="250dp"
+            android:layout_height="48dp"
             android:text="@string/killdinos"
             android:layout_gravity="center_horizontal" />
 

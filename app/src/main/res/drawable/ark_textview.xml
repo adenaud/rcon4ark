@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <inset android:insetBottom="6dp" android:insetLeft="4dp" android:insetRight="4dp" android:insetTop="6dp">
+            <shape android:shape="rectangle">
+                <solid android:color="@color/arkBtnPressed" />
+                <corners android:radius="3dp" />
+            </shape>
+        </inset>
+    </item>
+</selector>
