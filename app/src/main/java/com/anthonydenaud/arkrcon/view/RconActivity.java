@@ -1,5 +1,6 @@
 package com.anthonydenaud.arkrcon.view;
 
+import android.app.Application;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -29,7 +30,7 @@ import com.anthonydenaud.arkrcon.service.ArkService;
 import roboguice.activity.RoboActionBarActivity;
 import roboguice.inject.InjectView;
 
-public class RconActivity extends RoboActionBarActivity implements ConnectionListener, ViewPager.OnPageChangeListener {
+public class RconActivity extends ThemeActivity implements ConnectionListener, ViewPager.OnPageChangeListener{
 
 
     private RconFragmentPagerAdapter rconFragmentPagerAdapter;

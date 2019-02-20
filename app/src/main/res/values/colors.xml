@@ -6,5 +6,13 @@
     <color name="btnRed">#C9302C</color>
     <color name="btnRedPressed">#741816</color>
     <color name="textColor">#202020</color>
+    <color name="textColorLight">#ffffff</color>
     <color name="output_background">#e8eaf6</color>
+
+    <!-- Theme ARK -->
+
+    <color name="arkBackGround">#041f25</color>
+    <color name="arkBtn">#2c869e</color>
+    <color name="arkBtnPressed">#16697e</color>
+    <color name="arkTextView">#002f37</color>
 </resources>

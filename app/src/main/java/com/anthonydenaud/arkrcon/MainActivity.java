@@ -3,8 +3,10 @@ package com.anthonydenaud.arkrcon;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
@@ -22,6 +24,7 @@ import com.anthonydenaud.arkrcon.api.ApiCallback;
 import com.anthonydenaud.arkrcon.service.Rcon4GamesApiService;
 import com.anthonydenaud.arkrcon.service.LogService;
 import com.anthonydenaud.arkrcon.view.SettingsActivity;
+import com.anthonydenaud.arkrcon.view.ThemeActivity;
 import com.google.inject.Inject;
 
 import com.anthonydenaud.arkrcon.adapter.ServerAdapter;
@@ -36,7 +39,7 @@ import roboguice.activity.RoboActionBarActivity;
 import roboguice.inject.InjectView;
 import roboguice.util.Ln;
 
-public class MainActivity extends RoboActionBarActivity implements AdapterView.OnItemClickListener, ConnectionListener {
+public class MainActivity extends ThemeActivity implements AdapterView.OnItemClickListener, ConnectionListener {
 
     @InjectView(R.id.list_servers)
     private ListView listView;
@@ -122,6 +125,7 @@ public class MainActivity extends RoboActionBarActivity implements AdapterView.O
         listView.setOnItemClickListener(this);
         logService.migrate(this);
         refresh();
+
     }
 
     @Override
