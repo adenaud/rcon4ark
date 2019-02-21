@@ -73,6 +73,11 @@ public class CommandsFragment extends RconFragment implements View.OnClickListen
     private String command;
     private Activity context;
 
+    public CommandsFragment() {
+        this.context = getActivity();
+        this.arkService = new ArkService(this.context);
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

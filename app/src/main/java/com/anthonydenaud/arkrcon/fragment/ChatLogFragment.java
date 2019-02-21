@@ -67,6 +67,15 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
     private String message;
     private SharedPreferences preferences;
 
+
+    public ChatLogFragment() {
+        this.context = getActivity();
+        this.arkService = new ArkService(this.context);
+        this.logService = new LogService();
+        this.notificationService = new NotificationService(this.context);
+        this.preferences = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
+    }
+
     @Override
     public void onAttach(Context context) {
         this.context = (Activity) context;

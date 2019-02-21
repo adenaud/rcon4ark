@@ -30,20 +30,30 @@ import butterknife.BindView;
 
 public class PlayersFragment extends RconFragment {
 
-    private ArkService arkService;
-
     @BindView(R.id.list_players)
     ListView listViewPlayers;
 
     @BindView(R.id.textview_noplayers)
     TextView textViewNoPlayers;
 
+    private ArkService arkService;
     private Activity context;
 
     private PlayerArrayAdapter playerArrayAdapter;
 
+    public PlayersFragment(){
+        this.context = getActivity();
+        this.arkService = new ArkService(this.context);
+    }
+
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        this.context = getActivity();
+        this.arkService = new ArkService(this.context);
+
         setHasOptionsMenu(true);
         return inflater.inflate(R.layout.fragment_rcon_players, container, false);
     }

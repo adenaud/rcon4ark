@@ -50,12 +50,20 @@ public class RconActivity extends ThemeActivity implements ConnectionListener, V
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rcon);
 
+        this.arkService = new ArkService(this);
+        this.logService = new LogService();
+        this.notificationService = new NotificationService(this);
+        this.playersFragment = new PlayersFragment();
+        this.commandsFragment = new CommandsFragment();
+        this.chatLogFragment = new ChatLogFragment();
+
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         if (preferences.getBoolean("keep_screen_on", false)) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
         }
+
+
 
         Server server = getIntent().getParcelableExtra("server");
         if (server == null) {
