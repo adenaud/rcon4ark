@@ -1,6 +1,7 @@
 package com.anthonydenaud.arkrcon.view;
 
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -9,10 +10,9 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.anthonydenaud.arkrcon.dao.DatabaseHelper;
 import com.anthonydenaud.arkrcon.network.SteamQuery;
 import com.anthonydenaud.arkrcon.network.SteamQueryException;
-import com.github.koraktor.steamcondenser.exceptions.SteamCondenserException;
-import com.google.inject.Inject;
 
 import com.anthonydenaud.arkrcon.R;
 import com.anthonydenaud.arkrcon.dao.ServerDAO;
@@ -22,37 +22,36 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.UUID;
 
-import roboguice.activity.RoboActionBarActivity;
-import roboguice.inject.InjectView;
 
-public class ServerConnectionActivity extends RoboActionBarActivity implements View.OnClickListener {
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
-    @Inject
-    private ServerDAO dao;
+public class ServerConnectionActivity extends AppCompatActivity implements View.OnClickListener {
 
-    @Inject
-    private SteamQuery steamQuery;
+    ServerDAO dao;
 
-    @InjectView(R.id.name_edittext)
-    private EditText nameEditText;
+    SteamQuery steamQuery;
 
-    @InjectView(R.id.hostname_edittext)
-    private EditText hostnameEditText;
+    @BindView(R.id.name_edittext)
+    EditText nameEditText;
 
-    @InjectView(R.id.rcon_port_edittext)
-    private EditText rconPortEditText;
+    @BindView(R.id.hostname_edittext)
+    EditText hostnameEditText;
 
-    @InjectView(R.id.query_port_edittext)
-    private EditText queryPortEditText;
+    @BindView(R.id.rcon_port_edittext)
+    EditText rconPortEditText;
 
-    @InjectView(R.id.password_edittext)
-    private EditText passwordEditText;
+    @BindView(R.id.query_port_edittext)
+    EditText queryPortEditText;
 
-    @InjectView(R.id.admin_name_edittext)
-    private EditText adminNameEditText;
+    @BindView(R.id.password_edittext)
+    EditText passwordEditText;
 
-    @InjectView(R.id.fetch_name_button)
-    private ImageButton fetchNameButton;
+    @BindView(R.id.admin_name_edittext)
+    EditText adminNameEditText;
+
+    @BindView(R.id.fetch_name_button)
+    ImageButton fetchNameButton;
 
     private Server server;
 
@@ -60,9 +59,13 @@ public class ServerConnectionActivity extends RoboActionBarActivity implements V
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_server_connection);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_server_connection);
+        ButterKnife.bind(this);
+        Toolbar toolbar = findViewById(R.id.toolbar_server_connection);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        this.dao = new ServerDAO(new DatabaseHelper(this)); //TODO Fix that crap too
+        this.steamQuery = new SteamQuery();
 
         server = getIntent().getParcelableExtra("server");
         setTitle(getIntent().getIntExtra("titleId", R.string.edit_server));

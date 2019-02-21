@@ -7,24 +7,19 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.google.inject.Inject;
-
 import com.anthonydenaud.arkrcon.R;
 import com.anthonydenaud.arkrcon.model.Player;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 
 public class PlayerArrayAdapter extends ArrayAdapter<Player> {
-
 
     private static final int RESOURCE = R.layout.item_player;
     private final Context context;
     private List<Player> players;
 
-    @Inject
     public PlayerArrayAdapter(Context context) {
         super(context, RESOURCE);
         this.context = context;
@@ -48,8 +43,8 @@ public class PlayerArrayAdapter extends ArrayAdapter<Player> {
 
         Player player = getItem(position);
 
-        TextView textViewName = (TextView) convertView.findViewById(R.id.textView_player_name);
-        TextView textViewTime = (TextView) convertView.findViewById(R.id.textView_player_connect_time);
+        TextView textViewName = convertView.findViewById(R.id.textView_player_name);
+        TextView textViewTime = convertView.findViewById(R.id.textView_player_connect_time);
         textViewName.setText(player.getName());
         textViewTime.setText(formatTime(player.getConnectTime()));
 

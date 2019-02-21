@@ -1,14 +1,14 @@
 package com.anthonydenaud.arkrcon;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
@@ -21,11 +21,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anthonydenaud.arkrcon.api.ApiCallback;
+import com.anthonydenaud.arkrcon.dao.DatabaseHelper;
 import com.anthonydenaud.arkrcon.service.Rcon4GamesApiService;
 import com.anthonydenaud.arkrcon.service.LogService;
 import com.anthonydenaud.arkrcon.view.SettingsActivity;
 import com.anthonydenaud.arkrcon.view.ThemeActivity;
-import com.google.inject.Inject;
 
 import com.anthonydenaud.arkrcon.adapter.ServerAdapter;
 import com.anthonydenaud.arkrcon.dao.ServerDAO;
@@ -35,31 +35,26 @@ import com.anthonydenaud.arkrcon.service.ArkService;
 import com.anthonydenaud.arkrcon.view.RconActivity;
 import com.anthonydenaud.arkrcon.view.ServerConnectionActivity;
 
-import roboguice.activity.RoboActionBarActivity;
-import roboguice.inject.InjectView;
-import roboguice.util.Ln;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import timber.log.Timber;
 
-public class MainActivity extends ThemeActivity implements AdapterView.OnItemClickListener, ConnectionListener {
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, ConnectionListener {
 
-    @InjectView(R.id.list_servers)
-    private ListView listView;
+    @BindView(R.id.list_servers)
+    ListView listView;
 
-    @InjectView(R.id.textview_noserver)
-    private TextView textViewNoServer;
+    @BindView(R.id.textview_noserver)
+    TextView textViewNoServer;
 
-    @Inject
     private ServerAdapter serverAdapter;
 
-    @Inject
     private ServerDAO serverDAO;
 
-    @Inject
     private ArkService arkService;
 
-    @Inject
     private LogService logService;
 
-    @Inject
     private Rcon4GamesApiService apiService;
 
     private Server currentServer;
@@ -70,12 +65,19 @@ public class MainActivity extends ThemeActivity implements AdapterView.OnItemCli
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        ButterKnife.bind(this);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        this.arkService = new ArkService(this);
+        this.apiService = new Rcon4GamesApiService(this);
+        this.serverAdapter = new ServerAdapter(this, new ServerDAO(new DatabaseHelper(this))); //TODO Fix that crap
+
 
         registerForContextMenu(listView);
 
-        RavenLogger.getInstance().init(this);
 
         apiService.checkAppUpdateAvailable(new ApiCallback() {
             @Override
@@ -110,6 +112,7 @@ public class MainActivity extends ThemeActivity implements AdapterView.OnItemCli
         });
         apiService.saveUser();
 
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         if (fab != null) {
             fab.setOnClickListener(new View.OnClickListener() {
@@ -123,7 +126,7 @@ public class MainActivity extends ThemeActivity implements AdapterView.OnItemCli
         }
 
         listView.setOnItemClickListener(this);
-        logService.migrate(this);
+        //logService.migrate(this);
         refresh();
 
     }
@@ -185,6 +188,7 @@ public class MainActivity extends ThemeActivity implements AdapterView.OnItemCli
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_servers_floating, menu);
+        ButterKnife.bind(this);
     }
 
     @Override
@@ -242,7 +246,7 @@ public class MainActivity extends ThemeActivity implements AdapterView.OnItemCli
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Ln.d("onDisconnect");
+                Timber.d("onDisconnect");
                 Toast.makeText(MainActivity.this, getString(R.string.conneciton_lost), Toast.LENGTH_LONG).show();
             }
         });

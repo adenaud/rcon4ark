@@ -4,19 +4,14 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.provider.MediaStore;
 import android.widget.Toast;
 
 import com.anthonydenaud.arkrcon.R;
 import com.anthonydenaud.arkrcon.dao.ServerDAO;
 import com.anthonydenaud.arkrcon.model.Server;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
-import org.apache.commons.io.FileSystemUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
@@ -29,14 +24,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import roboguice.util.Ln;
+import timber.log.Timber;
 
-@Singleton
+//@Singleton
 public class LogService {
 
     private static final String MIGRATION_21_KEY = "LogMigration21";
 
-    @Inject
     private ServerDAO serverDAO;
 
     public boolean write(Context context, Server server, String log) {
@@ -45,7 +39,7 @@ public class LogService {
             File path = new File(context.getExternalFilesDir(null), "logs/" + server.getUuid());
             if (!path.exists()) {
                 if (!path.mkdirs()) {
-                    Ln.e("Unable to create log directory");
+                    Timber.e("Unable to create log directory");
                 }
             }
             String filename = "server.log";
@@ -61,7 +55,7 @@ public class LogService {
                 writer.close();
                 success = true;
             } catch (IOException e) {
-                Ln.e("Unable to create log file : %s", e.getMessage());
+                Timber.e("Unable to create log file : %s", e.getMessage());
             }
         }
         return success;
@@ -83,7 +77,7 @@ public class LogService {
         try {
             FileUtils.moveFile(logFile, new File(path, destination));
         } catch (IOException e) {
-            Ln.e("Unable to archive log file : %s", e.getMessage());
+            Timber.e("Unable to archive log file : %s", e.getMessage());
         }
     }
 
@@ -130,7 +124,7 @@ public class LogService {
                             log = IOUtils.toString(new FileInputStream(file));
                             log = log.replaceAll("'","\\\\'");
                         } catch (IOException e) {
-                            Ln.e("Error reading log file : %s", e.getMessage());
+                            Timber.e("Error reading log file : %s", e.getMessage());
                         }
                     }
                     write(context, server, log);
@@ -148,7 +142,7 @@ public class LogService {
             try {
                 log = IOUtils.toString(new FileInputStream(file));
             } catch (IOException e) {
-                Ln.e("Error reading log file : %s", e.getMessage());
+                Timber.e("Error reading log file : %s", e.getMessage());
             }
         }
         return log;

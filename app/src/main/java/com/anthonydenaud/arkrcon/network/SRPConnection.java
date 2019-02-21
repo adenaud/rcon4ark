@@ -3,8 +3,6 @@ package com.anthonydenaud.arkrcon.network;
 import android.content.Context;
 
 import com.anthonydenaud.arkrcon.event.OnServerStopRespondingListener;
-import com.anthonydenaud.arkrcon.RavenLogger;
-import com.google.inject.Inject;
 
 import com.anthonydenaud.arkrcon.R;
 import com.anthonydenaud.arkrcon.event.ConnectionListener;
@@ -21,7 +19,8 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Date;
 
-import roboguice.util.Ln;
+
+import timber.log.Timber;
 
 public class SRPConnection {
 
@@ -44,7 +43,6 @@ public class SRPConnection {
 
     private Date lastPacketTime;
 
-    @Inject
     public SRPConnection(Context context) {
         this.context = context;
         outgoingPackets = new LinkedMap<>();
@@ -52,7 +50,7 @@ public class SRPConnection {
 
 
     public void open(final String hostname, final int port) {
-        Ln.d("Connecting to %s:%d ...", hostname, port);
+        Timber.d("Connecting to %s:%d ...", hostname, port);
 
         lastPacketTime = new Date();
         if (!isConnected) {
@@ -66,7 +64,7 @@ public class SRPConnection {
                         connectionListener.onConnect(reconnecting);
                         runReceiveThread = true;
                         reconnecting = false;
-                        Ln.d("Connected");
+                        Timber.d("Connected");
                         beginReceive();
 
                     } catch (IOException e) {
@@ -104,7 +102,7 @@ public class SRPConnection {
                         outputStream.write(data);
                     } else {
                         isConnected = false;
-                        Ln.w("Unable to send packet : connection closed.");
+                        Timber.w("Unable to send packet : connection closed.");
                     }
                 } catch (IOException e) {
                     connectionListener.onConnectionDrop();
@@ -191,7 +189,7 @@ public class SRPConnection {
                     }
                 }
             } catch (IOException e) {
-                Ln.w("Unable to receive packet : %s", e.getMessage());
+                Timber.w("Unable to receive packet : %s", e.getMessage());
                 runReceiveThread = false;
             }
         }
@@ -203,10 +201,9 @@ public class SRPConnection {
             try {
                 close();
             } catch (IOException e) {
-                Ln.e("Unable to close client : %s", e.getLocalizedMessage());
-                RavenLogger.getInstance().error(SRPConnection.class,"Unable to close client :  "+ e.getLocalizedMessage(), e);
+                Timber.e("Unable to close client : %s", e.getLocalizedMessage());
             }
-            Ln.w("The server has stopped to responding to RCON requests, Reconnecting ...");
+            Timber.w("The server has stopped to responding to RCON requests, Reconnecting ...");
             if (onServerStopRespondingListener != null) {
                 onServerStopRespondingListener.onServerStopResponding();
             }

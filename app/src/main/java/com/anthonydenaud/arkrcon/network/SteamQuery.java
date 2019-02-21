@@ -1,17 +1,15 @@
 package com.anthonydenaud.arkrcon.network;
 
-import com.anthonydenaud.arkrcon.RavenLogger;
 import com.github.koraktor.steamcondenser.exceptions.SteamCondenserException;
 import com.github.koraktor.steamcondenser.steam.SteamPlayer;
 import com.github.koraktor.steamcondenser.steam.servers.GoldSrcServer;
 
-import java.nio.BufferOverflowException;
 import java.nio.BufferUnderflowException;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-import roboguice.util.Ln;
+import timber.log.Timber;
+
 
 public class SteamQuery {
 
@@ -23,7 +21,7 @@ public class SteamQuery {
             server = new GoldSrcServer(hostname, port);
             connected = true;
         } catch (SteamCondenserException e) {
-            Ln.e(e.getMessage());
+            Timber.e(e);
             throw new SteamQueryException();
         }
     }
@@ -47,15 +45,14 @@ public class SteamQuery {
                     try {
                         Thread.sleep(200);
                     } catch (InterruptedException e1) {
-                        Ln.e(e1.getMessage(), e1);
-                        RavenLogger.getInstance().error(SteamQuery.class, "getPlayers InterruptedException", e1);
+                        Timber.e(e1);
                     }
                     cause = e;
                     retry++;
                 }
             }
             if(error){
-                Ln.w(cause.getMessage());
+                Timber.w(cause);
             }
         }
         return players;
@@ -82,15 +79,14 @@ public class SteamQuery {
                     try {
                         Thread.sleep(200);
                     } catch (InterruptedException e1) {
-                        Ln.e(e1.getMessage(), e1);
-                        RavenLogger.getInstance().error(SteamQuery.class, "getPlayerCount InterruptedException", e1);
+                        Timber.e(e1);
                     }
                     retry++;
                     cause = e;
                 }
             }
             if(error){
-                Ln.w(cause.getMessage());
+                Timber.w(cause);
             }
         }
         return playerCount;
@@ -117,15 +113,14 @@ public class SteamQuery {
                     try {
                         Thread.sleep(200);
                     } catch (InterruptedException e1) {
-                        Ln.e(e1.getMessage(), e1);
-                        RavenLogger.getInstance().error(SteamQuery.class, "getMaxPlayers InterruptedException", e1);
+                        Timber.e(e1);
                     }
                     cause = e;
                     retry++;
                 }
             }
             if(error){
-                Ln.w(cause.getMessage());
+                Timber.w(cause);
             }
         }
         return maxPlayers;
@@ -147,15 +142,14 @@ public class SteamQuery {
                     try {
                         Thread.sleep(200);
                     } catch (InterruptedException e1) {
-                        Ln.e(e1.getMessage(), e1);
-                        RavenLogger.getInstance().error(SteamQuery.class, "getServerName InterruptedException", e1);
+                        Timber.e(e1);
                     }
                     cause = e;
                     retry++;
                 }
             }
             if(error){
-                Ln.w(cause.getMessage());
+                Timber.w(cause);
                 throw new SteamQueryException();
             }
         }

@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -26,11 +25,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.anthonydenaud.arkrcon.Codes;
 import com.anthonydenaud.arkrcon.model.Server;
 import com.anthonydenaud.arkrcon.service.LogService;
 import com.anthonydenaud.arkrcon.service.NotificationService;
-import com.google.inject.Inject;
 
 import com.anthonydenaud.arkrcon.R;
 import com.anthonydenaud.arkrcon.service.ArkService;
@@ -41,32 +38,29 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.IOException;
 import java.util.List;
 
-import roboguice.inject.InjectView;
-import roboguice.util.Ln;
+import butterknife.BindView;
+import timber.log.Timber;
 
 public class ChatLogFragment extends RconFragment implements View.OnClickListener, TextView.OnEditorActionListener {
 
-    @Inject
     private ArkService arkService;
 
-    @Inject
     private LogService logService;
 
-    @Inject
     private NotificationService notificationService;
 
-    @InjectView(R.id.webview_log)
-    private WebView webViewLog;
+    @BindView(R.id.webview_log)
+    WebView webViewLog;
 
 
-    @InjectView(R.id.editext_chat_send)
-    private EditText editTextChatSend;
+    @BindView(R.id.editext_chat_send)
+    EditText editTextChatSend;
 
-    @InjectView(R.id.btn_chat)
-    private Button buttonChat;
+    @BindView(R.id.btn_chat)
+    Button buttonChat;
 
-    @InjectView(R.id.btn_broadcast)
-    private Button buttonBroadcast;
+    @BindView(R.id.btn_broadcast)
+    Button buttonBroadcast;
 
 
     private Activity context;
@@ -114,7 +108,7 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
         try {
             template = IOUtils.toString(getResources().openRawResource(R.raw.template));
         } catch (IOException e) {
-            Ln.e(e);
+            Timber.e(e);
         }
         final String finalTemplate = template;
         webViewLog.loadData(finalTemplate, "text/html", "UTF-8");

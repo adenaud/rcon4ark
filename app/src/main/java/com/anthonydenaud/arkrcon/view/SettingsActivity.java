@@ -1,14 +1,11 @@
 package com.anthonydenaud.arkrcon.view;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.MenuItem;
 
 import com.anthonydenaud.arkrcon.R;
 import com.anthonydenaud.arkrcon.fragment.SettingsFragment;
 
-import roboguice.activity.RoboActionBarActivity;
 
 
 public class SettingsActivity extends ThemeActivity{
@@ -31,6 +28,7 @@ public class SettingsActivity extends ThemeActivity{
 
     @Override
     protected void applyTheme(String theme) {
+
         if(THEME_DARK.equals(theme)){
             setTheme(R.style.AppDarkTheme);
             getApplication().setTheme(R.style.AppDarkTheme);

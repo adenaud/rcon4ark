@@ -13,7 +13,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import roboguice.util.Ln;
+import timber.log.Timber;
 
 /**
  * Created by Anthony Denaud on 08/12/2016.
@@ -74,7 +74,7 @@ public class Rcon4GamesApi {
                 }
 
             }catch (IOException | JSONException e){
-                Ln.e("Unable to POST data : " + e.getMessage());
+                Timber.e(e, "Unable to POST data : " + e.getMessage());
             }
             return null;
         }
@@ -93,7 +93,7 @@ public class Rcon4GamesApi {
                 versionCode = json.getInt("last_version");
 
             } catch (IOException | JSONException e) {
-                Ln.e("Unable to get last version : " + e.getMessage());
+                Timber.e(e, "Unable to get last version : %s", e.getMessage());
             }
 
             if (versionCode > BuildConfig.VERSION_CODE && apiCallback != null) {

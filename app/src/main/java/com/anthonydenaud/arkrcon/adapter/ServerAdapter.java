@@ -10,7 +10,6 @@ import android.widget.TextView;
 
 import com.anthonydenaud.arkrcon.network.SteamQuery;
 import com.anthonydenaud.arkrcon.network.SteamQueryException;
-import com.google.inject.Inject;
 
 import com.anthonydenaud.arkrcon.R;
 import com.anthonydenaud.arkrcon.dao.ServerDAO;
@@ -18,9 +17,8 @@ import com.anthonydenaud.arkrcon.model.Server;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.StringTokenizer;
 
-import roboguice.util.Ln;
+import timber.log.Timber;
 
 /**
  * Created by Anthony on 09/10/2015.
@@ -32,8 +30,6 @@ public class ServerAdapter extends ArrayAdapter<Server> {
     private Context context;
     private ServerDAO serverDAO;
 
-
-    @Inject
     public ServerAdapter(Context context, ServerDAO serverDAO) {
         super(context, RESOURCE);
         this.context = context;
@@ -85,7 +81,7 @@ public class ServerAdapter extends ArrayAdapter<Server> {
                         }
                     });
                 } catch (SteamQueryException e) {
-                    Ln.e("Unable to connect via Steam condenser", e);
+                    Timber.e(e,"Unable to connect via Steam condenser");
                 }
 
             }

@@ -1,11 +1,11 @@
 package com.anthonydenaud.arkrcon.dao;
 
-import com.google.inject.Inject;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 
 import com.anthonydenaud.arkrcon.model.Server;
 
 import java.util.List;
+
 
 /**
  * Created by Anthony on 09/10/2015.
@@ -14,7 +14,6 @@ public class ServerDAO {
 
     private RuntimeExceptionDao<Server,Integer> dao;
 
-    @Inject
     public ServerDAO(DatabaseHelper databaseHelper){
         dao = databaseHelper.getRuntimeExceptionDao(Server.class);
     }

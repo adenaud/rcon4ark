@@ -10,13 +10,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.v4.app.NotificationCompat;
 
 import com.anthonydenaud.arkrcon.Codes;
 import com.anthonydenaud.arkrcon.R;
 import com.anthonydenaud.arkrcon.view.RconActivity;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -24,7 +21,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-@Singleton
+//@Singleton
 public class NotificationService {
 
     private static final String NOTIFICATION_DELETED = "NOTIFICATION_DELETED";
@@ -36,7 +33,6 @@ public class NotificationService {
     private int nbNotifications = 1;
     private String currentText;
 
-    @Inject
     public NotificationService(Context context) {
         this.context = context;
         preferences = PreferenceManager.getDefaultSharedPreferences(context);

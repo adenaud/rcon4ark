@@ -1,16 +1,17 @@
 package com.anthonydenaud.arkrcon.fragment;
 
+
+import android.support.v4.app.Fragment;
+
 import com.anthonydenaud.arkrcon.event.ServerResponseDispatcher;
 import com.anthonydenaud.arkrcon.model.Player;
 
 import java.util.List;
 
-import roboguice.fragment.RoboFragment;
-
 /**
  * Created by Anthony on 13/10/2015.
  */
-public class RconFragment extends RoboFragment implements ServerResponseDispatcher {
+public class RconFragment extends Fragment implements ServerResponseDispatcher {
     @Override
     public void onListPlayers(List<Player> players) {
 

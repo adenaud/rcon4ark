@@ -15,7 +15,6 @@ import android.view.WindowManager;
 
 import com.anthonydenaud.arkrcon.service.LogService;
 import com.anthonydenaud.arkrcon.service.NotificationService;
-import com.google.inject.Inject;
 
 import com.anthonydenaud.arkrcon.Codes;
 import com.anthonydenaud.arkrcon.R;
@@ -27,33 +26,23 @@ import com.anthonydenaud.arkrcon.fragment.PlayersFragment;
 import com.anthonydenaud.arkrcon.model.Server;
 import com.anthonydenaud.arkrcon.service.ArkService;
 
-import roboguice.activity.RoboActionBarActivity;
-import roboguice.inject.InjectView;
+import butterknife.BindView;
 
 public class RconActivity extends ThemeActivity implements ConnectionListener, ViewPager.OnPageChangeListener{
 
 
     private RconFragmentPagerAdapter rconFragmentPagerAdapter;
 
-    @Inject
     private PlayersFragment playersFragment;
-    @Inject
     private CommandsFragment commandsFragment;
-    @Inject
     private ChatLogFragment chatLogFragment;
 
-
-    @Inject
     private ArkService arkService;
-
-    @Inject
     private LogService logService;
-
-    @Inject
     private NotificationService notificationService;
 
-    @InjectView(R.id.container)
-    private ViewPager mViewPager;
+    @BindView(R.id.container)
+    ViewPager mViewPager;
 
 
     @Override

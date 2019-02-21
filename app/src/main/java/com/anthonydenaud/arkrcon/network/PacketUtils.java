@@ -6,7 +6,8 @@ import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import roboguice.util.Ln;
+import timber.log.Timber;
+
 
 public class PacketUtils {
 
@@ -26,7 +27,7 @@ public class PacketUtils {
             string = new String(res, "US-ASCII");
         } catch (IllegalArgumentException | UnsupportedEncodingException e) {
             res = "".getBytes();
-            Ln.e("getStringFromBytes -> IllegalArgumentException : " + new String(res));
+            Timber.e("getStringFromBytes -> IllegalArgumentException : %s", new String(res));
         }
         return string;
     }

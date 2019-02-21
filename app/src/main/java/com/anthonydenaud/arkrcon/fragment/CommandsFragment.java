@@ -21,55 +21,52 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import com.google.inject.Inject;
-
 import com.anthonydenaud.arkrcon.R;
 import com.anthonydenaud.arkrcon.service.ArkService;
 
 import org.apache.commons.lang3.StringUtils;
 
-import roboguice.inject.InjectView;
+import butterknife.BindView;
 
 public class CommandsFragment extends RconFragment implements View.OnClickListener, TimePickerDialog.OnTimeSetListener, TextView.OnEditorActionListener {
 
-    @Inject
     private ArkService arkService;
 
-    @InjectView(R.id.button_changeTime)
-    private Button buttonChangeTime;
+    @BindView(R.id.button_changeTime)
+    Button buttonChangeTime;
 
-    @InjectView(R.id.button_saveWorld)
-    private Button buttonSaveWorld;
+    @BindView(R.id.button_saveWorld)
+    Button buttonSaveWorld;
 
-    @InjectView(R.id.button_killDinos)
-    private Button buttonKillDinos;
+    @BindView(R.id.button_killDinos)
+    Button buttonKillDinos;
 
 
-    @InjectView(R.id.button_unban_player)
-    private Button buttonUnBan;
+    @BindView(R.id.button_unban_player)
+    Button buttonUnBan;
 
-    @InjectView(R.id.button_whitelist_remove)
-    private Button buttonWhiteListRemove;
+    @BindView(R.id.button_whitelist_remove)
+    Button buttonWhiteListRemove;
 
-    @InjectView(R.id.textview_output)
-    private TextView textViewOutput;
+    @BindView(R.id.textview_output)
+    TextView textViewOutput;
 
-    @InjectView(R.id.editext_command)
-    private AutoCompleteTextView editTextCommand;
+    @BindView(R.id.editext_command)
+    AutoCompleteTextView editTextCommand;
 
-    @InjectView(R.id.btn_exec)
-    private Button buttonExec;
+    @BindView(R.id.btn_exec)
+    Button buttonExec;
 
 
     /* View expanding */
-    @InjectView(R.id.layout_quick_commands)
-    private LinearLayout layoutQuickCmds;
-    @InjectView(R.id.layout_custom_commands)
-    private LinearLayout layoutCustomCmds;
-    @InjectView(R.id.btn_expand_quick_cmd)
-    private ImageButton btnExpandQuickCmds;
-    @InjectView(R.id.btn_expend_custom_cmd)
-    private ImageButton btnExpandCustomCmds;
+    @BindView(R.id.layout_quick_commands)
+    LinearLayout layoutQuickCmds;
+    @BindView(R.id.layout_custom_commands)
+    LinearLayout layoutCustomCmds;
+    @BindView(R.id.btn_expand_quick_cmd)
+    ImageButton btnExpandQuickCmds;
+    @BindView(R.id.btn_expend_custom_cmd)
+    ImageButton btnExpandCustomCmds;
 
 
     private String output;

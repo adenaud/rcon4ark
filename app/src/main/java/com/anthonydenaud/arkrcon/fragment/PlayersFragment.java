@@ -19,8 +19,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.inject.Inject;
-
 import com.anthonydenaud.arkrcon.adapter.PlayerArrayAdapter;
 import com.anthonydenaud.arkrcon.model.Player;
 import com.anthonydenaud.arkrcon.service.ArkService;
@@ -28,22 +26,20 @@ import com.anthonydenaud.arkrcon.R;
 
 import java.util.List;
 
-import roboguice.inject.InjectView;
+import butterknife.BindView;
 
 public class PlayersFragment extends RconFragment {
 
-    @Inject
     private ArkService arkService;
 
-    @InjectView(R.id.list_players)
-    private ListView listViewPlayers;
+    @BindView(R.id.list_players)
+    ListView listViewPlayers;
 
-    @InjectView(R.id.textview_noplayers)
-    private TextView textViewNoPlayers;
+    @BindView(R.id.textview_noplayers)
+    TextView textViewNoPlayers;
 
     private Activity context;
 
-    @Inject
     private PlayerArrayAdapter playerArrayAdapter;
 
     @Override

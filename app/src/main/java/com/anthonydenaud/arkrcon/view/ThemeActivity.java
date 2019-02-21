@@ -3,16 +3,16 @@ package com.anthonydenaud.arkrcon.view;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatActivity;
 
 import com.anthonydenaud.arkrcon.R;
 
-import roboguice.activity.RoboActionBarActivity;
 
 /**
  * Created by Anthony on 15/07/2017.
  */
 
-public class ThemeActivity extends RoboActionBarActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+public abstract class ThemeActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
 
     protected static final String THEME_LIGHT = "light";
@@ -39,6 +39,7 @@ public class ThemeActivity extends RoboActionBarActivity implements SharedPrefer
     }
 
     protected void applyTheme(String theme){
+
         if(THEME_DARK.equals(theme)){
             getApplication().setTheme(R.style.AppDarkTheme);
             setTheme(R.style.AppDarkTheme_NoActionBar);
@@ -47,6 +48,7 @@ public class ThemeActivity extends RoboActionBarActivity implements SharedPrefer
             getApplication().setTheme(R.style.AppArkTheme);
             setTheme(R.style.AppArkTheme_NoActionBar);
         }
+
     }
 
     @Override

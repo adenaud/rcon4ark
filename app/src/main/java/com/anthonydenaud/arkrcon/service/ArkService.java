@@ -8,8 +8,6 @@ import com.anthonydenaud.arkrcon.event.OnServerStopRespondingListener;
 import com.anthonydenaud.arkrcon.network.SteamQuery;
 import com.anthonydenaud.arkrcon.network.SteamQueryException;
 import com.github.koraktor.steamcondenser.steam.SteamPlayer;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 import com.anthonydenaud.arkrcon.R;
 import com.anthonydenaud.arkrcon.event.ConnectionListener;
@@ -36,17 +34,15 @@ import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import roboguice.util.Ln;
+import timber.log.Timber;
 
-@Singleton
+// TODO SINGLETON
 public class ArkService implements OnReceiveListener {
 
-    private final Context context;
+    private Context context;
 
-    @Inject
     private SRPConnection connection;
 
-    @Inject
     private SteamQuery steamQuery;
 
     private List<ConnectionListener> connectionListeners;
@@ -60,9 +56,11 @@ public class ArkService implements OnReceiveListener {
 
     private SharedPreferences preferences;
 
-    @Inject
     public ArkService(Context context) {
         this.context = context;
+        this.connection = new SRPConnection(context);
+        this.steamQuery = new SteamQuery();
+
         preferences = PreferenceManager.getDefaultSharedPreferences(context);
         connectionListeners = new ArrayList<>();
         serverResponseDispatchers = new ArrayList<>();
@@ -114,7 +112,7 @@ public class ArkService implements OnReceiveListener {
     }
 
     private void login(String password) {
-        Ln.d("Login ...");
+        Timber.d("Login ...");
         Packet packet = new Packet(connection.getSequenceNumber(), PacketType.SERVERDATA_AUTH.getValue(), password);
         connection.send(packet);
     }
@@ -243,7 +241,7 @@ public class ArkService implements OnReceiveListener {
                 for (ServerResponseDispatcher dispatcher : serverResponseDispatchers) {
 
                     if (requestPacket == null) {
-                        Ln.e(String.valueOf(packet.getId()) + packet.getBody());
+                        Timber.e(String.valueOf(packet.getId()) + packet.getBody());
                     } else if (customCommands.contains(packet.getId())) {
                         dispatcher.onCustomCommandResult(packet.getBody());
                     } else if (StringUtils.isNotEmpty(requestPacket.getBody()) && requestPacket.getBody().equals("ListPlayers")) {
@@ -270,7 +268,7 @@ public class ArkService implements OnReceiveListener {
                 try{
                     this.steamQuery.connect(server.getHostname(), queryPort);
                 }catch (SteamQueryException e){
-                    Ln.e("Unable to connect via Steam condenser",e );
+                    Timber.e(e, "Unable to connect via Steam condenser");
                 }
 
 
@@ -345,7 +343,7 @@ public class ArkService implements OnReceiveListener {
         try {
             connection.close();
         } catch (IOException e) {
-            Ln.e("ark service disconnect exception", e);
+            Timber.e(e, "ark service disconnect exception");
         }
     }
 
