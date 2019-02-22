@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -39,6 +40,7 @@ import java.io.IOException;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import timber.log.Timber;
 
 public class ChatLogFragment extends RconFragment implements View.OnClickListener, TextView.OnEditorActionListener {
@@ -68,7 +70,9 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
     private SharedPreferences preferences;
 
 
-    public ChatLogFragment() {
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         this.context = getActivity();
         this.arkService = new ArkService(this.context);
         this.logService = new LogService();
@@ -87,7 +91,9 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
         setHasOptionsMenu(true);
         arkService.addServerResponseDispatcher(this);
 
-        return inflater.inflate(R.layout.fragment_chat, container, false);
+        View view =  inflater.inflate(R.layout.fragment_chat, container, false);
+        ButterKnife.bind(this, view);
+        return view;
     }
 
     @Override

@@ -27,10 +27,9 @@ import com.anthonydenaud.arkrcon.service.ArkService;
 import org.apache.commons.lang3.StringUtils;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class CommandsFragment extends RconFragment implements View.OnClickListener, TimePickerDialog.OnTimeSetListener, TextView.OnEditorActionListener {
-
-    private ArkService arkService;
 
     @BindView(R.id.button_changeTime)
     Button buttonChangeTime;
@@ -68,15 +67,12 @@ public class CommandsFragment extends RconFragment implements View.OnClickListen
     @BindView(R.id.btn_expend_custom_cmd)
     ImageButton btnExpandCustomCmds;
 
+    private ArkService arkService;
+    private Activity context;
 
     private String output;
     private String command;
-    private Activity context;
 
-    public CommandsFragment() {
-        this.context = getActivity();
-        this.arkService = new ArkService(this.context);
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,11 +81,15 @@ public class CommandsFragment extends RconFragment implements View.OnClickListen
             output = savedInstanceState.getString("output");
             command = savedInstanceState.getString("command");
         }
+        this.context = getActivity();
+        this.arkService = new ArkService(this.context);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_rcon_commands, container, false);
+        View view = inflater.inflate(R.layout.fragment_rcon_commands, container, false);
+        ButterKnife.bind(this, view);
+        return view;
     }
 
     @Override

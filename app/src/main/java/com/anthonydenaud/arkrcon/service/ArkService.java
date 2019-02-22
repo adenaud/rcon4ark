@@ -71,8 +71,6 @@ public class ArkService implements OnReceiveListener {
 
         this.server = server;
 
-        connection.open(server.getHostname(), server.getPort());
-
         connection.setOnReceiveListener(this);
         connection.setConnectionListener(new ConnectionListener() {
             @Override
@@ -108,7 +106,7 @@ public class ArkService implements OnReceiveListener {
             }
         });
 
-
+        connection.open(server.getHostname(), server.getPort());
     }
 
     private void login(String password) {

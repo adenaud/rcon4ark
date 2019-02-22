@@ -27,6 +27,7 @@ import com.anthonydenaud.arkrcon.model.Server;
 import com.anthonydenaud.arkrcon.service.ArkService;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class RconActivity extends ThemeActivity implements ConnectionListener, ViewPager.OnPageChangeListener{
 
@@ -49,6 +50,8 @@ public class RconActivity extends ThemeActivity implements ConnectionListener, V
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rcon);
+
+        ButterKnife.bind(this);
 
         this.arkService = new ArkService(this);
         this.logService = new LogService();

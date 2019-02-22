@@ -5,8 +5,8 @@ import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,6 +27,7 @@ import com.anthonydenaud.arkrcon.R;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class PlayersFragment extends RconFragment {
 
@@ -41,21 +42,20 @@ public class PlayersFragment extends RconFragment {
 
     private PlayerArrayAdapter playerArrayAdapter;
 
-    public PlayersFragment(){
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         this.context = getActivity();
-        this.arkService = new ArkService(this.context);
+        this.arkService = new ArkService(context);
+        this.playerArrayAdapter = new PlayerArrayAdapter(context);
     }
-
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-        this.context = getActivity();
-        this.arkService = new ArkService(this.context);
-
         setHasOptionsMenu(true);
-        return inflater.inflate(R.layout.fragment_rcon_players, container, false);
+        View view =  inflater.inflate(R.layout.fragment_rcon_players, container, false);
+        ButterKnife.bind(this, view);
+        return view;
     }
 
     @Override
@@ -100,12 +100,9 @@ public class PlayersFragment extends RconFragment {
 
         if (players.size() > 0) {
             playerArrayAdapter.setPlayers(players);
-            context.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    textViewNoPlayers.setVisibility(View.GONE);
-                    listViewPlayers.setAdapter(playerArrayAdapter);
-                }
+            context.runOnUiThread(() -> {
+                textViewNoPlayers.setVisibility(View.GONE);
+                listViewPlayers.setAdapter(playerArrayAdapter);
             });
         }
     }
@@ -162,12 +159,7 @@ public class PlayersFragment extends RconFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(R.string.send_message);
         builder.setView(editText);
-        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                arkService.serverChatTo(player, editText.getText().toString());
-            }
-        });
+        builder.setPositiveButton(R.string.ok, (dialog, which) -> arkService.serverChatTo(player, editText.getText().toString()));
         builder.setNegativeButton(R.string.cancel, null);
         builder.show();
     }

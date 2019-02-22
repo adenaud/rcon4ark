@@ -25,7 +25,6 @@ public class Rcon4GamesApi {
 
     private ApiCallback apiCallback;
 
-
     public void getLastVersion(ApiCallback apiCallback){
         this.apiCallback = apiCallback;
         new CheckUpdateAsyncTask().execute(API_URL + "last_version");
