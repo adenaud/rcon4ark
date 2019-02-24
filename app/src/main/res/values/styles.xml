@@ -36,6 +36,7 @@
         <item name="android:windowBackground">@color/arkBackGround</item> <!-- 041f25-->
         <item name="buttonStyle">@style/button_ark</item>
         <item name="logTextView">@style/textview_ark</item>
+        <item name="android:itemBackground">@color/arkBackGround</item>
     </style>
 
     <style name="AppArkTheme.NoActionBar">

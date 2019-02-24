@@ -3,7 +3,9 @@ package com.anthonydenaud.arkrcon.view;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 
 import com.anthonydenaud.arkrcon.R;
 
@@ -19,14 +21,20 @@ public abstract class ThemeActivity extends AppCompatActivity implements SharedP
     protected static final String THEME_DARK = "dark";
     protected static final String THEME_ARK = "ark";
 
+    protected Toolbar toolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.registerOnSharedPreferenceChangeListener(this);
         setTheme(false);
         super.onCreate(savedInstanceState);
+    }
 
-
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        setToolBarTheme();
+        super.onPostCreate(savedInstanceState);
     }
 
     private void setTheme(boolean recreate){
@@ -35,6 +43,12 @@ public abstract class ThemeActivity extends AppCompatActivity implements SharedP
         applyTheme(theme);
         if(recreate){
             recreate();
+        }
+    }
+
+    protected void setToolBarTheme(){
+        if(toolbar != null){
+            toolbar.setPopupTheme(R.style.ThemeOverlay_AppCompat_Dark_ActionBar);
         }
     }
 
@@ -48,7 +62,6 @@ public abstract class ThemeActivity extends AppCompatActivity implements SharedP
             getApplication().setTheme(R.style.AppArkTheme);
             setTheme(R.style.AppArkTheme_NoActionBar);
         }
-
     }
 
     @Override
