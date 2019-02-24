@@ -1,14 +1,12 @@
 package com.anthonydenaud.arkrcon;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
@@ -25,7 +23,6 @@ import com.anthonydenaud.arkrcon.dao.DatabaseHelper;
 import com.anthonydenaud.arkrcon.service.Rcon4GamesApiService;
 import com.anthonydenaud.arkrcon.service.LogService;
 import com.anthonydenaud.arkrcon.view.SettingsActivity;
-import com.anthonydenaud.arkrcon.view.ThemeActivity;
 
 import com.anthonydenaud.arkrcon.adapter.ServerAdapter;
 import com.anthonydenaud.arkrcon.dao.ServerDAO;
@@ -34,12 +31,17 @@ import com.anthonydenaud.arkrcon.model.Server;
 import com.anthonydenaud.arkrcon.service.ArkService;
 import com.anthonydenaud.arkrcon.view.RconActivity;
 import com.anthonydenaud.arkrcon.view.ServerConnectionActivity;
+import com.anthonydenaud.arkrcon.view.ThemeActivity;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
+import toothpick.Scope;
+import toothpick.Toothpick;
 
-public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, ConnectionListener {
+public class MainActivity extends ThemeActivity implements AdapterView.OnItemClickListener, ConnectionListener {
 
     @BindView(R.id.list_servers)
     ListView listView;
@@ -49,13 +51,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     private ServerAdapter serverAdapter;
 
-    private ServerDAO serverDAO;
+    @Inject ServerDAO serverDAO;
 
-    private ArkService arkService;
+    @Inject ArkService arkService;
 
-    private LogService logService;
+    @Inject LogService logService;
 
-    private Rcon4GamesApiService apiService;
+    @Inject
+    Rcon4GamesApiService apiService;
 
     private Server currentServer;
     private ProgressDialog progressDialog;
@@ -68,16 +71,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         ButterKnife.bind(this);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        Scope s = Toothpick.openScopes(getApplication(), this);
+        Toothpick.inject(this, s);
+
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        this.arkService = new ArkService(this);
-        this.apiService = new Rcon4GamesApiService(this);
-        this.serverAdapter = new ServerAdapter(this, new ServerDAO(new DatabaseHelper(this))); //TODO Fix that crap
-
+        this.serverAdapter = new ServerAdapter(this, serverDAO);
 
         registerForContextMenu(listView);
-
 
         apiService.checkAppUpdateAvailable(new ApiCallback() {
             @Override
@@ -111,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         });
         apiService.saveUser();
+
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -243,24 +246,18 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     public void onDisconnect() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Timber.d("onDisconnect");
-                Toast.makeText(MainActivity.this, getString(R.string.conneciton_lost), Toast.LENGTH_LONG).show();
-            }
+        runOnUiThread(() -> {
+            Timber.d("onDisconnect");
+            Toast.makeText(MainActivity.this, getString(R.string.conneciton_lost), Toast.LENGTH_LONG).show();
         });
     }
 
     @Override
-    public void onConnectionFail(final String message) {
+    public void onConnectionFail() {
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                progressDialog.dismiss();
-                Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
-            }
+        runOnUiThread(() -> {
+            progressDialog.dismiss();
+            Toast.makeText(MainActivity.this, getText(R.string.connection_fail), Toast.LENGTH_LONG).show();
         });
     }
 

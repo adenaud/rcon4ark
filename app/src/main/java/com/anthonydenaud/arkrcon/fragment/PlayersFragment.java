@@ -26,8 +26,12 @@ import com.anthonydenaud.arkrcon.R;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import toothpick.Scope;
+import toothpick.Toothpick;
 
 public class PlayersFragment extends RconFragment {
 
@@ -37,7 +41,8 @@ public class PlayersFragment extends RconFragment {
     @BindView(R.id.textview_noplayers)
     TextView textViewNoPlayers;
 
-    private ArkService arkService;
+    @Inject
+    ArkService arkService;
     private Activity context;
 
     private PlayerArrayAdapter playerArrayAdapter;
@@ -46,8 +51,10 @@ public class PlayersFragment extends RconFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.context = getActivity();
-        this.arkService = new ArkService(context);
         this.playerArrayAdapter = new PlayerArrayAdapter(context);
+
+        Scope s = Toothpick.openScopes(getActivity().getApplication(), this);
+        Toothpick.inject(this, s);
     }
 
     @Override

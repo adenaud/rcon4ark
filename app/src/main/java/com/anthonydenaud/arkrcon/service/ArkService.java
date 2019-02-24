@@ -1,6 +1,6 @@
 package com.anthonydenaud.arkrcon.service;
 
-import android.content.Context;
+import android.app.Application;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
@@ -34,21 +34,20 @@ import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import timber.log.Timber;
 
-// TODO SINGLETON
+@Singleton
 public class ArkService implements OnReceiveListener {
 
-    private Context context;
+    private Application application;
 
     private SRPConnection connection;
-
     private SteamQuery steamQuery;
-
     private List<ConnectionListener> connectionListeners;
-
     private final List<ServerResponseDispatcher> serverResponseDispatchers;
-
     private List<Integer> customCommands;
 
     private Server server;
@@ -56,12 +55,13 @@ public class ArkService implements OnReceiveListener {
 
     private SharedPreferences preferences;
 
-    public ArkService(Context context) {
-        this.context = context;
-        this.connection = new SRPConnection(context);
+    @Inject
+    public ArkService(Application application) {
+        this.application = application;
+        this.connection = new SRPConnection();
         this.steamQuery = new SteamQuery();
 
-        preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        preferences = PreferenceManager.getDefaultSharedPreferences(application);
         connectionListeners = new ArrayList<>();
         serverResponseDispatchers = new ArrayList<>();
         customCommands = new ArrayList<>();
@@ -89,9 +89,9 @@ public class ArkService implements OnReceiveListener {
             }
 
             @Override
-            public void onConnectionFail(String message) {
+            public void onConnectionFail() {
                 for (ConnectionListener listener : connectionListeners) {
-                    listener.onConnectionFail(message);
+                    listener.onConnectionFail();
                 }
             }
         });
@@ -131,7 +131,7 @@ public class ArkService implements OnReceiveListener {
     }
 
     private String getAdminName() {
-        String adminName = context.getString(R.string.default_admin_name);
+        String adminName = application.getString(R.string.default_admin_name);
         if (StringUtils.isNotEmpty(server.getAdminName())) {
             adminName = server.getAdminName();
         }
@@ -258,7 +258,7 @@ public class ArkService implements OnReceiveListener {
             if (packet.getId() == -1) {
 
                 for (ConnectionListener listener : connectionListeners) {
-                    listener.onConnectionFail(context.getString(R.string.authentication_fail));
+                    listener.onConnectionFail();
                 }
                 disconnect();
             } else {
@@ -317,7 +317,7 @@ public class ArkService implements OnReceiveListener {
             command = "getchat";
         }
 
-        int defaultLogDelay = context.getResources().getInteger(R.integer.log_timer_delay);
+        int defaultLogDelay = application.getResources().getInteger(R.integer.log_timer_delay);
         int logDelay = Integer.valueOf(preferences.getString("log_delay", String.valueOf(defaultLogDelay)));
 
         logTimer = new Timer("LogTimer");

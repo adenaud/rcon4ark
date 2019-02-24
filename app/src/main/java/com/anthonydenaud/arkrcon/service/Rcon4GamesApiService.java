@@ -1,5 +1,6 @@
 package com.anthonydenaud.arkrcon.service;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -11,17 +12,21 @@ import com.anthonydenaud.arkrcon.model.Server;
 import java.util.UUID;
 
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import timber.log.Timber;
 
 
-//Singleton
+@Singleton
 public class Rcon4GamesApiService {
 
-    private final Context context;
+    private Application application;
     private Rcon4GamesApi api;
 
-    public Rcon4GamesApiService(Context context) {
-        this.context = context;
+    @Inject
+    public Rcon4GamesApiService(Application application) {
+        this.application = application;
         this.api = new Rcon4GamesApi();
     }
 
@@ -32,7 +37,7 @@ public class Rcon4GamesApiService {
 
     public void saveUser() {
         String uuid;
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(application);
         if (sharedPreferences.contains("uuid")) {
             uuid = sharedPreferences.getString("uuid", null);
         } else {
@@ -43,7 +48,7 @@ public class Rcon4GamesApiService {
     }
 
     public void saveServer(Server server) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(application);
 
         String uuid = server.getUuid();
         String name = server.getName();

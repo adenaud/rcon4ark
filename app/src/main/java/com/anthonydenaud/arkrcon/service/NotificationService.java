@@ -1,6 +1,7 @@
 package com.anthonydenaud.arkrcon.service;
 
 import android.app.Activity;
+import android.app.Application;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -9,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 import com.anthonydenaud.arkrcon.Codes;
 import com.anthonydenaud.arkrcon.R;
@@ -20,28 +20,28 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-//@Singleton
+
+@Singleton
 public class NotificationService {
 
     private static final String NOTIFICATION_DELETED = "NOTIFICATION_DELETED";
 
-    private final Context context;
-    private final SharedPreferences preferences;
+    private SharedPreferences preferences;
+    private NotificationManager notificationManager;
+
     private String[] keywords;
     private boolean active;
     private int nbNotifications = 1;
     private String currentText;
 
-    public NotificationService(Context context) {
-        this.context = context;
-        preferences = PreferenceManager.getDefaultSharedPreferences(context);
-
-        if (preferences.contains("chat_notification_keyword")) {
-            String keyword = preferences.getString("chat_notification_keyword", "");
-            keyword = keyword.replaceAll(", ", ",");
-            keywords = keyword.split(",");
-        }
+    @Inject
+    NotificationService(SharedPreferences preferences, NotificationManager notificationManager) {
+        this.preferences = preferences;
+        this.notificationManager = notificationManager;
+        reloadKeywords();
     }
 
     public void reloadKeywords(){
@@ -64,10 +64,9 @@ public class NotificationService {
 
     private void showNotification(final Activity activity, String contentText) {
 
+        Application application = activity.getApplication();
+
         long[] vibratePattern = {100, 200, 100, 200};
-
-        final NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
 
         BroadcastReceiver deleteReceiver = new BroadcastReceiver() {
             @Override
@@ -78,7 +77,7 @@ public class NotificationService {
             }
         };
 
-        Intent resultIntent = new Intent(context, RconActivity.class);
+        Intent resultIntent = new Intent(application, RconActivity.class);
         resultIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         resultIntent.putExtras(activity.getIntent().getExtras());
         activity.getIntent().putExtra("chat_notification", true);
@@ -87,7 +86,7 @@ public class NotificationService {
         Intent deleteIntent = new Intent(NOTIFICATION_DELETED);
         PendingIntent deletePendingIntent = PendingIntent.getBroadcast(activity, 0, deleteIntent, 0);
 
-        Notification.Builder builder = new Notification.Builder(context);
+        Notification.Builder builder = new Notification.Builder(application);
         if (preferences.getBoolean("vibrate", false)) {
             builder.setVibrate(vibratePattern);
         }
@@ -114,7 +113,6 @@ public class NotificationService {
     }
 
     public void notificationClicked(){
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(0);
         setActive(false);
     }

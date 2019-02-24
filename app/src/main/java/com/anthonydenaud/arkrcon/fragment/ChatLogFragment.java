@@ -1,7 +1,6 @@
 package com.anthonydenaud.arkrcon.fragment;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -39,17 +38,25 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.IOException;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
+import toothpick.Scope;
+import toothpick.Toothpick;
 
 public class ChatLogFragment extends RconFragment implements View.OnClickListener, TextView.OnEditorActionListener {
 
-    private ArkService arkService;
 
-    private LogService logService;
+    @Inject
+    ArkService arkService;
 
-    private NotificationService notificationService;
+    @Inject
+    LogService logService;
+
+    @Inject
+    NotificationService notificationService;
 
     @BindView(R.id.webview_log)
     WebView webViewLog;
@@ -64,8 +71,7 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
     @BindView(R.id.btn_broadcast)
     Button buttonBroadcast;
 
-
-    private Activity context;
+    private Context context;
     private String message;
     private SharedPreferences preferences;
 
@@ -74,15 +80,16 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.context = getActivity();
-        this.arkService = new ArkService(this.context);
         this.logService = new LogService();
-        this.notificationService = new NotificationService(this.context);
         this.preferences = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
+
+        Scope s = Toothpick.openScopes(getActivity().getApplication(), this);
+        Toothpick.inject(this, s);
     }
 
     @Override
     public void onAttach(Context context) {
-        this.context = (Activity) context;
+        this.context = context;
         super.onAttach(context);
     }
 
@@ -91,7 +98,7 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
         setHasOptionsMenu(true);
         arkService.addServerResponseDispatcher(this);
 
-        View view =  inflater.inflate(R.layout.fragment_chat, container, false);
+        View view = inflater.inflate(R.layout.fragment_chat, container, false);
         ButterKnife.bind(this, view);
         return view;
     }
@@ -171,7 +178,7 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
 
     @Override
     public void onResume() {
-        if(getActivity() != null && getActivity().getIntent().hasExtra("chat_notification")){
+        if (getActivity() != null && getActivity().getIntent().hasExtra("chat_notification")) {
             notificationService.notificationClicked();
         }
         super.onResume();
@@ -207,12 +214,9 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
         if (StringUtils.isNotEmpty(chatBuffer)) {
             notificationService.handleChatKeyword(getActivity(), chatBuffer);
             writeLog(formatHtml(chatBuffer));
-            context.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    addLogTextAfter(chatBuffer);
-                }
-            });
+            if (getActivity() != null) {
+                getActivity().runOnUiThread(() -> addLogTextAfter(chatBuffer));
+            }
         }
     }
 
@@ -221,12 +225,9 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
         if (StringUtils.isNotEmpty(logBuffer)) {
             notificationService.handleChatKeyword(getActivity(), logBuffer);
             writeLog(formatHtml(logBuffer));
-            context.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    addLogTextAfter(logBuffer);
-                }
-            });
+            if (getActivity() != null) {
+                getActivity().runOnUiThread((Runnable) () -> addLogTextAfter(logBuffer));
+            }
         }
     }
 
@@ -243,17 +244,13 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
     }
 
     private void addLogTextBefore(final String text) {
-        Thread htmlThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                context.runOnUiThread(new Runnable() {
-                                          @Override
-                                          public void run() {
-                                              String log = text.replaceAll("\n", "");
-                                              webViewLog.loadUrl("javascript:addLogTextBefore('" + log + "');");
-                                              forceScroll();
-                                          }
-                                      }
+        Thread htmlThread = new Thread(() -> {
+            if (getActivity() != null) {
+                getActivity().runOnUiThread(() -> {
+                            String log = text.replaceAll("\n", "");
+                            webViewLog.loadUrl("javascript:addLogTextBefore('" + log + "');");
+                            forceScroll();
+                        }
                 );
             }
         }, "HtmlThreadBefore");
@@ -261,18 +258,15 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
     }
 
     private void addLogTextAfter(final String text) {
-        Thread htmlThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                final String htmlToAdd = formatHtml(text);
-                context.runOnUiThread(new Runnable() {
-                                          @Override
-                                          public void run() {
-                                              String log = htmlToAdd.replaceAll("\n", "");
-                                              webViewLog.loadUrl("javascript:addLogTextAfter('" + log + "');");
-                                              scrollDown();
-                                          }
-                                      }
+        Thread htmlThread = new Thread(() -> {
+
+            final String htmlToAdd = formatHtml(text);
+            if (getActivity() != null) {
+                getActivity().runOnUiThread(() -> {
+                            String log = htmlToAdd.replaceAll("\n", "");
+                            webViewLog.loadUrl("javascript:addLogTextAfter('" + log + "');");
+                            scrollDown();
+                        }
                 );
             }
         }, "HtmlThreadAfter");

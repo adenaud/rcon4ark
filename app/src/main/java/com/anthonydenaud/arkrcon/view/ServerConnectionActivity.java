@@ -10,7 +10,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.anthonydenaud.arkrcon.dao.DatabaseHelper;
 import com.anthonydenaud.arkrcon.network.SteamQuery;
 import com.anthonydenaud.arkrcon.network.SteamQueryException;
 
@@ -23,11 +22,16 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.UUID;
 
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import toothpick.Scope;
+import toothpick.Toothpick;
 
-public class ServerConnectionActivity extends AppCompatActivity implements View.OnClickListener {
+public class ServerConnectionActivity extends ThemeActivity implements View.OnClickListener {
 
+    @Inject
     ServerDAO dao;
 
     SteamQuery steamQuery;
@@ -60,11 +64,12 @@ public class ServerConnectionActivity extends AppCompatActivity implements View.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_server_connection);
         ButterKnife.bind(this);
+        Scope s = Toothpick.openScopes(getApplication(), this);
+        Toothpick.inject(this, s);
         Toolbar toolbar = findViewById(R.id.toolbar_server_connection);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        this.dao = new ServerDAO(new DatabaseHelper(this)); //TODO Fix that crap too
         this.steamQuery = new SteamQuery();
 
         server = getIntent().getParcelableExtra("server");

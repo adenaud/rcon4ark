@@ -49,4 +49,7 @@ dependencies {
     implementation 'com.jakewharton:butterknife:9.0.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:9.0.0'
     implementation 'com.jakewharton.timber:timber:4.7.1'
+    implementation 'com.github.stephanenicolas.toothpick:toothpick-runtime:2.1.0'
+    implementation 'com.github.stephanenicolas.toothpick:smoothie-androidx:2.1.0'
+    annotationProcessor 'com.github.stephanenicolas.toothpick:toothpick-compiler:2.1.0'
 }

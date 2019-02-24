@@ -26,8 +26,12 @@ import com.anthonydenaud.arkrcon.service.ArkService;
 
 import org.apache.commons.lang3.StringUtils;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import toothpick.Scope;
+import toothpick.Toothpick;
 
 public class CommandsFragment extends RconFragment implements View.OnClickListener, TimePickerDialog.OnTimeSetListener, TextView.OnEditorActionListener {
 
@@ -67,7 +71,8 @@ public class CommandsFragment extends RconFragment implements View.OnClickListen
     @BindView(R.id.btn_expend_custom_cmd)
     ImageButton btnExpandCustomCmds;
 
-    private ArkService arkService;
+    @Inject
+    ArkService arkService;
     private Activity context;
 
     private String output;
@@ -82,7 +87,8 @@ public class CommandsFragment extends RconFragment implements View.OnClickListen
             command = savedInstanceState.getString("command");
         }
         this.context = getActivity();
-        this.arkService = new ArkService(this.context);
+        Scope s = Toothpick.openScopes(getActivity().getApplication(), this);
+        Toothpick.inject(this, s);
     }
 
     @Override

@@ -24,14 +24,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import timber.log.Timber;
 
-//@Singleton
+@Singleton
 public class LogService {
 
     private static final String MIGRATION_21_KEY = "LogMigration21";
 
-    private ServerDAO serverDAO;
+    @Inject
+    ServerDAO serverDAO;
 
     public boolean write(Context context, Server server, String log) {
         boolean success = false;

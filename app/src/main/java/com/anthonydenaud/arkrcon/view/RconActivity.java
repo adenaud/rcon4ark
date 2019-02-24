@@ -26,8 +26,12 @@ import com.anthonydenaud.arkrcon.fragment.PlayersFragment;
 import com.anthonydenaud.arkrcon.model.Server;
 import com.anthonydenaud.arkrcon.service.ArkService;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import toothpick.Scope;
+import toothpick.Toothpick;
 
 public class RconActivity extends ThemeActivity implements ConnectionListener, ViewPager.OnPageChangeListener{
 
@@ -38,9 +42,9 @@ public class RconActivity extends ThemeActivity implements ConnectionListener, V
     private CommandsFragment commandsFragment;
     private ChatLogFragment chatLogFragment;
 
-    private ArkService arkService;
-    private LogService logService;
-    private NotificationService notificationService;
+    @Inject ArkService arkService;
+    @Inject LogService logService;
+    @Inject NotificationService notificationService;
 
     @BindView(R.id.container)
     ViewPager mViewPager;
@@ -51,11 +55,11 @@ public class RconActivity extends ThemeActivity implements ConnectionListener, V
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rcon);
 
+        Scope s = Toothpick.openScopes(getApplication(), this);
+        Toothpick.inject(this, s);
+
         ButterKnife.bind(this);
 
-        this.arkService = new ArkService(this);
-        this.logService = new LogService();
-        this.notificationService = new NotificationService(this);
         this.playersFragment = new PlayersFragment();
         this.commandsFragment = new CommandsFragment();
         this.chatLogFragment = new ChatLogFragment();
@@ -76,7 +80,7 @@ public class RconActivity extends ThemeActivity implements ConnectionListener, V
 
             arkService.addConnectionListener(this);
 
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            toolbar = findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -144,17 +148,14 @@ public class RconActivity extends ThemeActivity implements ConnectionListener, V
 
     @Override
     public void onDisconnect() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                setResult(Codes.RESULT_CONNECTION_DROP, getIntent());
-                finish();
-            }
+        runOnUiThread(() -> {
+            setResult(Codes.RESULT_CONNECTION_DROP, getIntent());
+            finish();
         });
     }
 
     @Override
-    public void onConnectionFail(String message) {
+    public void onConnectionFail() {
     }
 
     @Override

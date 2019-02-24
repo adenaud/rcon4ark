@@ -6,6 +6,8 @@ import com.anthonydenaud.arkrcon.model.Server;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 
 /**
  * Created by Anthony on 09/10/2015.
@@ -14,6 +16,7 @@ public class ServerDAO {
 
     private RuntimeExceptionDao<Server,Integer> dao;
 
+    @Inject
     public ServerDAO(DatabaseHelper databaseHelper){
         dao = databaseHelper.getRuntimeExceptionDao(Server.class);
     }

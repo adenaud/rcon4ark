@@ -1,5 +1,6 @@
 package com.anthonydenaud.arkrcon.dao;
 
+import android.app.Application;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -13,18 +14,19 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
+import javax.inject.Singleton;
+
 
 /**
  * Created by Anthony on 09/10/2015.
  */
-//@Singleton
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     private static final String DATABASE_NAME = "nexusrcon-ark.db";
     private static final int DATABASE_VERSION = 3;
 
-    public DatabaseHelper(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    public DatabaseHelper(Application application) {
+        super(application, DATABASE_NAME, null, DATABASE_VERSION);
 
     }
 

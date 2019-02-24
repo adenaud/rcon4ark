@@ -1,7 +1,5 @@
 package com.anthonydenaud.arkrcon.network;
 
-import android.content.Context;
-
 import com.anthonydenaud.arkrcon.event.OnServerStopRespondingListener;
 
 import com.anthonydenaud.arkrcon.R;
@@ -24,7 +22,6 @@ import timber.log.Timber;
 
 public class SRPConnection {
 
-    private final Context context;
     private int sequenceNumber;
 
     private Thread connectionThread;
@@ -43,8 +40,7 @@ public class SRPConnection {
 
     private Date lastPacketTime;
 
-    public SRPConnection(Context context) {
-        this.context = context;
+    public SRPConnection() {
         outgoingPackets = new LinkedMap<>();
     }
 
@@ -70,7 +66,7 @@ public class SRPConnection {
                     } catch (IOException e) {
                         isConnected = false;
                         if (connectionListener != null) {
-                            connectionListener.onConnectionFail(context.getString(R.string.connection_fail));
+                            connectionListener.onConnectionFail();
                         }
                     }
                 }
