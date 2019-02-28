@@ -103,24 +103,31 @@ public class ServerConnectionActivity extends ThemeActivity implements View.OnCl
 
         if (id == R.id.save) {
 
+            if(StringUtils.isNotEmpty(queryPortEditText.getText().toString())){
+                try{
+                    int queryPort = Integer.parseInt(queryPortEditText.getText().toString());
+                    server.setQueryPort(queryPort);
+                } catch (NumberFormatException e){
+                    Toast.makeText(this, R.string.invalid_query_port, Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+            }
+
             try {
 
                 String host = hostnameEditText.getText().toString();
                 int rconPort = Integer.parseInt(rconPortEditText.getText().toString());
-                int queryPort = Integer.parseInt(queryPortEditText.getText().toString());
 
                 String adminName = adminNameEditText.getText().toString();
                 if (StringUtils.isEmpty(adminName)) {
                     adminName = getString(R.string.default_admin_name);
                 }
 
-
                 if (rconPort > 0 && rconPort < 65535) {
                     if (StringUtils.isNotEmpty(host)) {
                         server.setName(nameEditText.getText().toString());
                         server.setHostname(host);
                         server.setPort(rconPort);
-                        server.setQueryPort(queryPort);
                         server.setPassword(passwordEditText.getText().toString());
                         server.setAdminName(adminName);
 
@@ -136,7 +143,7 @@ public class ServerConnectionActivity extends ThemeActivity implements View.OnCl
                     Toast.makeText(this, R.string.invalid_rcon_port, Toast.LENGTH_SHORT).show();
                 }
             } catch (NumberFormatException e) {
-                Toast.makeText(this, R.string.port_not_valid, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.invalid_rcon_port, Toast.LENGTH_SHORT).show();
             }
             return true;
         }

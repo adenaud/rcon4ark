@@ -22,40 +22,58 @@
         <EditText
             android:id="@+id/name_edittext"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="48dp"
+            android:layout_weight="1"
             android:hint="@string/server_name"
             android:inputType="text"
-            android:maxLines="1"/>
+            android:maxLines="1" />
 
         <ImageButton
             android:id="@+id/fetch_name_button"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:background="@drawable/ic_cached"/>
+            android:background="@drawable/ic_cached" />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/hostname_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/hostname" />
 
 
     <EditText
         android:id="@+id/hostname_edittext"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:hint="@string/hostname"
+        android:hint="@string/hostname_hint"
         android:inputType="textUri" />
+
+    <TextView
+        android:id="@+id/rcon_port_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/rcon_port" />
 
     <EditText
         android:id="@+id/rcon_port_edittext"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:hint="@string/rcon_port"
+        android:hint="@string/rcon_port_hint"
         android:inputType="number" />
+
+    <TextView
+        android:id="@+id/query_port_hint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/query_port" />
 
     <EditText
         android:id="@+id/query_port_edittext"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:hint="@string/query_port"
+        android:hint="@string/query_port_hint"
         android:inputType="number" />
 
     <!--<EditText
