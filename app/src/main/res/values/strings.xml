@@ -18,6 +18,8 @@
     <string name="edit_server">Edit server</string>
 
     <string name="server_name">Server name</string>
+    <string name="server_name_hint"> </string>
+
     <string name="hostname">IP Address / Hostname</string>
     <string name="hostname_hint"> </string>
 
@@ -28,7 +30,9 @@
     <string name="query_port_hint">27017</string>
 
     <string name="password">Password</string>
+
     <string name="admin_name">Admin name (optional)</string>
+    <string name="admin_name_hint"> </string>
 
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
@@ -36,6 +40,8 @@
 
     <string name="invalid_query_port">The query port is invalid</string>
     <string name="invalid_rcon_port">The RCON port is invalid</string>
+
+    <string name="test_connection">Test connection</string>
 
     <!--  Players fragment-->
 

@@ -1,21 +1,24 @@
 package com.anthonydenaud.arkrcon.view;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.anthonydenaud.arkrcon.event.ConnectionListener;
 import com.anthonydenaud.arkrcon.network.SteamQuery;
 import com.anthonydenaud.arkrcon.network.SteamQueryException;
 
 import com.anthonydenaud.arkrcon.R;
 import com.anthonydenaud.arkrcon.dao.ServerDAO;
 import com.anthonydenaud.arkrcon.model.Server;
+import com.anthonydenaud.arkrcon.service.ArkService;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -33,6 +36,9 @@ public class ServerConnectionActivity extends ThemeActivity implements View.OnCl
 
     @Inject
     ServerDAO dao;
+
+    @Inject
+    ArkService arkService;
 
     SteamQuery steamQuery;
 
@@ -56,6 +62,12 @@ public class ServerConnectionActivity extends ThemeActivity implements View.OnCl
 
     @BindView(R.id.fetch_name_button)
     ImageButton fetchNameButton;
+
+    @BindView(R.id.test_button)
+    Button testConnectionButton;
+
+    @BindView(R.id.test_connection_progress)
+    ProgressBar progressBar;
 
     private Server server;
 
@@ -89,6 +101,7 @@ public class ServerConnectionActivity extends ThemeActivity implements View.OnCl
         }
 
         fetchNameButton.setOnClickListener(this);
+        testConnectionButton.setOnClickListener(this);
     }
 
     @Override
@@ -154,41 +167,57 @@ public class ServerConnectionActivity extends ThemeActivity implements View.OnCl
     @Override
     public void onClick(View view) {
         if (view == fetchNameButton) {
-            Thread thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
+            Thread thread = new Thread(() -> {
+                try {
 
-                        String host = hostnameEditText.getText().toString();
-                        int queryPort = Integer.parseInt(queryPortEditText.getText().toString());
-                        steamQuery.connect(host, queryPort);
-                        final String serverName = steamQuery.getServerName();
+                    String host = hostnameEditText.getText().toString();
+                    int queryPort = Integer.parseInt(queryPortEditText.getText().toString());
+                    steamQuery.connect(host, queryPort);
+                    final String serverName = steamQuery.getServerName();
 
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                nameEditText.setText(serverName);
-                            }
-                        });
-                    }catch (SteamQueryException e) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(ServerConnectionActivity.this, "Unable to fetch server name", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }catch (NumberFormatException e){
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                String message = getResources().getString(R.string.invalid_query_port);
-                                Toast.makeText(ServerConnectionActivity.this, message, Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
+                    runOnUiThread(() -> nameEditText.setText(serverName));
+                }catch (SteamQueryException e) {
+                    runOnUiThread(() -> Toast.makeText(ServerConnectionActivity.this, "Unable to fetch server name", Toast.LENGTH_SHORT).show());
+                }catch (NumberFormatException e){
+                    runOnUiThread(() -> {
+                        String message = getResources().getString(R.string.invalid_query_port);
+                        Toast.makeText(ServerConnectionActivity.this, message, Toast.LENGTH_SHORT).show();
+                    });
                 }
             });
             thread.start();
         }
+
+        if (view == testConnectionButton) {
+            testConnection();
+        }
+    }
+
+    private void testConnection(){
+
+        progressBar.setVisibility(View.VISIBLE);
+
+        arkService.addConnectionListener(new ConnectionListener() {
+            @Override
+            public void onConnect(boolean reconnect) {
+                runOnUiThread(() -> hideProgressBar());
+            }
+            @Override
+            public void onConnectionFail() {
+                runOnUiThread(() -> hideProgressBar());
+            }
+
+            @Override
+            public void onDisconnect() {}
+            @Override
+            public void onConnectionDrop() {}
+        });
+        arkService.connect(server);
+        arkService.removeAllConnectionListener();
+
+    }
+
+    private void hideProgressBar() {
+        progressBar.setVisibility(View.GONE);
     }
 }

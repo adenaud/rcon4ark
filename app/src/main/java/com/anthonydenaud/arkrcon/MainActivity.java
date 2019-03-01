@@ -233,12 +233,7 @@ public class MainActivity extends ThemeActivity implements AdapterView.OnItemCli
             intent.putExtra("server", currentServer);
             startActivityForResult(intent, Codes.REQUEST_RCON_CLOSE);
 
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    progressDialog.dismiss();
-                }
-            });
+            runOnUiThread(() -> progressDialog.dismiss());
             rconActivityStarted = true;
             apiService.saveServer(currentServer);
         }
