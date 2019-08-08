@@ -37,7 +37,7 @@ public class Server implements Parcelable {
     public Server() {
         name = "";
         hostname = "";
-        port = 32330;
+        port = 27020;
         queryPort = 0;
         password = "";
         adminName = "";
