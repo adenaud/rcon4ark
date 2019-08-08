@@ -22,6 +22,8 @@ import timber.log.Timber;
 
 public class SRPConnection {
 
+    private static final int TIMEOUT = 10 * 1000; // 10 Seconds timeout
+
     private int sequenceNumber;
 
     private Thread connectionThread;
@@ -56,7 +58,7 @@ public class SRPConnection {
                 public void run() {
                     try {
                         isConnected = true;
-                        client.connect(new InetSocketAddress(hostname, port));
+                        client.connect(new InetSocketAddress(hostname, port), TIMEOUT);
                         connectionListener.onConnect(reconnecting);
                         runReceiveThread = true;
                         reconnecting = false;
