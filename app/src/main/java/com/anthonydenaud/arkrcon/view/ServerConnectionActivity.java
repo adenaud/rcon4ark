@@ -1,6 +1,7 @@
 package com.anthonydenaud.arkrcon.view;
 
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -9,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anthonydenaud.arkrcon.event.ConnectionListener;
@@ -18,7 +20,7 @@ import com.anthonydenaud.arkrcon.network.SteamQueryException;
 import com.anthonydenaud.arkrcon.R;
 import com.anthonydenaud.arkrcon.dao.ServerDAO;
 import com.anthonydenaud.arkrcon.model.Server;
-import com.anthonydenaud.arkrcon.service.ArkService;
+import com.anthonydenaud.arkrcon.service.ConnectionTestService;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -38,7 +40,7 @@ public class ServerConnectionActivity extends ThemeActivity implements View.OnCl
     ServerDAO dao;
 
     @Inject
-    ArkService arkService;
+    ConnectionTestService connectionTestService;
 
     SteamQuery steamQuery;
 
@@ -68,6 +70,9 @@ public class ServerConnectionActivity extends ThemeActivity implements View.OnCl
 
     @BindView(R.id.test_connection_progress)
     ProgressBar progressBar;
+
+    @BindView(R.id.test_result_text)
+    TextView testResultTextView;
 
     private Server server;
 
@@ -196,15 +201,16 @@ public class ServerConnectionActivity extends ThemeActivity implements View.OnCl
     private void testConnection(){
 
         progressBar.setVisibility(View.VISIBLE);
+        testResultTextView.setVisibility(View.GONE);
 
-        arkService.addConnectionListener(new ConnectionListener() {
+        connectionTestService.test(server, new ConnectionListener() {
             @Override
             public void onConnect(boolean reconnect) {
-                runOnUiThread(() -> hideProgressBar());
+                finishConnectionTest(true);
             }
             @Override
             public void onConnectionFail() {
-                runOnUiThread(() -> hideProgressBar());
+                finishConnectionTest(false);
             }
 
             @Override
@@ -212,9 +218,25 @@ public class ServerConnectionActivity extends ThemeActivity implements View.OnCl
             @Override
             public void onConnectionDrop() {}
         });
-        arkService.connect(server);
-        arkService.removeAllConnectionListener();
+    }
 
+    private void finishConnectionTest(boolean isSuccess) {
+        runOnUiThread(() -> {
+            int message;
+            int color;
+            if (isSuccess) {
+                message = R.string.test_connection_success;
+                color = R.color.green;
+            } else {
+                message = R.string.test_connection_fail;
+                color = R.color.red;
+            }
+            testResultTextView.setText(message);
+            testResultTextView.setTextColor(ContextCompat.getColor(ServerConnectionActivity.this, color));
+            testResultTextView.setVisibility(View.VISIBLE);
+            hideProgressBar();
+        });
+        connectionTestService.finish();
     }
 
     private void hideProgressBar() {

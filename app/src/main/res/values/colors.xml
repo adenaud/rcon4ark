@@ -15,4 +15,9 @@
     <color name="arkBtn">#2c869e</color>
     <color name="arkBtnPressed">#16697e</color>
     <color name="arkTextView">#002f37</color>
+
+
+    <!-- Various color -->
+    <color name="green">#2E7D32</color>
+    <color name="red">#D32F2F</color>
 </resources>

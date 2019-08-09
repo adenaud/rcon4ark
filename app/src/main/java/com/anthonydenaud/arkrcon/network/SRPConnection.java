@@ -46,30 +46,31 @@ public class SRPConnection {
         outgoingPackets = new LinkedMap<>();
     }
 
-
     public void open(final String hostname, final int port) {
+        this.open(hostname, port, true);
+    }
+
+    public void open(final String hostname, final int port, boolean startReceiveThread) {
         Timber.d("Connecting to %s:%d ...", hostname, port);
 
         lastPacketTime = new Date();
         if (!isConnected) {
             client = new Socket();
-            connectionThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        isConnected = true;
-                        client.connect(new InetSocketAddress(hostname, port), TIMEOUT);
-                        connectionListener.onConnect(reconnecting);
-                        runReceiveThread = true;
-                        reconnecting = false;
-                        Timber.d("Connected");
+            connectionThread = new Thread(() -> {
+                try {
+                    isConnected = true;
+                    client.connect(new InetSocketAddress(hostname, port), TIMEOUT);
+                    connectionListener.onConnect(reconnecting);
+                    reconnecting = false;
+                    Timber.d("Connected");
+                    if(startReceiveThread){
                         beginReceive();
+                    }
 
-                    } catch (IOException e) {
-                        isConnected = false;
-                        if (connectionListener != null) {
-                            connectionListener.onConnectionFail();
-                        }
+                } catch (IOException e) {
+                    isConnected = false;
+                    if (connectionListener != null) {
+                        connectionListener.onConnectionFail();
                     }
                 }
             });
@@ -112,17 +113,13 @@ public class SRPConnection {
     }
 
     private void beginReceive() {
-        receiveThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                receive();
-            }
-        });
+        receiveThread = new Thread(this::receive);
         receiveThread.setName("ReceiverThread");
         receiveThread.start();
     }
 
     private void receive() {
+        runReceiveThread = true;
         while (runReceiveThread) {
             InputStream inputStream;
             try {
@@ -220,9 +217,12 @@ public class SRPConnection {
         if (client != null) {
             client.close();
             isConnected = false;
-            runReceiveThread = false;
-            receiveThread.interrupt();
             connectionThread.interrupt();
+
+            if(runReceiveThread){
+                receiveThread.interrupt();
+                runReceiveThread = false;
+            }
         }
         outgoingPackets.clear();
     }
