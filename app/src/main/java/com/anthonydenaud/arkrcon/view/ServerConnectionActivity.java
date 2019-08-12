@@ -119,7 +119,16 @@ public class ServerConnectionActivity extends ThemeActivity implements View.OnCl
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.save) {
+        if (id == android.R.id.home) {
+            if (connectionTestService.isTestInProgress()) {
+                connectionTestService.close();
+            }
+        }
+        else if (id == R.id.save) {
+
+            if (connectionTestService.isTestInProgress()) {
+                connectionTestService.close();
+            }
 
             if(StringUtils.isNotEmpty(queryPortEditText.getText().toString())){
                 try{
@@ -202,22 +211,25 @@ public class ServerConnectionActivity extends ThemeActivity implements View.OnCl
 
         progressBar.setVisibility(View.VISIBLE);
         testResultTextView.setVisibility(View.GONE);
+        testConnectionButton.setVisibility(View.GONE);
 
-        connectionTestService.test(server, new ConnectionListener() {
-            @Override
-            public void onConnect(boolean reconnect) {
-                finishConnectionTest(true);
-            }
-            @Override
-            public void onConnectionFail() {
-                finishConnectionTest(false);
-            }
+        if(!connectionTestService.isTestInProgress()) {
+            connectionTestService.test(server, new ConnectionListener() {
+                @Override
+                public void onConnect(boolean reconnect) {
+                    finishConnectionTest(true);
+                }
+                @Override
+                public void onConnectionFail() {
+                    finishConnectionTest(false);
+                }
 
-            @Override
-            public void onDisconnect() {}
-            @Override
-            public void onConnectionDrop() {}
-        });
+                @Override
+                public void onDisconnect() {}
+                @Override
+                public void onConnectionDrop() {}
+            });
+        }
     }
 
     private void finishConnectionTest(boolean isSuccess) {
@@ -234,9 +246,10 @@ public class ServerConnectionActivity extends ThemeActivity implements View.OnCl
             testResultTextView.setText(message);
             testResultTextView.setTextColor(ContextCompat.getColor(ServerConnectionActivity.this, color));
             testResultTextView.setVisibility(View.VISIBLE);
+            testConnectionButton.setVisibility(View.VISIBLE);
             hideProgressBar();
         });
-        connectionTestService.finish();
+        connectionTestService.close();
     }
 
     private void hideProgressBar() {

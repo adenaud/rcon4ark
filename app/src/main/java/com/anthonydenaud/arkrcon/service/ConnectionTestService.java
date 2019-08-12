@@ -15,6 +15,7 @@ import timber.log.Timber;
 public class ConnectionTestService {
 
     private SRPConnection connection;
+    private boolean isTestInProgress = false;
 
     @Inject
     ConnectionTestService() {
@@ -22,11 +23,14 @@ public class ConnectionTestService {
     }
 
     public void test(Server server, ConnectionListener connectionListener){
-        connection.open(server.getHostname(), server.getPort(), false);
-        connection.setConnectionListener(connectionListener);
+        if (!isTestInProgress) {
+            isTestInProgress = true;
+            connection.open(server.getHostname(), server.getPort(), false);
+            connection.setConnectionListener(connectionListener);
+        }
     }
 
-    public void finish(){
+    public void close(){
         try {
             connection.setConnectionListener(null);
             if(connection.isConnected()){
@@ -34,6 +38,12 @@ public class ConnectionTestService {
             }
         } catch (IOException e) {
             Timber.e(e, "ark service disconnect exception");
+        } finally {
+            isTestInProgress = false;
         }
+    }
+
+    public boolean isTestInProgress() {
+        return isTestInProgress;
     }
 }
