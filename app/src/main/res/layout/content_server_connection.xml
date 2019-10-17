@@ -161,7 +161,12 @@
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/back" />
+            android:drawableStart="@drawable/chevron_left"
+            android:drawableLeft="@drawable/chevron_left"
+            android:text="@string/back"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp"
+            android:visibility="gone" />
 
         <Space
             android:layout_width="0dp"
@@ -173,7 +178,21 @@
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/next" />
+            android:drawableEnd="@drawable/chevron_right"
+            android:drawableRight="@drawable/chevron_right"
+            android:text="@string/next"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/finish_button"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/finish"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp"
+            android:visibility="gone" />
     </LinearLayout>
 
 </LinearLayout>

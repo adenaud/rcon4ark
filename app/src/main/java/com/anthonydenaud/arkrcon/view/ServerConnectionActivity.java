@@ -93,6 +93,9 @@ public class ServerConnectionActivity extends ThemeActivity implements View.OnCl
     @BindView(R.id.next_button)
     Button nextButton;
 
+    @BindView(R.id.finish_button)
+    Button finishButton;
+
     private Server server;
 
     private int currentStep;
@@ -136,6 +139,7 @@ public class ServerConnectionActivity extends ThemeActivity implements View.OnCl
         testConnectionButton.setOnClickListener(v -> this.testConnection());
         backButton.setOnClickListener(v -> this.back());
         nextButton.setOnClickListener(v -> this.next());
+        finishButton.setOnClickListener(v -> this.save());
     }
 
     @Override
@@ -154,54 +158,7 @@ public class ServerConnectionActivity extends ThemeActivity implements View.OnCl
             }
         }
         else if (id == R.id.save) {
-
-            if (connectionTestService.isTestInProgress()) {
-                connectionTestService.close();
-            }
-
-            if(StringUtils.isNotEmpty(queryPortEditText.getText().toString())){
-                try{
-                    int queryPort = Integer.parseInt(queryPortEditText.getText().toString());
-                    server.setQueryPort(queryPort);
-                } catch (NumberFormatException e){
-                    Toast.makeText(this, R.string.invalid_query_port, Toast.LENGTH_SHORT).show();
-                    return true;
-                }
-            }
-
-            try {
-
-                String host = hostnameEditText.getText().toString();
-                int rconPort = Integer.parseInt(rconPortEditText.getText().toString());
-
-                String adminName = adminNameEditText.getText().toString();
-                if (StringUtils.isEmpty(adminName)) {
-                    adminName = getString(R.string.default_admin_name);
-                }
-
-                if (rconPort > 0 && rconPort < 65535) {
-                    if (StringUtils.isNotEmpty(host)) {
-                        server.setName(nameEditText.getText().toString());
-                        server.setHostname(host);
-                        server.setPort(rconPort);
-                        server.setPassword(passwordEditText.getText().toString());
-                        server.setAdminName(adminName);
-
-                        dao.save(server);
-
-                        getIntent().putExtra("server", server);
-                        setResult(RESULT_OK, getIntent());
-                        finish();
-                    } else {
-                        Toast.makeText(this, R.string.hostname_not_valid, Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Toast.makeText(this, R.string.invalid_rcon_port, Toast.LENGTH_SHORT).show();
-                }
-            } catch (NumberFormatException e) {
-                Toast.makeText(this, R.string.invalid_rcon_port, Toast.LENGTH_SHORT).show();
-            }
-            return true;
+            return save();
         }
 
         return super.onOptionsItemSelected(item);
@@ -290,7 +247,7 @@ public class ServerConnectionActivity extends ThemeActivity implements View.OnCl
         }
         backButton.setVisibility(View.VISIBLE);
         nextButton.setVisibility(View.VISIBLE);
-
+        finishButton.setVisibility(View.GONE);
 
     }
 
@@ -308,9 +265,60 @@ public class ServerConnectionActivity extends ThemeActivity implements View.OnCl
 
         if (this.currentStep == layouts.size()){
             nextButton.setVisibility(View.GONE);
+            finishButton.setVisibility(View.VISIBLE);
             return;
         }
         backButton.setVisibility(View.VISIBLE);
         nextButton.setVisibility(View.VISIBLE);
+    }
+
+    private boolean save() {
+        if (connectionTestService.isTestInProgress()) {
+            connectionTestService.close();
+        }
+
+        if(StringUtils.isNotEmpty(queryPortEditText.getText().toString())){
+            try{
+                int queryPort = Integer.parseInt(queryPortEditText.getText().toString());
+                server.setQueryPort(queryPort);
+            } catch (NumberFormatException e){
+                Toast.makeText(this, R.string.invalid_query_port, Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        }
+
+        try {
+
+            String host = hostnameEditText.getText().toString();
+            int rconPort = Integer.parseInt(rconPortEditText.getText().toString());
+
+            String adminName = adminNameEditText.getText().toString();
+            if (StringUtils.isEmpty(adminName)) {
+                adminName = getString(R.string.default_admin_name);
+            }
+
+            if (rconPort > 0 && rconPort < 65535) {
+                if (StringUtils.isNotEmpty(host)) {
+                    server.setName(nameEditText.getText().toString());
+                    server.setHostname(host);
+                    server.setPort(rconPort);
+                    server.setPassword(passwordEditText.getText().toString());
+                    server.setAdminName(adminName);
+
+                    dao.save(server);
+
+                    getIntent().putExtra("server", server);
+                    setResult(RESULT_OK, getIntent());
+                    finish();
+                } else {
+                    Toast.makeText(this, R.string.hostname_not_valid, Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(this, R.string.invalid_rcon_port, Toast.LENGTH_SHORT).show();
+            }
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, R.string.invalid_rcon_port, Toast.LENGTH_SHORT).show();
+        }
+        return true;
     }
 }
