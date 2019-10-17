@@ -45,6 +45,9 @@
     <string name="test_connection_success">Connections successful</string>
     <string name="test_connection_fail">Connection failed, make sure RCON is enabled on your server and IP / Port are correct.</string>
 
+    <string name="back">Back</string>
+    <string name="next">Next</string>
+
 
     <!--  Players fragment-->
 

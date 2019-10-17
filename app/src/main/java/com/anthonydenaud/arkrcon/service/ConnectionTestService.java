@@ -31,15 +31,17 @@ public class ConnectionTestService {
     }
 
     public void close(){
-        try {
-            connection.setConnectionListener(null);
-            if(connection.isConnected()){
-                connection.close();
+        if(isTestInProgress) {
+            try {
+                connection.setConnectionListener(null);
+                if(connection.isConnected()){
+                    connection.close();
+                }
+            } catch (IOException e) {
+                Timber.e(e, "ark service disconnect exception");
+            } finally {
+                isTestInProgress = false;
             }
-        } catch (IOException e) {
-            Timber.e(e, "ark service disconnect exception");
-        } finally {
-            isTestInProgress = false;
         }
     }
 

@@ -3,12 +3,14 @@ package com.anthonydenaud.arkrcon.view;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
+import android.text.Layout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +26,8 @@ import com.anthonydenaud.arkrcon.service.ConnectionTestService;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -43,6 +47,15 @@ public class ServerConnectionActivity extends ThemeActivity implements View.OnCl
     ConnectionTestService connectionTestService;
 
     SteamQuery steamQuery;
+
+    @BindView(R.id.step1_layout)
+    LinearLayout step1Layout;
+
+    @BindView(R.id.step2_layout)
+    LinearLayout step2Layout;
+
+    @BindView(R.id.step3_layout)
+    LinearLayout step3Layout;
 
     @BindView(R.id.name_edittext)
     EditText nameEditText;
@@ -74,7 +87,16 @@ public class ServerConnectionActivity extends ThemeActivity implements View.OnCl
     @BindView(R.id.test_result_text)
     TextView testResultTextView;
 
+    @BindView(R.id.back_button)
+    Button backButton;
+
+    @BindView(R.id.next_button)
+    Button nextButton;
+
     private Server server;
+
+    private int currentStep;
+    private List<LinearLayout> layouts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +110,11 @@ public class ServerConnectionActivity extends ThemeActivity implements View.OnCl
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         this.steamQuery = new SteamQuery();
+        this.currentStep = 1;
+        this.layouts = new ArrayList<>();
+        layouts.add(step1Layout);
+        layouts.add(step2Layout);
+        layouts.add(step3Layout);
 
         server = getIntent().getParcelableExtra("server");
         setTitle(getIntent().getIntExtra("titleId", R.string.edit_server));
@@ -106,7 +133,9 @@ public class ServerConnectionActivity extends ThemeActivity implements View.OnCl
         }
 
         fetchNameButton.setOnClickListener(this);
-        testConnectionButton.setOnClickListener(this);
+        testConnectionButton.setOnClickListener(v -> this.testConnection());
+        backButton.setOnClickListener(v -> this.back());
+        nextButton.setOnClickListener(v -> this.next());
     }
 
     @Override
@@ -201,10 +230,6 @@ public class ServerConnectionActivity extends ThemeActivity implements View.OnCl
             });
             thread.start();
         }
-
-        if (view == testConnectionButton) {
-            testConnection();
-        }
     }
 
     private void testConnection(){
@@ -247,12 +272,45 @@ public class ServerConnectionActivity extends ThemeActivity implements View.OnCl
             testResultTextView.setTextColor(ContextCompat.getColor(ServerConnectionActivity.this, color));
             testResultTextView.setVisibility(View.VISIBLE);
             testConnectionButton.setVisibility(View.VISIBLE);
-            hideProgressBar();
+            progressBar.setVisibility(View.GONE);
         });
         connectionTestService.close();
     }
 
-    private void hideProgressBar() {
-        progressBar.setVisibility(View.GONE);
+    private void back(){
+        LinearLayout currentLayout = this.layouts.get(this.currentStep - 1);
+        LinearLayout previousLayout = this.layouts.get((--this.currentStep) - 1);
+
+        currentLayout.setVisibility(View.GONE);
+        previousLayout.setVisibility(View.VISIBLE);
+
+        if(currentStep == 1) {
+            backButton.setVisibility(View.GONE);
+            return;
+        }
+        backButton.setVisibility(View.VISIBLE);
+        nextButton.setVisibility(View.VISIBLE);
+
+
+    }
+
+    private void next(){
+
+        if(currentStep == 1) {
+            connectionTestService.close();
+        }
+
+        LinearLayout currentLayout = this.layouts.get(this.currentStep - 1);
+        LinearLayout nextLayout = this.layouts.get((++this.currentStep) - 1);
+
+        currentLayout.setVisibility(View.GONE);
+        nextLayout.setVisibility(View.VISIBLE);
+
+        if (this.currentStep == layouts.size()){
+            nextButton.setVisibility(View.GONE);
+            return;
+        }
+        backButton.setVisibility(View.VISIBLE);
+        nextButton.setVisibility(View.VISIBLE);
     }
 }
