@@ -128,13 +128,13 @@
             android:id="@+id/layout_custom_commands">
 
             <TextView
+                android:id="@+id/textview_output"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:id="@+id/textview_output"
-                android:scrollbars="vertical"
+                android:layout_marginTop="8dp"
                 android:layout_weight="1"
-                style="@style/textview_ark"
-                android:layout_marginTop="8dp" />
+                android:background="@color/output_background"
+                android:scrollbars="vertical" />
 
             <LinearLayout
                 android:orientation="horizontal"
