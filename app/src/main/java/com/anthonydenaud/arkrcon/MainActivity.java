@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.View;
@@ -19,7 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anthonydenaud.arkrcon.api.ApiCallback;
-import com.anthonydenaud.arkrcon.dao.DatabaseHelper;
+import com.anthonydenaud.arkrcon.event.AuthenticationListener;
 import com.anthonydenaud.arkrcon.service.Rcon4GamesApiService;
 import com.anthonydenaud.arkrcon.service.LogService;
 import com.anthonydenaud.arkrcon.view.SettingsActivity;
@@ -41,7 +40,8 @@ import timber.log.Timber;
 import toothpick.Scope;
 import toothpick.Toothpick;
 
-public class MainActivity extends ThemeActivity implements AdapterView.OnItemClickListener, ConnectionListener {
+public class MainActivity extends ThemeActivity
+        implements AdapterView.OnItemClickListener, ConnectionListener, AuthenticationListener {
 
     @BindView(R.id.list_servers)
     ListView listView;
@@ -218,6 +218,7 @@ public class MainActivity extends ThemeActivity implements AdapterView.OnItemCli
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         currentServer = serverAdapter.getItem(position);
         arkService.addConnectionListener(this);
+        arkService.addAuthenticationListener(this);
         arkService.connect(currentServer);
 
         progressDialog = new ProgressDialog(this);
@@ -226,8 +227,26 @@ public class MainActivity extends ThemeActivity implements AdapterView.OnItemCli
         progressDialog.show();
     }
 
+
+
     @Override
-    public void onConnect(boolean reconnecting) {
+    public void onDisconnect() {
+        runOnUiThread(() -> {
+            Timber.d("onDisconnect");
+            Toast.makeText(MainActivity.this, getString(R.string.conneciton_lost), Toast.LENGTH_LONG).show();
+        });
+    }
+
+    @Override
+    public void onConnectionFail() {
+        runOnUiThread(() -> {
+            progressDialog.dismiss();
+            Toast.makeText(MainActivity.this, getText(R.string.connection_fail), Toast.LENGTH_LONG).show();
+        });
+    }
+
+    @Override
+    public void onAuthenticationSuccess() {
         if (!rconActivityStarted) {
             Intent intent = new Intent(this, RconActivity.class);
             intent.putExtra("server", currentServer);
@@ -240,22 +259,16 @@ public class MainActivity extends ThemeActivity implements AdapterView.OnItemCli
     }
 
     @Override
-    public void onDisconnect() {
+    public void onAuthenticationFail() {
         runOnUiThread(() -> {
-            Timber.d("onDisconnect");
-            Toast.makeText(MainActivity.this, getString(R.string.conneciton_lost), Toast.LENGTH_LONG).show();
+            progressDialog.dismiss();
+            Toast.makeText(MainActivity.this, getText(R.string.authentication_fail), Toast.LENGTH_LONG).show();
         });
     }
 
     @Override
-    public void onConnectionFail() {
-
-        runOnUiThread(() -> {
-            progressDialog.dismiss();
-            Toast.makeText(MainActivity.this, getText(R.string.connection_fail), Toast.LENGTH_LONG).show();
-        });
+    public void onConnect(boolean reconnecting) {
     }
-
     @Override
     public void onConnectionDrop() {
     }

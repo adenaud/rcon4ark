@@ -42,7 +42,8 @@
     <string name="invalid_rcon_port">The RCON port is invalid</string>
 
     <string name="test_connection">Test connection</string>
-    <string name="test_connection_success">Connections successful</string>
+    <string name="test_connection_success">Connections successful.</string>
+    <string name="test_authentication_fail">Authentication failed, make sure your password is correct.</string>
     <string name="test_connection_fail">Connection failed, make sure RCON is enabled on your server and IP / Port are correct.</string>
 
     <string name="back">Back</string>
@@ -97,7 +98,7 @@
     <!-- Errors -->
 
     <string name="connection_fail">The server is unreachable, make sure your IP / Port is correct.</string>
-    <string name="authentication_fail">Authentication fail, make sure your password is correct.</string>
+    <string name="authentication_fail">Authentication failed, make sure your password is correct.</string>
     <string name="conneciton_lost">Connection lost</string>
     <string name="port_not_valid">Port is not correct</string>
     <string name="hostname_not_valid">Hostname is not correct</string>

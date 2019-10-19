@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.anthonydenaud.arkrcon.event.AuthenticationListener;
 import com.anthonydenaud.arkrcon.event.OnServerStopRespondingListener;
 import com.anthonydenaud.arkrcon.network.SteamQuery;
 import com.anthonydenaud.arkrcon.network.SteamQueryException;
@@ -47,6 +48,7 @@ public class ArkService implements OnReceiveListener {
     private SRPConnection connection;
     private SteamQuery steamQuery;
     private List<ConnectionListener> connectionListeners;
+    private List<AuthenticationListener> authenticationListeners;
     private final List<ServerResponseDispatcher> serverResponseDispatchers;
     private List<Integer> customCommands;
 
@@ -63,6 +65,7 @@ public class ArkService implements OnReceiveListener {
 
         preferences = PreferenceManager.getDefaultSharedPreferences(application);
         connectionListeners = new ArrayList<>();
+        authenticationListeners = new ArrayList<>();
         serverResponseDispatchers = new ArrayList<>();
         customCommands = new ArrayList<>();
     }
@@ -255,13 +258,15 @@ public class ArkService implements OnReceiveListener {
         }
 
         if (packet.getType() == PacketType.SERVERDATA_AUTH_RESPONSE.getValue()) {
-            if (packet.getId() == -1) {
 
-                for (ConnectionListener listener : connectionListeners) {
-                    listener.onConnectionFail();
+            if (packet.getId() == -1) { // Authentication Failed
+
+                for (AuthenticationListener listener : authenticationListeners) {
+                    listener.onAuthenticationFail();
                 }
                 disconnect();
-            } else {
+            } else { // Authentication was successful
+
                 int queryPort = server.getQueryPort();
                 try{
                     this.steamQuery.connect(server.getHostname(), queryPort);
@@ -269,9 +274,8 @@ public class ArkService implements OnReceiveListener {
                     Timber.e(e, "Unable to connect via Steam condenser");
                 }
 
-
-                for (ConnectionListener listener : connectionListeners) {
-                    listener.onConnect(connection.isReconnecting());
+                for (AuthenticationListener listener : authenticationListeners) {
+                    listener.onAuthenticationSuccess();
                 }
 
                 startLogAndChatTimers();
@@ -398,6 +402,14 @@ public class ArkService implements OnReceiveListener {
 
     public synchronized void removeAllConnectionListener() {
         connectionListeners.clear();
+    }
+
+    public synchronized void addAuthenticationListener(AuthenticationListener authenticationListener) {
+        authenticationListeners.add(authenticationListener);
+    }
+
+    public synchronized void removeAllAuthenticationListeners() {
+        authenticationListeners.clear();
     }
 
     public void sendRawCommand(String command) {

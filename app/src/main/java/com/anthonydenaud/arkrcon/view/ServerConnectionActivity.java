@@ -15,7 +15,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.anthonydenaud.arkrcon.event.AuthenticationListener;
 import com.anthonydenaud.arkrcon.event.ConnectionListener;
+import com.anthonydenaud.arkrcon.event.ReceiveEvent;
+import com.anthonydenaud.arkrcon.network.Packet;
+import com.anthonydenaud.arkrcon.network.PacketType;
 import com.anthonydenaud.arkrcon.network.SteamQuery;
 import com.anthonydenaud.arkrcon.network.SteamQueryException;
 
@@ -191,37 +195,64 @@ public class ServerConnectionActivity extends ThemeActivity implements View.OnCl
 
     private void testConnection(){
 
+
+
         progressBar.setVisibility(View.VISIBLE);
         testResultTextView.setVisibility(View.GONE);
         testConnectionButton.setVisibility(View.GONE);
 
+
+
+        String host = hostnameEditText.getText().toString();
+        int port = Integer.parseInt(rconPortEditText.getText().toString());
+        String password = passwordEditText.getText().toString();
+
+        Server testServer = new Server();
+        testServer.setHostname(host);
+        testServer.setPort(port);
+        testServer.setPassword(password);
+
         if(!connectionTestService.isTestInProgress()) {
-            connectionTestService.test(server, new ConnectionListener() {
-                @Override
-                public void onConnect(boolean reconnect) {
-                    finishConnectionTest(true);
-                }
+            connectionTestService.test(testServer, new ConnectionListener() {
                 @Override
                 public void onConnectionFail() {
-                    finishConnectionTest(false);
+                    finishConnectionTest(false, false);
                 }
-
                 @Override
-                public void onDisconnect() {}
+                public void onConnect(boolean reconnect) {
+                }
                 @Override
-                public void onConnectionDrop() {}
+                public void onDisconnect() {
+                }
+                @Override
+                public void onConnectionDrop() {
+                }
+            }, new AuthenticationListener() {
+                @Override
+                public void onAuthenticationSuccess() {
+                    finishConnectionTest(true, true);
+                }
+                @Override
+                public void onAuthenticationFail() {
+                    finishConnectionTest(true, false);
+                }
             });
         }
     }
 
-    private void finishConnectionTest(boolean isSuccess) {
+    private void finishConnectionTest(boolean isConnected, boolean isAuthenticated) {
         runOnUiThread(() -> {
             int message;
             int color;
-            if (isSuccess) {
+            if (isConnected && isAuthenticated) {
                 message = R.string.test_connection_success;
                 color = R.color.green;
-            } else {
+            }
+            else if (isConnected) {
+                message = R.string.test_authentication_fail;
+                color = R.color.red;
+            }
+            else {
                 message = R.string.test_connection_fail;
                 color = R.color.red;
             }

@@ -47,10 +47,6 @@ public class SRPConnection {
     }
 
     public void open(final String hostname, final int port) {
-        this.open(hostname, port, true);
-    }
-
-    public void open(final String hostname, final int port, boolean startReceiveThread) {
         Timber.d("Connecting to %s:%d ...", hostname, port);
 
         lastPacketTime = new Date();
@@ -63,9 +59,7 @@ public class SRPConnection {
                     connectionListener.onConnect(reconnecting);
                     reconnecting = false;
                     Timber.d("Connected");
-                    if(startReceiveThread){
-                        beginReceive();
-                    }
+                    beginReceive();
 
                 } catch (IOException e) {
                     isConnected = false;
