@@ -27,13 +27,13 @@ public abstract class ThemeActivity extends AppCompatActivity implements SharedP
     protected void onCreate(Bundle savedInstanceState) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.registerOnSharedPreferenceChangeListener(this);
-        setTheme(false);
+        //setTheme(false);
         super.onCreate(savedInstanceState);
     }
 
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
-        setToolBarTheme();
+        //setToolBarTheme();
         super.onPostCreate(savedInstanceState);
     }
 
