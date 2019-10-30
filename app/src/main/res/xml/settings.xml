@@ -9,13 +9,14 @@
             android:summary="@string/keep_screen_on_summary"
             android:title="@string/keep_screen_on" />
 
+        <!--
         <ListPreference
             android:defaultValue="@string/theme_default"
             android:entries="@array/themes_caption"
             android:entryValues="@array/themes_values"
             android:key="theme"
             android:summary="@string/theme_summary"
-            android:title="@string/theme" />
+            android:title="@string/theme" />-->
 
     </PreferenceCategory>
 
@@ -48,7 +49,9 @@
             android:title="@string/chat_auto_scroll" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/notifications">
+    <!--
+    <PreferenceCategory
+        android:title="@string/notifications">
         <SwitchPreference
             android:defaultValue="false"
             android:key="notifications_enabled"
@@ -62,7 +65,7 @@
             android:key="chat_notification_keyword"
             android:summary="@string/chat_notification_keyword_summary"
             android:title="@string/chat_notification_keyword" />
-    </PreferenceCategory>
+    </PreferenceCategory>-->
 
 
 </PreferenceScreen>
