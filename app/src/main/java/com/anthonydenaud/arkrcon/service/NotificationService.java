@@ -2,7 +2,7 @@ package com.anthonydenaud.arkrcon.service;
 
 import android.app.Activity;
 import android.app.Application;
-import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -10,6 +10,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.Build;
+import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 
 import com.anthonydenaud.arkrcon.Codes;
 import com.anthonydenaud.arkrcon.R;
@@ -29,6 +32,9 @@ public class NotificationService {
 
     private static final String NOTIFICATION_DELETED = "NOTIFICATION_DELETED";
 
+    private static final String CHANNEL_ID = "rcon4ark_chat_channel";
+    private static final String CHANNEL_NAME = "Chat alerts";
+
     private SharedPreferences preferences;
     private NotificationManager notificationManager;
 
@@ -38,10 +44,25 @@ public class NotificationService {
     private String currentText;
 
     @Inject
-    NotificationService(SharedPreferences preferences, NotificationManager notificationManager) {
-        this.preferences = preferences;
+    NotificationService(Application application, NotificationManager notificationManager) {
         this.notificationManager = notificationManager;
+        this.preferences = PreferenceManager.getDefaultSharedPreferences(application);
+        createNotificationChannel();
         reloadKeywords();
+    }
+
+    private void createNotificationChannel(){
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+
+            if (preferences.getBoolean("vibrate", false)) {
+                long[] vibratePattern = {100, 200, 100, 200};
+                notificationChannel.setVibrationPattern(vibratePattern);
+            }
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
     }
 
     public void reloadKeywords(){
@@ -51,7 +72,6 @@ public class NotificationService {
             keywords = keyword.split(",");
         }
     }
-
 
     public void handleChatKeyword(Activity activity, String chatbuffer) {
 
@@ -64,9 +84,7 @@ public class NotificationService {
 
     private void showNotification(final Activity activity, String contentText) {
 
-        Application application = activity.getApplication();
-
-        long[] vibratePattern = {100, 200, 100, 200};
+       Application application = activity.getApplication();
 
         BroadcastReceiver deleteReceiver = new BroadcastReceiver() {
             @Override
@@ -86,10 +104,8 @@ public class NotificationService {
         Intent deleteIntent = new Intent(NOTIFICATION_DELETED);
         PendingIntent deletePendingIntent = PendingIntent.getBroadcast(activity, 0, deleteIntent, 0);
 
-        Notification.Builder builder = new Notification.Builder(application);
-        if (preferences.getBoolean("vibrate", false)) {
-            builder.setVibrate(vibratePattern);
-        }
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(application, CHANNEL_ID);
+
         // Notification is not present, we create it.
         if (!active) {
             builder.setContentTitle(activity.getString(R.string.notification_title));
@@ -97,13 +113,13 @@ public class NotificationService {
             activity.registerReceiver(deleteReceiver, new IntentFilter(NOTIFICATION_DELETED));
             currentText = contentText;
             active = true;
+            nbNotifications = 1;
         }else{
             //Notification is present, we update it.
             currentText = String.format("%s\n%s", currentText, contentText);
             builder.setContentTitle( String.valueOf(++nbNotifications) + " " + activity.getString(R.string.notification_title));
             builder.setContentText(contentText);
-            builder.setStyle(new Notification.BigTextStyle().bigText(currentText));
-
+            builder.setStyle(new NotificationCompat.BigTextStyle().bigText(currentText));
         }
         builder.setSmallIcon(android.R.drawable.stat_notify_chat);
         builder.setContentIntent(pendingIntent);
@@ -128,7 +144,6 @@ public class NotificationService {
         }
         return result;
     }
-
 
     private void setActive(boolean active) {
         this.active = active;
