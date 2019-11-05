@@ -13,6 +13,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 import timber.log.Timber;
 
 /**
@@ -23,11 +24,9 @@ public class Rcon4GamesApi {
 
     private static final String API_URL = "http://rcon4games.com/ark/api/";
 
-    private ApiCallback apiCallback;
 
     public void getLastVersion(ApiCallback apiCallback){
-        this.apiCallback = apiCallback;
-        new CheckUpdateAsyncTask().execute(API_URL + "last_version");
+        new CheckUpdateAsyncTask(apiCallback).execute(API_URL + "last_version");
     }
 
     public void saveUser(String uuid){
@@ -55,7 +54,7 @@ public class Rcon4GamesApi {
         }
     }
 
-    private class  PostAsyncTask extends AsyncTask<String, Void, Void> {
+    private static class PostAsyncTask extends AsyncTask<String, Void, Void> {
 
         private final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
@@ -66,20 +65,28 @@ public class Rcon4GamesApi {
                 RequestBody body = RequestBody.create(JSON, params[1]);
                 Request request = new Request.Builder().url(params[0]).post(body).build();
                 Response response = client.newCall(request).execute();
-                JSONObject json = new JSONObject(response.body().string());
+                ResponseBody responseBody = response.body();
+                JSONObject json = responseBody != null ? new JSONObject(responseBody.string()) : new JSONObject();
 
                 if(!"OK".equals(json.getString("status"))){
-                    throw new ApiException(response.body().string());
+                    throw new ApiException(json.toString());
                 }
 
             }catch (IOException | JSONException e){
-                Timber.e(e, "Unable to POST data : " + e.getMessage());
+                Timber.e(e, "Unable to POST data : %s", e.getMessage());
             }
             return null;
         }
     }
 
-    private class CheckUpdateAsyncTask extends AsyncTask<String, Void, Void> {
+    private static class CheckUpdateAsyncTask extends AsyncTask<String, Void, Void> {
+
+        private ApiCallback apiCallback;
+
+        CheckUpdateAsyncTask(ApiCallback apiCallback) {
+         this.apiCallback = apiCallback;
+        }
+
         @Override
         protected Void doInBackground(String... params) {
             int versionCode = 0;
@@ -87,8 +94,8 @@ public class Rcon4GamesApi {
                 OkHttpClient client = new OkHttpClient();
                 Request request = new Request.Builder().url(params[0]).build();
                 Response response = client.newCall(request).execute();
-
-                JSONObject json = new JSONObject(response.body().string());
+                ResponseBody responseBody = response.body();
+                JSONObject json = responseBody != null ? new JSONObject(responseBody.string()) : new JSONObject();
                 versionCode = json.getInt("last_version");
 
             } catch (IOException | JSONException e) {
