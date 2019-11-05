@@ -50,6 +50,11 @@
     <string name="next">Next</string>
     <string name="finish">Finish</string>
 
+    <string name="step1_help"> </string>
+    <string name="step2_help">The query port is only used to display the player counts on the server list and the playing times of players connected to a server.</string>
+    <string name="step3_1_help">Name for your server. Click the "Refresh" button to automatically fetch it from your server (This require Query port to be set).</string>
+    <string name="step3_2_help">This name will prefix all chat message send from the app.</string>
+
 
     <!--  Players fragment-->
 
