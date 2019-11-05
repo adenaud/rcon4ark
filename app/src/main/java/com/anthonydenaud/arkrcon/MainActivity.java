@@ -233,15 +233,21 @@ public class MainActivity extends ThemeActivity
     public void onDisconnect() {
         runOnUiThread(() -> {
             Timber.d("onDisconnect");
-            Toast.makeText(MainActivity.this, getString(R.string.conneciton_lost), Toast.LENGTH_LONG).show();
+            if (!MainActivity.this.isDestroyed()) {
+                Toast.makeText(MainActivity.this, getString(R.string.conneciton_lost), Toast.LENGTH_LONG).show();
+            }
         });
     }
 
     @Override
     public void onConnectionFail() {
         runOnUiThread(() -> {
-            progressDialog.dismiss();
-            Toast.makeText(MainActivity.this, getText(R.string.connection_fail), Toast.LENGTH_LONG).show();
+            if (!MainActivity.this.isDestroyed()) {
+                if (progressDialog != null && progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
+                Toast.makeText(MainActivity.this, getText(R.string.connection_fail), Toast.LENGTH_LONG).show();
+            }
         });
     }
 
