@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Base64;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -134,7 +135,8 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
             Timber.e(e);
         }
         final String finalTemplate = template;
-        webViewLog.loadData(finalTemplate, "text/html", "UTF-8");
+        String encodedHtml = Base64.encodeToString(finalTemplate.getBytes(), Base64.NO_PADDING);
+        webViewLog.loadData(encodedHtml, "text/html", "base64");
         webViewLog.setWebChromeClient(new WebChromeClient());
         webViewLog.getSettings().setJavaScriptEnabled(true);
         webViewLog.setWebViewClient(new WebViewClient() {
