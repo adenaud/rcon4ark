@@ -12,7 +12,8 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import android.support.v4.app.NotificationCompat;
+
+import androidx.core.app.NotificationCompat;
 
 import com.anthonydenaud.arkrcon.Codes;
 import com.anthonydenaud.arkrcon.R;
@@ -25,6 +26,7 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
 
 
 @Singleton
@@ -99,10 +101,10 @@ public class NotificationService {
         resultIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         resultIntent.putExtras(activity.getIntent().getExtras());
         activity.getIntent().putExtra("chat_notification", true);
-        PendingIntent pendingIntent = PendingIntent.getActivity(activity, Codes.REQUEST_RCON_CLOSE, resultIntent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(activity, Codes.REQUEST_RCON_CLOSE, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Intent deleteIntent = new Intent(NOTIFICATION_DELETED);
-        PendingIntent deletePendingIntent = PendingIntent.getBroadcast(activity, 0, deleteIntent, 0);
+        PendingIntent deletePendingIntent = PendingIntent.getBroadcast(activity, 0, deleteIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(application, CHANNEL_ID);
 

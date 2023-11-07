@@ -5,7 +5,6 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.text.method.ScrollingMovementMethod;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -21,6 +20,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import androidx.appcompat.app.AlertDialog;
+
 import com.anthonydenaud.arkrcon.R;
 import com.anthonydenaud.arkrcon.service.ArkService;
 
@@ -28,47 +29,23 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import toothpick.Scope;
 import toothpick.Toothpick;
 
 public class CommandsFragment extends RconFragment implements View.OnClickListener, TimePickerDialog.OnTimeSetListener, TextView.OnEditorActionListener {
 
-    @BindView(R.id.button_changeTime)
     Button buttonChangeTime;
-
-    @BindView(R.id.button_saveWorld)
     Button buttonSaveWorld;
-
-    @BindView(R.id.button_killDinos)
     Button buttonKillDinos;
-
-
-    @BindView(R.id.button_unban_player)
     Button buttonUnBan;
-
-    @BindView(R.id.button_whitelist_remove)
     Button buttonWhiteListRemove;
-
-    @BindView(R.id.textview_output)
     TextView textViewOutput;
-
-    @BindView(R.id.editext_command)
     AutoCompleteTextView editTextCommand;
-
-    @BindView(R.id.btn_exec)
     Button buttonExec;
-
-
     /* View expanding */
-    @BindView(R.id.layout_quick_commands)
     LinearLayout layoutQuickCmds;
-    @BindView(R.id.layout_custom_commands)
     LinearLayout layoutCustomCmds;
-    @BindView(R.id.btn_expand_quick_cmd)
     ImageButton btnExpandQuickCmds;
-    @BindView(R.id.btn_expend_custom_cmd)
     ImageButton btnExpandCustomCmds;
 
     @Inject
@@ -94,7 +71,20 @@ public class CommandsFragment extends RconFragment implements View.OnClickListen
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_rcon_commands, container, false);
-        ButterKnife.bind(this, view);
+
+        buttonChangeTime = view.findViewById(R.id.button_changeTime);
+        buttonSaveWorld = view.findViewById(R.id.button_saveWorld);
+        buttonKillDinos = view.findViewById(R.id.button_killDinos);
+        buttonUnBan = view.findViewById(R.id.button_unban_player);
+        buttonWhiteListRemove = view.findViewById(R.id.button_whitelist_remove);
+        textViewOutput = view.findViewById(R.id.textview_output);
+        editTextCommand = view.findViewById(R.id.editext_command);
+        layoutQuickCmds = view.findViewById(R.id.layout_quick_commands);
+        layoutCustomCmds = view.findViewById(R.id.layout_custom_commands);
+        btnExpandQuickCmds = view.findViewById(R.id.btn_expand_quick_cmd);
+        btnExpandCustomCmds = view.findViewById(R.id.btn_expend_custom_cmd);
+        buttonExec = view.findViewById(R.id.btn_exec);
+
         return view;
     }
 

@@ -1,8 +1,6 @@
 package com.anthonydenaud.arkrcon.view;
 
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.Toolbar;
 import android.text.Layout;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,6 +12,9 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 
 import com.anthonydenaud.arkrcon.event.AuthenticationListener;
 import com.anthonydenaud.arkrcon.event.ConnectionListener;
@@ -37,8 +38,6 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import toothpick.Scope;
 import toothpick.Toothpick;
 
@@ -52,52 +51,21 @@ public class ServerConnectionActivity extends ThemeActivity implements View.OnCl
 
     SteamQuery steamQuery;
 
-    @BindView(R.id.step1_layout)
     LinearLayout step1Layout;
-
-    @BindView(R.id.step2_layout)
     LinearLayout step2Layout;
-
-    @BindView(R.id.step3_layout)
     LinearLayout step3Layout;
-
-    @BindView(R.id.name_edittext)
     EditText nameEditText;
-
-    @BindView(R.id.hostname_edittext)
     EditText hostnameEditText;
-
-    @BindView(R.id.rcon_port_edittext)
     EditText rconPortEditText;
-
-    @BindView(R.id.query_port_edittext)
     EditText queryPortEditText;
-
-    @BindView(R.id.password_edittext)
     EditText passwordEditText;
-
-    @BindView(R.id.admin_name_edittext)
     EditText adminNameEditText;
-
-    @BindView(R.id.fetch_name_button)
     ImageButton fetchNameButton;
-
-    @BindView(R.id.test_button)
     Button testConnectionButton;
-
-    @BindView(R.id.test_connection_progress)
     ProgressBar progressBar;
-
-    @BindView(R.id.test_result_text)
     TextView testResultTextView;
-
-    @BindView(R.id.back_button)
     Button backButton;
-
-    @BindView(R.id.next_button)
     Button nextButton;
-
-    @BindView(R.id.finish_button)
     Button finishButton;
 
     private Server server;
@@ -109,12 +77,31 @@ public class ServerConnectionActivity extends ThemeActivity implements View.OnCl
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_server_connection);
-        ButterKnife.bind(this);
+
+
         Scope s = Toothpick.openScopes(getApplication(), this);
         Toothpick.inject(this, s);
         Toolbar toolbar = findViewById(R.id.toolbar_server_connection);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        step1Layout = findViewById(R.id.step1_layout);
+        step2Layout = findViewById(R.id.step2_layout);
+        step3Layout = findViewById(R.id.step3_layout);
+
+        nameEditText = findViewById(R.id.name_edittext);
+        hostnameEditText = findViewById(R.id.hostname_edittext);
+        rconPortEditText = findViewById(R.id.rcon_port_edittext);
+        queryPortEditText = findViewById(R.id.query_port_edittext);
+        passwordEditText = findViewById(R.id.password_edittext);
+        adminNameEditText = findViewById(R.id.admin_name_edittext);
+        fetchNameButton = findViewById(R.id.fetch_name_button);
+        testConnectionButton = findViewById(R.id.test_button);
+        progressBar = findViewById(R.id.test_connection_progress);
+        testResultTextView = findViewById(R.id.test_result_text);
+        backButton = findViewById(R.id.back_button);
+        nextButton = findViewById(R.id.next_button);
+        finishButton = findViewById(R.id.finish_button);
 
         this.steamQuery = new SteamQuery();
         this.currentStep = 1;

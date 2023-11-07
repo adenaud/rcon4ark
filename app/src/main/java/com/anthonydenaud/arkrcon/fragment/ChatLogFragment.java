@@ -7,8 +7,6 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -40,8 +38,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import androidx.annotation.Nullable;
+
+import com.google.android.material.snackbar.Snackbar;
+
 import timber.log.Timber;
 import toothpick.Scope;
 import toothpick.Toothpick;
@@ -58,17 +58,12 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
     @Inject
     NotificationService notificationService;
 
-    @BindView(R.id.webview_log)
     WebView webViewLog;
 
-
-    @BindView(R.id.editext_chat_send)
     EditText editTextChatSend;
 
-    @BindView(R.id.btn_chat)
     Button buttonChat;
 
-    @BindView(R.id.btn_broadcast)
     Button buttonBroadcast;
 
     private Context context;
@@ -85,6 +80,7 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
 
         Scope s = Toothpick.openScopes(getActivity().getApplication(), this);
         Toothpick.inject(this, s);
+
     }
 
     @Override
@@ -99,7 +95,12 @@ public class ChatLogFragment extends RconFragment implements View.OnClickListene
         arkService.addServerResponseDispatcher(this);
 
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
-        ButterKnife.bind(this, view);
+
+        webViewLog = view.findViewById(R.id.webview_log);
+        editTextChatSend = view.findViewById(R.id.editext_chat_send);
+        buttonChat = view.findViewById(R.id.btn_chat);
+        buttonBroadcast = view.findViewById(R.id.btn_broadcast);
+
         return view;
     }
 

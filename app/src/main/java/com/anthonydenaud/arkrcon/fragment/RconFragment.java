@@ -1,10 +1,9 @@
 package com.anthonydenaud.arkrcon.fragment;
 
-
-import android.support.v4.app.Fragment;
-
 import com.anthonydenaud.arkrcon.event.ServerResponseDispatcher;
 import com.anthonydenaud.arkrcon.model.Player;
+
+import androidx.fragment.app.Fragment;
 
 import java.util.List;
 

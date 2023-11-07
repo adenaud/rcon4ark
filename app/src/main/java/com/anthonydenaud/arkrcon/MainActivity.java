@@ -5,8 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AlertDialog;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.View;
@@ -16,6 +14,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
 
 import com.anthonydenaud.arkrcon.api.ApiCallback;
 import com.anthonydenaud.arkrcon.event.AuthenticationListener;
@@ -31,11 +31,10 @@ import com.anthonydenaud.arkrcon.service.ArkService;
 import com.anthonydenaud.arkrcon.view.RconActivity;
 import com.anthonydenaud.arkrcon.view.ServerConnectionActivity;
 import com.anthonydenaud.arkrcon.view.ThemeActivity;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import javax.inject.Inject;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import timber.log.Timber;
 import toothpick.Scope;
 import toothpick.Toothpick;
@@ -43,10 +42,8 @@ import toothpick.Toothpick;
 public class MainActivity extends ThemeActivity
         implements AdapterView.OnItemClickListener, ConnectionListener, AuthenticationListener {
 
-    @BindView(R.id.list_servers)
     ListView listView;
 
-    @BindView(R.id.textview_noserver)
     TextView textViewNoServer;
 
     private ServerAdapter serverAdapter;
@@ -69,12 +66,13 @@ public class MainActivity extends ThemeActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ButterKnife.bind(this);
-
         Scope s = Toothpick.openScopes(getApplication(), this);
         Toothpick.inject(this, s);
 
+        listView = findViewById(R.id.list_servers);
+        textViewNoServer = findViewById(R.id.textview_noserver);
         toolbar = findViewById(R.id.toolbar);
+
         setSupportActionBar(toolbar);
 
         this.serverAdapter = new ServerAdapter(this, serverDAO);
@@ -112,19 +110,15 @@ public class MainActivity extends ThemeActivity
                 });
             }
         });
-        apiService.saveUser();
 
 
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         if (fab != null) {
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(MainActivity.this, ServerConnectionActivity.class);
-                    intent.putExtra("titleId", R.string.new_server);
-                    startActivityForResult(intent, Codes.REQUEST_NEW_SERVER);
-                }
+            fab.setOnClickListener(view -> {
+                Intent intent = new Intent(MainActivity.this, ServerConnectionActivity.class);
+                intent.putExtra("titleId", R.string.new_server);
+                startActivityForResult(intent, Codes.REQUEST_NEW_SERVER);
             });
         }
 
@@ -191,7 +185,6 @@ public class MainActivity extends ThemeActivity
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_servers_floating, menu);
-        ButterKnife.bind(this);
     }
 
     @Override
@@ -260,7 +253,6 @@ public class MainActivity extends ThemeActivity
 
             runOnUiThread(() -> progressDialog.dismiss());
             rconActivityStarted = true;
-            apiService.saveServer(currentServer);
         }
     }
 

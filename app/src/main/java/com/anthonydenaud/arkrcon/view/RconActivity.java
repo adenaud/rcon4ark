@@ -4,14 +4,16 @@ import android.app.Application;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.design.widget.TabLayout;
-import android.support.v7.widget.Toolbar;
 
-import android.support.v4.view.ViewPager;
+
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
+
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.tabs.TabLayout;
 
 import com.anthonydenaud.arkrcon.service.LogService;
 import com.anthonydenaud.arkrcon.service.NotificationService;
@@ -28,8 +30,6 @@ import com.anthonydenaud.arkrcon.service.ArkService;
 
 import javax.inject.Inject;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import toothpick.Scope;
 import toothpick.Toothpick;
 
@@ -46,9 +46,7 @@ public class RconActivity extends ThemeActivity implements ConnectionListener, V
     @Inject LogService logService;
     @Inject NotificationService notificationService;
 
-    @BindView(R.id.container)
     ViewPager mViewPager;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,11 +56,11 @@ public class RconActivity extends ThemeActivity implements ConnectionListener, V
         Scope s = Toothpick.openScopes(getApplication(), this);
         Toothpick.inject(this, s);
 
-        ButterKnife.bind(this);
-
         this.playersFragment = new PlayersFragment();
         this.commandsFragment = new CommandsFragment();
         this.chatLogFragment = new ChatLogFragment();
+
+        mViewPager = findViewById(R.id.container);
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 

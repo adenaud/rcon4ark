@@ -6,7 +6,6 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -28,17 +27,16 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import toothpick.Scope;
 import toothpick.Toothpick;
 
 public class PlayersFragment extends RconFragment {
 
-    @BindView(R.id.list_players)
     ListView listViewPlayers;
 
-    @BindView(R.id.textview_noplayers)
     TextView textViewNoPlayers;
 
     @Inject
@@ -61,12 +59,15 @@ public class PlayersFragment extends RconFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
         View view =  inflater.inflate(R.layout.fragment_rcon_players, container, false);
-        ButterKnife.bind(this, view);
+
+        listViewPlayers =  view.findViewById(R.id.list_players);
+        textViewNoPlayers =  view.findViewById(R.id.textview_noplayers);
+
         return view;
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         registerForContextMenu(listViewPlayers);
