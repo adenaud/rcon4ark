@@ -6,8 +6,8 @@ android {
     defaultConfig {
         applicationId "com.anthonydenaud.arkrcon"
         minSdkVersion 21
-        targetSdkVersion 31
-        versionCode 37
+        targetSdkVersion 34
+        versionCode 38
         versionName "1.6.2"
     }
     compileOptions {
