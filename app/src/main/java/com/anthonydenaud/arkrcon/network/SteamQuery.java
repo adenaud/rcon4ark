@@ -1,8 +1,8 @@
 package com.anthonydenaud.arkrcon.network;
 
 import com.github.koraktor.steamcondenser.exceptions.SteamCondenserException;
-import com.github.koraktor.steamcondenser.steam.SteamPlayer;
-import com.github.koraktor.steamcondenser.steam.servers.GoldSrcServer;
+import com.github.koraktor.steamcondenser.servers.SteamPlayer;
+import com.github.koraktor.steamcondenser.servers.GoldSrcServer;
 
 import java.nio.BufferUnderflowException;
 import java.util.HashMap;
@@ -104,10 +104,14 @@ public class SteamQuery {
                 try {
                     server.updateServerInfo();
                     HashMap<String, Object> serverInfo = server.getServerInfo();
-                    if(serverInfo == null){
+                    if (serverInfo == null){
                         throw  new SteamCondenserException();
                     }
-                    maxPlayers = ((Byte) serverInfo.get("maxPlayers"));
+                    Byte maxPlayersByte = (Byte) serverInfo.get("maxPlayers");
+                    if (maxPlayersByte == null){
+                        throw  new SteamCondenserException();
+                    }
+                    maxPlayers = maxPlayersByte & 0xff;
                     error = false;
                 } catch (SteamCondenserException | TimeoutException | BufferUnderflowException e) {
                     try {
@@ -136,6 +140,9 @@ public class SteamQuery {
                 try {
                     server.updateServerInfo();
                     HashMap<String, Object> serverInfo = server.getServerInfo();
+                    if (serverInfo == null){
+                        throw  new SteamCondenserException();
+                    }
                     serverName = (String) serverInfo.get("serverName");
                     error = false;
                 } catch (SteamCondenserException | TimeoutException | BufferUnderflowException e) {

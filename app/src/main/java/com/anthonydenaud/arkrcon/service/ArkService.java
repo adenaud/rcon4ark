@@ -8,7 +8,7 @@ import com.anthonydenaud.arkrcon.event.AuthenticationListener;
 import com.anthonydenaud.arkrcon.event.OnServerStopRespondingListener;
 import com.anthonydenaud.arkrcon.network.SteamQuery;
 import com.anthonydenaud.arkrcon.network.SteamQueryException;
-import com.github.koraktor.steamcondenser.steam.SteamPlayer;
+import com.github.koraktor.steamcondenser.servers.SteamPlayer;
 
 import com.anthonydenaud.arkrcon.R;
 import com.anthonydenaud.arkrcon.event.ConnectionListener;
