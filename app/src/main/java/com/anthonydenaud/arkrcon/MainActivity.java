@@ -15,6 +15,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 
 import com.anthonydenaud.arkrcon.api.ApiCallback;
@@ -31,7 +33,6 @@ import com.anthonydenaud.arkrcon.service.ArkService;
 import com.anthonydenaud.arkrcon.view.RconActivity;
 import com.anthonydenaud.arkrcon.view.ServerConnectionActivity;
 import com.anthonydenaud.arkrcon.view.ThemeActivity;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import javax.inject.Inject;
 
@@ -60,6 +61,9 @@ public class MainActivity extends ThemeActivity
     private Server currentServer;
     private ProgressDialog progressDialog;
     private boolean rconActivityStarted = false;
+
+    private ActivityResultLauncher<Intent> serverActivityLauncher;
+    private ActivityResultLauncher<Intent> rconActivityLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,21 +115,17 @@ public class MainActivity extends ThemeActivity
             }
         });
 
-
-
-        FloatingActionButton fab = findViewById(R.id.fab);
-        if (fab != null) {
-            fab.setOnClickListener(view -> {
-                Intent intent = new Intent(MainActivity.this, ServerConnectionActivity.class);
-                intent.putExtra("titleId", R.string.new_server);
-                startActivityForResult(intent, Codes.REQUEST_NEW_SERVER);
-            });
-        }
-
         listView.setOnItemClickListener(this);
         //logService.migrate(this);
         refresh();
 
+        serverActivityLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), (result) -> refresh());
+
+        rconActivityLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), (result) -> {
+            arkService.removeAllConnectionListener();
+            arkService.disconnect();
+            rconActivityStarted = false;
+        });
     }
 
     @Override
@@ -155,28 +155,21 @@ public class MainActivity extends ThemeActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.settings) {
             Intent intent = new Intent(this, SettingsActivity.class);
-            startActivityForResult(intent, Codes.REQUEST_SETTINGS);
+            startActivity(intent);
+        }
+        else if (item.getItemId() == R.id.server_add) {
+            Intent intent = new Intent(MainActivity.this, ServerConnectionActivity.class);
+            intent.putExtra("titleId", R.string.new_server);
+            this.serverActivityLauncher.launch(intent);
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        if (requestCode == Codes.REQUEST_NEW_SERVER || requestCode == Codes.REQUEST_EDIT_SERVER) {
-            refresh();
-        }
-        if (requestCode == Codes.REQUEST_RCON_CLOSE) {
-            arkService.removeAllConnectionListener();
-            arkService.disconnect();
-            rconActivityStarted = false;
-        }
-
         if (resultCode == Codes.RESULT_CONNECTION_DROP) {
             Toast.makeText(this, getString(R.string.conneciton_lost), Toast.LENGTH_LONG).show();
         }
-
-
         super.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -191,19 +184,18 @@ public class MainActivity extends ThemeActivity
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         Server server = (Server) listView.getItemAtPosition(info.position);
-        switch (item.getItemId()) {
-            case R.id.menu_action_edit:
-                Intent intent = new Intent(MainActivity.this, ServerConnectionActivity.class);
-                intent.putExtra("server", server);
-                intent.putExtra("titleId", R.string.edit_server);
-                startActivityForResult(intent, Codes.REQUEST_EDIT_SERVER);
-                return true;
-            case R.id.menu_action_delete:
-                serverDAO.delete(server);
-                refresh();
-                return true;
-            default:
-                return super.onContextItemSelected(item);
+        if (R.id.menu_action_edit == item.getItemId()) {
+            Intent intent = new Intent(MainActivity.this, ServerConnectionActivity.class);
+            intent.putExtra("server", server);
+            intent.putExtra("titleId", R.string.edit_server);
+            this.serverActivityLauncher.launch(intent);
+            return true;
+        } else if(R.id.menu_action_delete == item.getItemId()){
+            serverDAO.delete(server);
+            refresh();
+            return true;
+        } else {
+            return super.onContextItemSelected(item);
         }
     }
 
@@ -249,7 +241,7 @@ public class MainActivity extends ThemeActivity
         if (!rconActivityStarted) {
             Intent intent = new Intent(this, RconActivity.class);
             intent.putExtra("server", currentServer);
-            startActivityForResult(intent, Codes.REQUEST_RCON_CLOSE);
+            rconActivityLauncher.launch(intent);
 
             runOnUiThread(() -> progressDialog.dismiss());
             rconActivityStarted = true;
